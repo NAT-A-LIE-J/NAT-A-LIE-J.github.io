@@ -7,11 +7,7 @@
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata">
 
-<!-- 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
--->
+
 
 <style>
 body, html {
@@ -28,9 +24,7 @@ body, html {
 }
 */ 
 
-.menu {
-  display: none;
-}
+
 </style>
 </head>
 <body>
@@ -45,7 +39,7 @@ body, html {
       <a href="resume.html" class="w3-button w3-block w3-black">RESUME</a>
     </div>
         <div class="w3-col s3">
-      <a href="projectshtml" class="w3-button w3-block w3-black">PROJECTS</a>
+      <a href="projects.html" class="w3-button w3-block w3-black">PROJECTS</a>
     </div>
     <div class="w3-col s3">
       <a href="photos.html" class="w3-button w3-block w3-black">PHOTOS</a>
