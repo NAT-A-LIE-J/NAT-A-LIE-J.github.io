@@ -98,7 +98,7 @@ input, select, textarea {
 	}
 
 	body {
-		background: #FAEDCA;
+		background: #0F0E0EFF;
 	}
 
 		body.is-preload *, body.is-preload *:before, body.is-preload *:after {
@@ -4024,3 +4024,47 @@ input, select, textarea {
 	display: inline-block;
 	margin: 0 auto;
   }
+  /* slider.css (or your existing stylesheet) */
+
+.slider {
+  position: relative;
+  width: 800px;
+  height: auto;
+  overflow: visible;
+  margin: 0 auto;
+}
+
+.slide {
+  position: static;
+  width: 100%;
+  padding-bottom: 2em;
+  display: none;
+}
+.slide.active {
+  display: block;
+}
+
+/* style your nav buttons so they’re visible and clickable */
+.slider .prev,
+.slider .next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  color: white;
+  font-size: 2rem;
+  padding: 0.2em 0.5em;
+  cursor: pointer;
+  z-index: 10;
+}
+.slider .prev { left: -80px; }
+.slider .next { right: -80px; }
+
+.slider .slide img,
+.slider .slide video {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
