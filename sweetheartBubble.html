@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sweet Heart Emoticon Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: white;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+        }
+
+        .emoticon-bubble {
+            position: absolute;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            user-select: none;
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            animation: float 3s ease-in-out infinite;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 8px;
+        }
+
+        .emoticon-bubble:hover {
+            transform: scale(1.1);
+        }
+
+        .emoticon-bubble:active {
+            transform: scale(0.95);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+
+        .heart {
+            position: absolute;
+            color: #dc143c;
+            font-size: 20px;
+            pointer-events: none;
+            animation: heartBurst 2s ease-out forwards;
+        }
+
+        @keyframes heartBurst {
+            0% {
+                transform: scale(0) translateY(0);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2) translateY(-30px);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(0.8) translateY(-80px);
+                opacity: 0;
+            }
+        }
+
+        .score {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #333;
+            font-size: 24px;
+            font-weight: bold;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px 15px;
+            border-radius: 20px;
+            border: 2px solid #333;
+        }
+
+        .speech-bubble {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            color: #333;
+            border: 1px solid #ccc;
+            white-space: nowrap;
+            z-index: 10;
+            pointer-events: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 8px solid rgba(255, 255, 255, 0.95);
+        }
+
+        .instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #333;
+            text-align: center;
+            font-size: 16px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="score">Saved: <span id="scoreCount">0</span></div>
+    <div class="instructions">Click the bubbles to save the cute emoticons! 🐱🐶</div>
+
+    <script>
+        const catEmoticons = [
+            '(=^･ω･^=)',
+            '(=^‥^=)',
+            '(=^･ｪ･^=)',
+            '(^･o･^)',
+            '(^._.^)',
+            '(^人^)',
+            '(=^･^=)',
+            '(=ＴェＴ=)',
+            '(^▽^)',
+            '(＾◡＾)'
+        ];
+
+        const dogEmoticons = [
+            '(∪･ω･∪)',
+            '(∪￣ ㋓ ￣∪)',
+            '(∪･ｪ･∪)',
+            '(∪▽∪)',
+            '(∪◡∪)',
+            '(U・ᴥ・U)',
+            '(∪ᵒᴥᵒ∪)',
+            '(U◡U)',
+            '(∪ ◡ ∪)',
+            '(U ᵕ U)'
+        ];
+
+        const rainbowColors = [
+            'rgba(255, 99, 71, 0.6)',
+            'rgba(255, 165, 0, 0.6)',
+            'rgba(255, 215, 0, 0.6)',
+            'rgba(144, 238, 144, 0.6)',
+            'rgba(135, 206, 235, 0.6)',
+            'rgba(147, 112, 219, 0.6)',
+            'rgba(255, 182, 193, 0.6)'
+        ];
+
+        const helpPhrases = [
+            "Please help free me!",
+            "I'm trapped!",
+            "Save me please!",
+            "Help! I'm stuck!",
+            "Please rescue me!",
+            "I need your help!",
+            "Please pop my bubble!",
+            "Free me from here!"
+        ];
+
+        const thankYouPhrases = [
+            "Thank you!",
+            "Yay! I'm free!",
+            "You saved me!",
+            "Thank you so much!",
+            "I'm finally free!",
+            "You're my hero!",
+            "Freedom at last!",
+            "Hooray!"
+        ];
+
+        let bubbles = [];
+        let maxBubbles = Math.floor((window.innerWidth * window.innerHeight) / 15000);
+        let score = 0;
+
+        function getRandomEmoticon() {
+            const allEmoticons = [...catEmoticons, ...dogEmoticons];
+            return allEmoticons[Math.floor(Math.random() * allEmoticons.length)];
+        }
+
+        function getRandomPosition() {
+            const margin = 100;
+            return {
+                x: Math.random() * (window.innerWidth - 2 * margin) + margin,
+                y: Math.random() * (window.innerHeight - 200) + 100
+            };
+        }
+
+        function showSpeechBubble(x, y, text, duration) {
+            if (!duration) duration = 2000;
+            
+            const speechBubble = document.createElement('div');
+            speechBubble.className = 'speech-bubble';
+            speechBubble.textContent = text;
+            speechBubble.style.left = (x - 50) + 'px';
+            speechBubble.style.top = (y - 50) + 'px';
+            
+            document.body.appendChild(speechBubble);
+            
+            setTimeout(function() {
+                if (speechBubble.parentNode) {
+                    document.body.removeChild(speechBubble);
+                }
+            }, duration);
+        }
+
+        function createHeartBurst(x, y) {
+            const heartCount = 8;
+            
+            for (let i = 0; i < heartCount; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = '❤️';
+                
+                const angle = Math.PI + (Math.PI * i) / (heartCount - 1);
+                const distance = 30 + Math.random() * 40;
+                const finalX = x + Math.cos(angle) * distance;
+                const finalY = y + Math.sin(angle) * distance;
+                
+                heart.style.left = x + 'px';
+                heart.style.top = y + 'px';
+                
+                setTimeout(function() {
+                    heart.style.left = finalX + 'px';
+                    heart.style.top = finalY + 'px';
+                }, 10);
+                
+                document.body.appendChild(heart);
+                
+                setTimeout(function() {
+                    if (heart.parentNode) {
+                        document.body.removeChild(heart);
+                    }
+                }, 2000);
+            }
+        }
+
+        function createBubble() {
+            if (bubbles.length >= maxBubbles) return;
+
+            const bubble = document.createElement('div');
+            bubble.className = 'emoticon-bubble';
+            bubble.textContent = getRandomEmoticon();
+            
+            const size = 60 + Math.random() * 60;
+            const fontSize = size * 0.3;
+            
+            bubble.style.width = size + 'px';
+            bubble.style.height = size + 'px';
+            bubble.style.fontSize = fontSize + 'px';
+            
+            const position = getRandomPosition();
+            bubble.style.left = position.x + 'px';
+            bubble.style.top = position.y + 'px';
+            
+            const clicksNeeded = Math.floor(Math.random() * 20) + 1;
+            let currentClicks = 0;
+            let isPopped = false;
+            
+            const initialColor = rainbowColors[Math.floor(Math.random() * rainbowColors.length)];
+            bubble.style.backgroundColor = initialColor;
+            
+            const colorMatch = initialColor.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
+            const originalR = parseInt(colorMatch[1]);
+            const originalG = parseInt(colorMatch[2]);
+            const originalB = parseInt(colorMatch[3]);
+            
+            const helpInterval = setInterval(function() {
+                if (!isPopped && bubble.parentNode) {
+                    const helpPhrase = helpPhrases[Math.floor(Math.random() * helpPhrases.length)];
+                    showSpeechBubble(position.x + size/2, position.y, helpPhrase);
+                } else {
+                    clearInterval(helpInterval);
+                }
+            }, 3000 + Math.random() * 4000);
+            
+            bubble.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (isPopped) return;
+                
+                currentClicks++;
+                
+                const redIntensity = Math.min(currentClicks / clicksNeeded, 1);
+                const red = originalR + (255 - originalR) * redIntensity;
+                const green = originalG * (1 - redIntensity * 0.8);
+                const blue = originalB * (1 - redIntensity * 0.8);
+                
+                bubble.style.backgroundColor = 'rgba(' + Math.floor(red) + ', ' + Math.floor(green) + ', ' + Math.floor(blue) + ', 0.6)';
+                
+                bubble.style.transform = 'scale(0.9)';
+                setTimeout(function() {
+                    if (bubble.parentNode) {
+                        bubble.style.transform = 'scale(1)';
+                    }
+                }, 100);
+                
+                if (currentClicks >= clicksNeeded) {
+                    isPopped = true;
+                    clearInterval(helpInterval);
+                    
+                    const thankYouPhrase = thankYouPhrases[Math.floor(Math.random() * thankYouPhrases.length)];
+                    showSpeechBubble(position.x + size/2, position.y, thankYouPhrase, 1500);
+                    
+                    score++;
+                    document.getElementById('scoreCount').textContent = score;
+                    
+                    createHeartBurst(position.x + size/2, position.y + size/2);
+                    
+                    bubble.style.transition = 'all 0.5s ease-out';
+                    bubble.style.transform = 'scale(0)';
+                    bubble.style.opacity = '0';
+                    
+                    setTimeout(function() {
+                        if (bubble.parentNode) {
+                            document.body.removeChild(bubble);
+                        }
+                        bubbles = bubbles.filter(function(b) { return b !== bubble; });
+                    }, 500);
+                }
+            });
+            
+            document.body.appendChild(bubble);
+            bubbles.push(bubble);
+        }
+
+        // Start the game
+        createBubble();
+        setInterval(createBubble, 5000);
+
+        window.addEventListener('resize', function() {
+            maxBubbles = Math.floor((window.innerWidth * window.innerHeight) / 15000);
+        });
+    </script>
+</body>
+</html>

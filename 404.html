@@ -384,8 +384,8 @@
 						
 						bubble.draw(this.ctx);
 						
-						// Remove bubbles that are off screen or too faded
-						if (bubble.y < -bubble.size || bubble.alpha <= 0) {
+						// Remove bubbles that are off screen (no alpha check since they don't fade)
+						if (bubble.y < -bubble.size) {
 							this.bubbles.splice(i, 1);
 						}
 					}
@@ -439,8 +439,8 @@
 						}
 					}
 					
-					// Fade out as bubble rises
-					this.alpha -= 0.002;
+					// Keep bubbles visible - no fading
+					// this.alpha -= 0.002; // Removed this line
 				}
 
 				draw(ctx) {
