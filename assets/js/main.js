@@ -43,75 +43,74 @@
 					$(this).parents('form').submit();
 
 			});
+// Sidebar - Fixed Implementation
+	if ($sidebar.length > 0) {
 
-	// Sidebar.
-		if ($sidebar.length > 0) {
+		var $sidebar_a = $sidebar.find('a');
 
-			var $sidebar_a = $sidebar.find('a');
+		// Handle clicks
+		$sidebar_a
+			.addClass('scrolly')
+			.on('click', function() {
+				var $this = $(this);
 
-			$sidebar_a
-				.addClass('scrolly')
-				.on('click', function() {
+				// External link? Bail.
+				if ($this.attr('href').charAt(0) != '#')
+					return;
 
-					var $this = $(this);
+				// Deactivate all links.
+				$sidebar_a.removeClass('active');
 
-					// External link? Bail.
-						if ($this.attr('href').charAt(0) != '#')
-							return;
+				// Activate clicked link.
+				$this.addClass('active');
+			});
 
-					// Deactivate all links.
-						$sidebar_a.removeClass('active');
+		// Handle scroll tracking
+		$window.on('scroll', function() {
+			var scrollTop = $window.scrollTop();
+			var windowHeight = $window.height();
 
-					// Activate link *and* lock it (so Scrollex doesn't try to activate other links as we're scrolling to this one's section).
-						$this
-							.addClass('active')
-							.addClass('active-locked');
+			$sidebar_a.each(function() {
+				var $this = $(this);
+				var href = $this.attr('href');
+				var $section = $(href);
 
-				})
-				.each(function() {
+				// No section for this link? Skip.
+				if ($section.length < 1) return;
 
-					var	$this = $(this),
-						id = $this.attr('href'),
-						$section = $(id);
+				var sectionTop = $section.offset().top - 150;
+				var sectionHeight = $section.outerHeight();
+				var sectionBottom = sectionTop + sectionHeight;
 
-					// No section for this link? Bail.
-						if ($section.length < 1)
-							return;
+				// Check if we're in this section
+				if (scrollTop >= sectionTop && scrollTop < sectionBottom) {
+					// Remove active from all links
+					$sidebar_a.removeClass('active');
+					// Add active to current section's link
+					$this.addClass('active');
+					
+					// Remove inactive class from section for animations
+					$section.removeClass('inactive');
+				}
+			});
+		});
 
-					// Scrollex.
-						$section.scrollex({
-							mode: 'middle',
-							top: '-20vh',
-							bottom: '-20vh',
-							initialize: function() {
+		// Initialize sections and set first link as active
+		$sidebar_a.each(function() {
+			var $this = $(this);
+			var href = $this.attr('href');
+			var $section = $(href);
 
-								// Deactivate section.
-									$section.addClass('inactive');
+			// Initialize section as inactive for animations
+			if ($section.length > 0) {
+				$section.addClass('inactive');
+			}
+		});
 
-							},
-							enter: function() {
-
-								// Activate section.
-									$section.removeClass('inactive');
-
-								// No locked links? Deactivate all links and activate this section's one.
-									if ($sidebar_a.filter('.active-locked').length == 0) {
-
-										$sidebar_a.removeClass('active');
-										$this.addClass('active');
-
-									}
-
-								// Otherwise, if this section's link is the one that's locked, unlock it.
-									else if ($this.hasClass('active-locked'))
-										$this.removeClass('active-locked');
-
-							}
-						});
-
-				});
-
-		}
+		// Set first link as active initially
+		$sidebar_a.first().addClass('active');
+		$($("#sidebar a").first().attr('href')).removeClass('inactive');
+	}
 
 	// Scrolly.
 		$('.scrolly').scrolly({
