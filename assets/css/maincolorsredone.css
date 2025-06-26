@@ -1552,3 +1552,46 @@ body.is-preload #intro .inner {
     75% { transform: rotate(10deg); }
     100% { transform: rotate(0deg); }
 }
+
+/* Profile picture flip effect */
+.headshot-container {
+    perspective: 1000px; /* Creates the 3D space for the flip */
+    width: 100%;
+    margin-bottom: 1em;
+    display: flex;
+    justify-content: center; /* Centers the flipper */
+}
+
+.headshot-flipper {
+    position: relative;
+    width: auto;
+    height: auto;
+    transition: transform 0.3s ease-in-out;
+    transform-style: preserve-3d;
+    transform-origin: center center; /* Ensures rotation happens from center */
+}
+
+.headshot-container:hover .headshot-flipper {
+    transform: rotateY(180deg);
+}
+
+.headshot-front, .headshot-back {
+    backface-visibility: hidden;
+    display: block;
+    max-width: 100%;
+    height: auto;
+    /* Keeps original rectangular shape - no border-radius */
+}
+
+.headshot-front {
+    position: relative;
+}
+
+.headshot-back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    transform: rotateY(180deg);
+}
