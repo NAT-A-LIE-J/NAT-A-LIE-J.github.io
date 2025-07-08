@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>On-Premise vs. Cloud Decision Helper</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 16px; /* More rounded corners */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Softer shadow */
+            padding: 30px;
+            width: 100%;
+            max-width: 700px; /* Increased max-width for better readability */
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .statement-text {
+            font-size: 1.25rem; /* Larger font for statements */
+            color: #334155; /* Darker text for readability */
+            min-height: 80px; /* Ensure consistent height for statement display */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .rating-buttons-container {
+            display: flex;
+            flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+            justify-content: center;
+            gap: 10px; /* Space between buttons */
+            margin-bottom: 20px;
+        }
+        .rating-button {
+            background-color: #e2e8f0; /* Light gray button background */
+            color: #475569; /* Darker gray text */
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 12px 18px; /* More padding for larger touch targets */
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            flex-shrink: 0; /* Prevent shrinking */
+            min-width: 45px; /* Ensure minimum width */
+        }
+        .rating-button:hover {
+            background-color: #d1d9e2; /* Slightly darker on hover */
+            transform: translateY(-2px); /* Subtle lift effect */
+        }
+        .rating-button.selected {
+            background-color: #3b82f6; /* Blue for selected */
+            color: white;
+            border-color: #2563eb;
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3); /* Blue shadow */
+        }
+        .action-button {
+            background-color: #10b981; /* Green for action buttons */
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); /* Green shadow */
+        }
+        .action-button:hover {
+            background-color: #059669; /* Darker green on hover */
+            transform: translateY(-2px);
+        }
+        .results-section {
+            text-align: left;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f8fafc; /* Lighter background for results */
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+        .results-section h2 {
+            font-size: 1.8rem;
+            color: #1e293b;
+            margin-bottom: 15px;
+        }
+        .results-section p {
+            font-size: 1.1rem;
+            color: #475569;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        .score-display {
+            font-weight: bold;
+            color: #3b82f6; /* Blue for scores */
+        }
+        .recommendation-text {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #059669; /* Green for recommendation */
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #ecfdf5; /* Light green background */
+            border-radius: 10px;
+            border: 1px solid #a7f3d0;
+        }
+        .start-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 25px;
+        }
+        .start-screen h1 {
+            font-size: 2.5rem;
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+        .start-screen p {
+            font-size: 1.2rem;
+            color: #475569;
+            line-height: 1.6;
+            max-width: 500px;
+        }
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            max-width: 400px;
+            text-align: center;
+        }
+        .message-box p {
+            font-size: 1.1rem;
+            color: #334155;
+        }
+        .message-box button {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .message-box button:hover {
+            background-color: #2563eb;
+        }
+        /* Custom styles for the progress bars */
+        .score-bars-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .score-bar-label {
+            font-weight: bold;
+            color: #334155;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        .score-value {
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        .progress-bar-wrapper {
+            display: flex;
+            width: 100%;
+            height: 20px; /* Height of the progress bar */
+            background-color: #e2e8f0; /* Background for the track */
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        .progress-bar {
+            height: 100%;
+            transition: width 0.3s ease-out; /* Smooth transition for width changes */
+            border-radius: 10px; /* Rounded ends for the bar itself */
+        }
+        .on-prem-bar {
+            background-color: #3b82f6; /* Blue for On-Premise */
+        }
+        .cloud-bar {
+            background-color: #10b981; /* Green for Cloud Service */
+        }
+        .descriptor-text {
+            font-size: 0.95rem;
+            color: #64748b; /* Gray text for descriptor */
+            margin-top: 15px;
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            background-color: #f1f5f9; /* Light gray background */
+            border-left: 4px solid #a7b3c2; /* Left border for emphasis */
+            border-radius: 8px;
+            text-align: left;
+            line-height: 1.4;
+            display: none; /* Hidden by default */
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="gameContainer">
+        <!-- Start Screen -->
+        <div id="startScreen" class="start-screen">
+            <h1>On-Premise vs. Cloud Decision Helper</h1>
+            <p>Welcome! This tool will help you decide whether an on-premise self-hosting solution or a cloud service is better suited for your project's generative AI needs.</p>
+            <p>For each statement, rate how much you agree with it for your specific needs on a scale of 1 to 10.</p>
+            <button id="startButton" class="action-button">Start Assessment</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="gameScreen" class="hidden">
+            <p class="text-lg text-gray-600 mb-4" id="statementCounter">Statement 1 of X</p>
+
+            <!-- Score Display Bars -->
+            <div class="score-bars-container mb-6 w-full">
+                <div class="flex justify-between items-center w-full px-2">
+                    <span class="score-bar-label">On-Premise: <span id="currentOnPremScore" class="score-value">0</span></span>
+                    <span class="score-bar-label">Cloud Service: <span id="currentCloudScore" class="score-value">0</span></span>
+                </div>
+                <div class="progress-bar-wrapper">
+                    <div id="onPremProgressBar" class="progress-bar on-prem-bar" style="width: 0%;"></div>
+                    <div id="cloudProgressBar" class="progress-bar cloud-bar" style="width: 0%;"></div>
+                </div>
+            </div>
+            <!-- End Score Display Bars -->
+
+            <div class="statement-text bg-blue-50/50 rounded-lg border border-blue-100 mb-6" id="statementText">
+                <!-- Statement will be loaded here -->
+            </div>
+            <div class="rating-buttons-container" id="ratingButtons">
+                <!-- Rating buttons 1-10 will be generated here -->
+            </div>
+
+            <!-- Descriptor Text -->
+            <div id="descriptorText" class="descriptor-text">
+                <!-- Descriptor will be loaded here -->
+            </div>
+
+            <button id="nextButton" class="action-button mt-6" disabled>Next</button>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="resultsScreen" class="hidden results-section">
+            <h2>Assessment Results</h2>
+            <p>Based on your responses, here's a summary of your inclinations:</p>
+            <p>On-Premise Score: <span id="onPremScoreDisplay" class="score-display">0</span></p>
+            <p>Cloud Service Score: <span id="cloudScoreDisplay" class="score-display">0</span></p>
+            <p class="recommendation-text" id="recommendationText">
+                <!-- Recommendation will be displayed here -->
+            </p>
+            <button id="restartButton" class="action-button mt-6">Start Over</button>
+        </div>
+    </div>
+
+    <!-- Message Box for alerts -->
+    <div id="messageBox" class="message-box">
+        <p id="messageText"></p>
+        <button id="messageBoxCloseButton">OK</button>
+    </div>
+
+    <script type="module">
+        // Original statements for the assessment
+        const originalOnPremStatements = [
+            { text: "Maintaining complete control over my project's raw data, model artifacts, and logs, without external transmission, is crucial for my needs.", type: "on-prem", descriptor: "On-premise solutions provide direct physical and logical control over all data, eliminating reliance on third-party data handling." },
+            { text: "My project requires strict adherence to specific regulatory or internal security compliance standards (e.g., HIPAA, ITAR), which is easier to achieve with on-premise solutions.", type: "on-prem", descriptor: "Organizations have direct control over implementing and auditing security measures, making it simpler to meet highly specific or niche compliance requirements." },
+            { text: "Ultra-low latency for users on the same network, avoiding public internet hops, is a critical performance requirement for my project.", type: "on-prem", descriptor: "When servers are physically close to users on the same network, data travel time is minimized, resulting in superior latency." },
+            { text: "I need complete control over hardware, software, and data to allow for extensive customization for my project.", type: "on-prem", descriptor: "Full ownership allows for deep-level customization of hardware configurations, operating systems, and software stacks to perfectly match unique project demands." },
+            { text: "Predictable performance and consistent costs are essential for my project, especially if it involves large-scale or continuous workloads.", type: "on-prem", descriptor: "After the initial investment, operational costs for consistent, high-volume workloads tend to be more stable and predictable compared to variable cloud consumption models." },
+            { text: "For my project's predictable, high-volume workloads, a higher initial hardware investment that leads to lower long-term total cost of ownership is preferable.", type: "on-prem", descriptor: "For consistent, heavy usage, the upfront capital expenditure can be amortized over time, potentially becoming more cost-effective than continuous cloud subscription fees." },
+            { text: "Avoiding vendor lock-in and maintaining flexibility to switch components or software is important for my project's long-term strategy.", type: "on-prem", descriptor: "On-premise environments offer the freedom to choose and integrate any hardware or software, preventing dependence on a single provider's ecosystem." },
+            { text: "I am willing and able to manage the purchase, maintenance, and lifecycle of all necessary hardware, including OS drivers, model updates, security patches, and internal IT support.", type: "on-prem", descriptor: "This statement reflects the inherent responsibility of on-premise solutions, where all infrastructure management falls to the organization." }
+        ];
+
+        const originalCloudStatements = [
+            { text: "I am comfortable with my project's data being stored on third-party servers, relying on the cloud provider's security measures and their compliance certifications.", type: "cloud", descriptor: "Cloud providers invest heavily in security infrastructure and obtain numerous compliance certifications, offloading this burden from the user." },
+            { text: "I can tolerate potentially higher or more variable network latency for my project, depending on the cloud region and network conditions.", type: "cloud", descriptor: "Cloud services rely on public internet connections, which can introduce variability and higher latency compared to local network access." },
+            { text: "I am comfortable with customization options being limited to the cloud provider's system and accept the potential for vendor lock-in or less direct control over pricing and model behavior.", type: "cloud", descriptor: "Cloud environments offer predefined services and configurations, which simplifies deployment but limits deep-level customization and can create dependency on the provider." },
+            { text: "I am prepared for recurring costs that may escalate with heavy or sustained usage of cloud services.", type: "cloud", descriptor: "Cloud billing is typically usage-based, meaning costs can increase significantly with higher consumption of resources like compute, storage, and data transfer." },
+            { text: "Having immediate access to the latest and most powerful hardware, such as GPUs and AI-specific processors, continuously updated by the provider, is a high priority for my project.", type: "cloud", descriptor: "Cloud providers regularly refresh their hardware and offer immediate access to advanced, specialized computing resources without requiring upfront purchase." },
+            { text: "Minimizing initial investment and offloading all underlying hardware management (including OS, drivers, and security patches) to a third party is highly desirable for my project.", type: "cloud", descriptor: "Cloud providers handle all infrastructure maintenance, reducing the operational burden and initial capital expenditure for the user." },
+            { text: "My project requires easy and rapid scalability to efficiently handle fluctuating demands.", type: "cloud", descriptor: "Cloud platforms are designed for elasticity, allowing users to quickly provision or de-provision resources to match demand without physical hardware limitations." }
+        ];
+
+        let statements = []; // This will hold the interleaved statements
+
+        // DOM elements
+        const startScreen = document.getElementById('startScreen');
+        const gameScreen = document.getElementById('gameScreen');
+        const resultsScreen = document.getElementById('resultsScreen');
+        const startButton = document.getElementById('startButton');
+        const statementText = document.getElementById('statementText');
+        const statementCounter = document.getElementById('statementCounter');
+        const ratingButtonsContainer = document.getElementById('ratingButtons');
+        const nextButton = document.getElementById('nextButton');
+        const onPremScoreDisplay = document.getElementById('onPremScoreDisplay');
+        const cloudScoreDisplay = document.getElementById('cloudScoreDisplay');
+        const recommendationText = document.getElementById('recommendationText');
+        const restartButton = document.getElementById('restartButton');
+        const messageBox = document.getElementById('messageBox');
+        const messageText = document.getElementById('messageText');
+        const messageBoxCloseButton = document.getElementById('messageBoxCloseButton');
+
+        // New DOM elements for current scores and progress bars
+        const currentOnPremScoreElement = document.getElementById('currentOnPremScore');
+        const currentCloudScoreElement = document.getElementById('currentCloudScore');
+        const onPremProgressBar = document.getElementById('onPremProgressBar');
+        const cloudProgressBar = document.getElementById('cloudProgressBar');
+        const descriptorTextElement = document.getElementById('descriptorText'); // New descriptor element
+
+
+        // Game state variables
+        let currentStatementIndex = 0;
+        let onPremScore = 0;
+        let cloudScore = 0;
+        let selectedRating = 0; // To store the rating for the current statement
+
+        /**
+         * Displays a custom message box instead of alert().
+         * @param {string} message The message to display.
+         */
+        function showMessageBox(message) {
+            messageText.textContent = message;
+            messageBox.style.display = 'flex';
+        }
+
+        /**
+         * Hides the custom message box.
+         */
+        function hideMessageBox() {
+            messageBox.style.display = 'none';
+        }
+
+        /**
+         * Initializes the game by setting up event listeners and displaying the start screen.
+         */
+        function initGame() {
+            startButton.addEventListener('click', startGame);
+            nextButton.addEventListener('click', handleNextStatement);
+            restartButton.addEventListener('click', resetGame);
+            messageBoxCloseButton.addEventListener('click', hideMessageBox);
+
+            // Generate rating buttons dynamically
+            for (let i = 1; i <= 10; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                button.classList.add('rating-button', 'rounded-lg', 'font-semibold');
+                button.setAttribute('data-value', i);
+                button.addEventListener('click', (event) => {
+                    selectRating(event.target);
+                });
+                ratingButtonsContainer.appendChild(button);
+            }
+            updateScoreDisplays(); // Initialize score displays
+        }
+
+        /**
+         * Interleaves two arrays.
+         * @param {Array} arr1 The first array.
+         * @param {Array} arr2 The second array.
+         * @returns {Array} The interleaved array.
+         */
+        function interleaveArrays(arr1, arr2) {
+            const result = [];
+            const maxLength = Math.max(arr1.length, arr2.length);
+
+            for (let i = 0; i < maxLength; i++) {
+                if (arr1[i]) {
+                    result.push(arr1[i]);
+                }
+                if (arr2[i]) {
+                    result.push(arr2[i]);
+                }
+            }
+            return result;
+        }
+
+        /**
+         * Starts the game, hides the start screen, and shows the game screen.
+         */
+        function startGame() {
+            // Interleave the statements at the beginning of the game
+            statements = interleaveArrays(originalOnPremStatements, originalCloudStatements);
+            startScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            loadStatement();
+            updateScoreDisplays(); // Ensure scores are 0 when game starts
+        }
+
+        /**
+         * Loads the current statement and updates the UI.
+         */
+        function loadStatement() {
+            if (currentStatementIndex < statements.length) {
+                const statement = statements[currentStatementIndex];
+                statementText.textContent = statement.text;
+                statementCounter.textContent = `Statement ${currentStatementIndex + 1} of ${statements.length}`;
+                resetRatingButtons();
+                nextButton.disabled = true; // Disable next until a rating is selected
+                descriptorTextElement.style.display = 'none'; // Hide descriptor when new statement loads
+                descriptorTextElement.textContent = ''; // Clear descriptor text
+            } else {
+                showResults();
+            }
+        }
+
+        /**
+         * Resets the visual state of rating buttons and selectedRating.
+         */
+        function resetRatingButtons() {
+            selectedRating = 0;
+            const buttons = ratingButtonsContainer.querySelectorAll('.rating-button');
+            buttons.forEach(button => {
+                button.classList.remove('selected');
+            });
+        }
+
+        /**
+         * Handles the selection of a rating button.
+         * @param {HTMLElement} selectedButton The button that was clicked.
+         */
+        function selectRating(selectedButton) {
+            resetRatingButtons(); // Clear previous selection
+            selectedButton.classList.add('selected');
+            selectedRating = parseInt(selectedButton.getAttribute('data-value'));
+            nextButton.disabled = false; // Enable next button
+
+            // Display the descriptor for the current statement
+            const currentStatement = statements[currentStatementIndex];
+            if (currentStatement && currentStatement.descriptor) {
+                descriptorTextElement.textContent = currentStatement.descriptor;
+                descriptorTextElement.style.display = 'block'; // Show descriptor
+            }
+        }
+
+        /**
+         * Processes the current statement's rating and moves to the next.
+         */
+        function handleNextStatement() {
+            if (selectedRating === 0) {
+                showMessageBox("Please select a rating (1-10) before proceeding.");
+                return;
+            }
+
+            const currentStatement = statements[currentStatementIndex];
+            if (currentStatement.type === 'on-prem') {
+                onPremScore += selectedRating;
+            } else if (currentStatement.type === 'cloud') {
+                cloudScore += selectedRating;
+            }
+
+            currentStatementIndex++;
+            updateScoreDisplays(); // Update scores and bars after each statement
+            loadStatement();
+        }
+
+        /**
+         * Updates the numerical score displays and the width of the progress bars.
+         */
+        function updateScoreDisplays() {
+            currentOnPremScoreElement.textContent = onPremScore;
+            currentCloudScoreElement.textContent = cloudScore;
+
+            // The total width of the bar wrapper is 100%. We need to divide it
+            // proportionally based on the current scores relative to each other.
+            // If both are 0, both bars should be 0%.
+            const totalCurrentScore = onPremScore + cloudScore;
+            let onPremBarWidth = 0;
+            let cloudBarWidth = 0;
+
+            if (totalCurrentScore > 0) {
+                onPremBarWidth = (onPremScore / totalCurrentScore) * 100;
+                cloudBarWidth = (cloudScore / totalCurrentScore) * 100;
+            }
+
+            onPremProgressBar.style.width = `${onPremBarWidth}%`;
+            cloudProgressBar.style.width = `${cloudBarWidth}%`;
+
+            // If one score is 0 and the other is not, ensure the non-zero one takes full width for that segment
+            // This logic ensures that if only one type of statement has been answered, its bar fills the available space.
+            if (onPremScore > 0 && cloudScore === 0) {
+                onPremProgressBar.style.width = '100%';
+                cloudProgressBar.style.width = '0%';
+            } else if (cloudScore > 0 && onPremScore === 0) {
+                onPremProgressBar.style.width = '0%';
+                cloudProgressBar.style.width = '100%';
+            } else if (onPremScore === 0 && cloudScore === 0) {
+                 onPremProgressBar.style.width = '0%';
+                 cloudProgressBar.style.width = '0%';
+            }
+        }
+
+
+        /**
+         * Displays the final results and recommendation.
+         */
+        function showResults() {
+            gameScreen.classList.add('hidden');
+            resultsScreen.classList.remove('hidden');
+
+            onPremScoreDisplay.textContent = onPremScore;
+            cloudScoreDisplay.textContent = cloudScore;
+
+            let recommendation = "";
+            if (onPremScore > cloudScore) {
+                recommendation = "Based on your responses, your project appears to lean more towards an **On-Premise Self-Hosting** solution. This suggests that factors like full data control, specific security/compliance needs, and long-term cost efficiency for predictable workloads are highly important to you.";
+            } else if (cloudScore > onPremScore) {
+                recommendation = "Based on your responses, your project appears to lean more towards a **Cloud Service** solution. This suggests that factors like scalability, lower initial investment, access to cutting-edge technology, and reduced management overhead are highly important to you.";
+            } else {
+                recommendation = "Your responses indicate a balanced preference between On-Premise and Cloud Service. A **hybrid approach** or further detailed analysis of specific critical factors might be beneficial for your project.";
+            }
+            recommendationText.innerHTML = recommendation; // Use innerHTML to allow for bold text
+        }
+
+        /**
+         * Resets the game to its initial state.
+         */
+        function resetGame() {
+            currentStatementIndex = 0;
+            onPremScore = 0;
+            cloudScore = 0;
+            selectedRating = 0;
+
+            resultsScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+            resetRatingButtons(); // Ensure buttons are unselected for next game
+            nextButton.disabled = true; // Disable next button on reset
+            updateScoreDisplays(); // Reset score displays and bars
+            descriptorTextElement.style.display = 'none'; // Hide descriptor on reset
+            descriptorTextElement.textContent = ''; // Clear descriptor text
+        }
+
+        // Initialize the game when the window loads
+        window.onload = initGame;
+    </script>
+</body>
+</html>

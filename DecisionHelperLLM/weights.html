@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open vs. Closed Weights Decision Helper</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 16px; /* More rounded corners */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Softer shadow */
+            padding: 30px;
+            width: 100%;
+            max-width: 700px; /* Increased max-width for better readability */
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .statement-text {
+            font-size: 1.25rem; /* Larger font for statements */
+            color: #334155; /* Darker text for readability */
+            min-height: 80px; /* Ensure consistent height for statement display */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .rating-buttons-container {
+            display: flex;
+            flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+            justify-content: center;
+            gap: 10px; /* Space between buttons */
+            margin-bottom: 20px;
+        }
+        .rating-button {
+            background-color: #e2e8f0; /* Light gray button background */
+            color: #475569; /* Darker gray text */
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 12px 18px; /* More padding for larger touch targets */
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            flex-shrink: 0; /* Prevent shrinking */
+            min-width: 45px; /* Ensure minimum width */
+        }
+        .rating-button:hover {
+            background-color: #d1d9e2; /* Slightly darker on hover */
+            transform: translateY(-2px); /* Subtle lift effect */
+        }
+        .rating-button.selected {
+            background-color: #3b82f6; /* Blue for selected */
+            color: white;
+            border-color: #2563eb;
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3); /* Blue shadow */
+        }
+        .action-button {
+            background-color: #10b981; /* Green for action buttons */
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); /* Green shadow */
+        }
+        .action-button:hover {
+            background-color: #059669; /* Darker green on hover */
+            transform: translateY(-2px);
+        }
+        .results-section {
+            text-align: left;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f8fafc; /* Lighter background for results */
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+        .results-section h2 {
+            font-size: 1.8rem;
+            color: #1e293b;
+            margin-bottom: 15px;
+        }
+        .results-section p {
+            font-size: 1.1rem;
+            color: #475569;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        .score-display {
+            font-weight: bold;
+            color: #3b82f6; /* Blue for scores */
+        }
+        .recommendation-text {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #059669; /* Green for recommendation */
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #ecfdf5; /* Light green background */
+            border-radius: 10px;
+            border: 1px solid #a7f3d0;
+        }
+        .start-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 25px;
+        }
+        .start-screen h1 {
+            font-size: 2.5rem;
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+        .start-screen p {
+            font-size: 1.2rem;
+            color: #475569;
+            line-height: 1.6;
+            max-width: 500px;
+        }
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            max-width: 400px;
+            text-align: center;
+        }
+        .message-box p {
+            font-size: 1.1rem;
+            color: #334155;
+        }
+        .message-box button {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .message-box button:hover {
+            background-color: #2563eb;
+        }
+        /* Custom styles for the progress bars */
+        .score-bars-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .score-bar-label {
+            font-weight: bold;
+            color: #334155;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        .score-value {
+            font-weight: bold;
+            color: #3b82f6;
+        }
+        .progress-bar-wrapper {
+            display: flex;
+            width: 100%;
+            height: 20px; /* Height of the progress bar */
+            background-color: #e2e8f0; /* Background for the track */
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        .progress-bar {
+            height: 100%;
+            transition: width 0.3s ease-out; /* Smooth transition for width changes */
+            border-radius: 10px; /* Rounded ends for the bar itself */
+        }
+        .open-weights-bar {
+            background-color: #3b82f6; /* Blue for Open Weights */
+        }
+        .closed-weights-bar {
+            background-color: #10b981; /* Green for Closed Weights */
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="gameContainer">
+        <!-- Start Screen -->
+        <div id="startScreen" class="start-screen">
+            <h1>Open vs. Closed Weights Decision Helper</h1>
+            <p>Welcome! This tool will help you decide whether an **Open Weights** or **Closed Weights** generative AI model is better suited for your project.</p>
+            <p>For each statement, rate how much you agree with it for your specific needs on a scale of 1 to 10.</p>
+            <button id="startButton" class="action-button">Start Assessment</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="gameScreen" class="hidden">
+            <p class="text-lg text-gray-600 mb-4" id="statementCounter">Statement 1 of X</p>
+
+            <!-- Score Display Bars -->
+            <div class="score-bars-container mb-6 w-full">
+                <div class="flex justify-between items-center w-full px-2">
+                    <span class="score-bar-label">Open Weights: <span id="currentOpenWeightsScore" class="score-value">0</span></span>
+                    <span class="score-bar-label">Closed Weights: <span id="currentClosedWeightsScore" class="score-value">0</span></span>
+                </div>
+                <div class="progress-bar-wrapper">
+                    <div id="openWeightsProgressBar" class="progress-bar open-weights-bar" style="width: 0%;"></div>
+                    <div id="closedWeightsProgressBar" class="progress-bar closed-weights-bar" style="width: 0%;"></div>
+                </div>
+            </div>
+            <!-- End Score Display Bars -->
+
+            <div class="statement-text bg-blue-50/50 rounded-lg border border-blue-100 mb-6" id="statementText">
+                <!-- Statement will be loaded here -->
+            </div>
+            <div class="rating-buttons-container" id="ratingButtons">
+                <!-- Rating buttons 1-10 will be generated here -->
+            </div>
+            <button id="nextButton" class="action-button mt-6" disabled>Next</button>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="resultsScreen" class="hidden results-section">
+            <h2>Assessment Results</h2>
+            <p>Based on your responses, here's a summary of your inclinations:</p>
+            <p>Open Weights Score: <span id="openWeightsScoreDisplay" class="score-display">0</span></p>
+            <p>Closed Weights Score: <span id="closedWeightsScoreDisplay" class="score-display">0</span></p>
+            <p class="recommendation-text" id="recommendationText">
+                <!-- Recommendation will be displayed here -->
+            </p>
+            <button id="restartButton" class="action-button mt-6">Start Over</button>
+        </div>
+    </div>
+
+    <!-- Message Box for alerts -->
+    <div id="messageBox" class="message-box">
+        <p id="messageText"></p>
+        <button id="messageBoxCloseButton">OK</button>
+    </div>
+
+    <script type="module">
+        // Statements for the assessment on Open vs. Closed Weights
+        const originalStatements = [
+            { text: "I need full visibility into the model's architecture and how it was trained to audit for biases, security, and compliance.", type: "open-weights" },
+            { text: "It is crucial for me to have complete control over the model's deployment environment and inference code.", type: "open-weights" },
+            { text: "I require the ability to deeply customize and fine-tune the model on my specific datasets for specialized tasks.", type: "open-weights" },
+            { text: "I want to foster a collaborative environment where a community can build upon and improve the model I use.", type: "open-weights" },
+            { text: "I am willing to make an upfront investment in infrastructure to potentially lower long-term costs by running the model on my own hardware.", type: "open-weights" },
+            { text: "I want to avoid ongoing API costs and vendor dependency.", type: "open-weights" },
+            { text: "Minimizing vendor lock-in is a high priority; I want to control the entire stack and switch environments freely.", type: "open-weights" },
+            { text: "I need greater control over data privacy, even if it means bearing the responsibility for the model's safety and potential malicious use.", type: "open-weights" },
+            { text: "My use case requires verifying or auditing how the model was trained.", type: "open-weights" },
+            { text: "My preferred cost model involves costs being the compute and storage I incur running it myself (CapEx/OpEx), not per-call fees from a vendor.", type: "open-weights" },
+            { text: "I believe full visibility into architecture and training data provenance (to the extent disclosed) aids auditing for biases, security, and compliance.", type: "open-weights" },
+
+
+            { text: "I am comfortable with the model being a 'black box' where internal details of its training and data are hidden.", type: "closed-weights" },
+            { text: "Limited customization options, primarily through prompt-based steering or vendor-controlled fine-tuning services, are sufficient for my needs.", type: "closed-weights" },
+            { text: "I prefer innovation to be centralized and driven by the model provider.", type: "closed-weights" },
+            { text: "I prefer a pay-as-you-go pricing model with subscription fees, even if it can become expensive with high usage.", type: "closed-weights" },
+            { text: "I value a turnkey solution where the vendor handles updates, security patches, scaling, and provides SLA guarantees.", type: "closed-weights" },
+            { text: "I prefer the model provider to control the infrastructure and usage policies, even if it means less direct control for me.", type: "closed-weights" },
+            { text: "I prefer the model provider to manage security and implement safety guardrails, even if it means sending sensitive data to a third party.", type: "closed-weights" },
+            { text: "My use case can tolerate 'black-box' models and I am comfortable with ongoing usage fees.", type: "closed-weights" },
+            { text: "I prioritize a solution that offers SLA-backed performance, reliability, and vendor support.", type: "closed-weights" },
+            { text: "I value the convenience and support of a managed service over full control and transparency.", type: "closed-weights" },
+            { text: "My project's cost model aligns with pay-as-you-go pricing (tokens, compute time, endpoint calls) without hardware ownership.", type: "closed-weights" },
+            { text: "I understand that internal details of model training, data provenance, and exact parameter values being hidden can complicate compliance or bias audits, but I'm okay with that.", type: "closed-weights" },
+            { text: "I'm prepared for higher vendor lock-in, being bound to the vendor’s API, runtime, and pricing.", type: "closed-weights" }
+        ];
+
+        let statements = []; // This will hold the shuffled statements
+
+        // DOM elements
+        const startScreen = document.getElementById('startScreen');
+        const gameScreen = document.getElementById('gameScreen');
+        const resultsScreen = document.getElementById('resultsScreen');
+        const startButton = document.getElementById('startButton');
+        const statementText = document.getElementById('statementText');
+        const statementCounter = document.getElementById('statementCounter');
+        const ratingButtonsContainer = document.getElementById('ratingButtons');
+        const nextButton = document.getElementById('nextButton');
+        const openWeightsScoreDisplay = document.getElementById('openWeightsScoreDisplay');
+        const closedWeightsScoreDisplay = document.getElementById('closedWeightsScoreDisplay');
+        const recommendationText = document.getElementById('recommendationText');
+        const restartButton = document.getElementById('restartButton');
+        const messageBox = document.getElementById('messageBox');
+        const messageText = document.getElementById('messageText');
+        const messageBoxCloseButton = document.getElementById('messageBoxCloseButton');
+
+        // New DOM elements for current scores and progress bars
+        const currentOpenWeightsScoreElement = document.getElementById('currentOpenWeightsScore');
+        const currentClosedWeightsScoreElement = document.getElementById('currentClosedWeightsScore');
+        const openWeightsProgressBar = document.getElementById('openWeightsProgressBar');
+        const closedWeightsProgressBar = document.getElementById('closedWeightsProgressBar');
+
+
+        // Game state variables
+        let currentStatementIndex = 0;
+        let openWeightsScore = 0;
+        let closedWeightsScore = 0;
+        let selectedRating = 0; // To store the rating for the current statement
+
+        /**
+         * Displays a custom message box instead of alert().
+         * @param {string} message The message to display.
+         */
+        function showMessageBox(message) {
+            messageText.textContent = message;
+            messageBox.style.display = 'flex';
+        }
+
+        /**
+         * Hides the custom message box.
+         */
+        function hideMessageBox() {
+            messageBox.style.display = 'none';
+        }
+
+        /**
+         * Shuffles an array using the Fisher-Yates (Knuth) algorithm.
+         * @param {Array} array The array to shuffle.
+         * @returns {Array} The shuffled array.
+         */
+        function shuffleArray(array) {
+            let currentIndex = array.length, randomIndex;
+
+            // While there remain elements to shuffle.
+            while (currentIndex !== 0) {
+                // Pick a remaining element.
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+
+                // And swap it with the current element.
+                [array[currentIndex], array[randomIndex]] = [
+                    array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        /**
+         * Initializes the game by setting up event listeners and displaying the start screen.
+         */
+        function initGame() {
+            startButton.addEventListener('click', startGame);
+            nextButton.addEventListener('click', handleNextStatement);
+            restartButton.addEventListener('click', resetGame);
+            messageBoxCloseButton.addEventListener('click', hideMessageBox);
+
+            // Generate rating buttons dynamically
+            for (let i = 1; i <= 10; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                button.classList.add('rating-button', 'rounded-lg', 'font-semibold');
+                button.setAttribute('data-value', i);
+                button.addEventListener('click', (event) => {
+                    selectRating(event.target);
+                });
+                ratingButtonsContainer.appendChild(button);
+            }
+            updateScoreDisplays(); // Initialize score displays
+        }
+
+        /**
+         * Starts the game, hides the start screen, and shows the game screen.
+         */
+        function startGame() {
+            // Shuffle the statements array at the beginning of the game
+            statements = shuffleArray([...originalStatements]); // Create a shallow copy before shuffling
+            startScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            loadStatement();
+            updateScoreDisplays(); // Ensure scores are 0 when game starts
+        }
+
+        /**
+         * Loads the current statement and updates the UI.
+         */
+        function loadStatement() {
+            if (currentStatementIndex < statements.length) {
+                const statement = statements[currentStatementIndex];
+                statementText.textContent = statement.text;
+                statementCounter.textContent = `Statement ${currentStatementIndex + 1} of ${statements.length}`;
+                resetRatingButtons();
+                nextButton.disabled = true; // Disable next until a rating is selected
+            } else {
+                showResults();
+            }
+        }
+
+        /**
+         * Resets the visual state of rating buttons and selectedRating.
+         */
+        function resetRatingButtons() {
+            selectedRating = 0;
+            const buttons = ratingButtonsContainer.querySelectorAll('.rating-button');
+            buttons.forEach(button => {
+                button.classList.remove('selected');
+            });
+        }
+
+        /**
+         * Handles the selection of a rating button.
+         * @param {HTMLElement} selectedButton The button that was clicked.
+         */
+        function selectRating(selectedButton) {
+            resetRatingButtons(); // Clear previous selection
+            selectedButton.classList.add('selected');
+            selectedRating = parseInt(selectedButton.getAttribute('data-value'));
+            nextButton.disabled = false; // Enable next button
+        }
+
+        /**
+         * Processes the current statement's rating and moves to the next.
+         */
+        function handleNextStatement() {
+            if (selectedRating === 0) {
+                showMessageBox("Please select a rating (1-10) before proceeding.");
+                return;
+            }
+
+            const currentStatement = statements[currentStatementIndex];
+            if (currentStatement.type === 'open-weights') {
+                openWeightsScore += selectedRating;
+            } else if (currentStatement.type === 'closed-weights') {
+                closedWeightsScore += selectedRating;
+            }
+
+            currentStatementIndex++;
+            updateScoreDisplays(); // Update scores and bars after each statement
+            loadStatement();
+        }
+
+        /**
+         * Updates the numerical score displays and the width of the progress bars.
+         */
+        function updateScoreDisplays() {
+            currentOpenWeightsScoreElement.textContent = openWeightsScore;
+            currentClosedWeightsScoreElement.textContent = closedWeightsScore;
+
+            const totalCurrentScore = openWeightsScore + closedWeightsScore;
+            let openWeightsBarWidth = 0;
+            let closedWeightsBarWidth = 0;
+
+            if (totalCurrentScore > 0) {
+                openWeightsBarWidth = (openWeightsScore / totalCurrentScore) * 100;
+                closedWeightsBarWidth = (closedWeightsScore / totalCurrentScore) * 100;
+            }
+
+            openWeightsProgressBar.style.width = `${openWeightsBarWidth}%`;
+            closedWeightsProgressBar.style.width = `${closedWeightsBarWidth}%`;
+
+            // If one score is 0 and the other is not, ensure the non-zero one takes full width for that segment
+            if (openWeightsScore > 0 && closedWeightsScore === 0) {
+                openWeightsProgressBar.style.width = '100%';
+                closedWeightsProgressBar.style.width = '0%';
+            } else if (closedWeightsScore > 0 && openWeightsScore === 0) {
+                openWeightsProgressBar.style.width = '0%';
+                closedWeightsProgressBar.style.width = '100%';
+            } else if (openWeightsScore === 0 && closedWeightsScore === 0) {
+                openWeightsProgressBar.style.width = '0%';
+                closedWeightsProgressBar.style.width = '0%';
+            }
+        }
+
+
+        /**
+         * Displays the final results and recommendation.
+         */
+        function showResults() {
+            gameScreen.classList.add('hidden');
+            resultsScreen.classList.remove('hidden');
+
+            openWeightsScoreDisplay.textContent = openWeightsScore;
+            closedWeightsScoreDisplay.textContent = closedWeightsScore;
+
+            let recommendation = "";
+            if (openWeightsScore > closedWeightsScore) {
+                recommendation = "Based on your responses, your project appears to lean more towards an **Open Weights** model. This suggests that factors like full control, deep customization, avoiding vendor lock-in, and transparency are highly important to you.";
+            } else if (closedWeightsScore > openWeightsScore) {
+                recommendation = "Based on your responses, your project appears to lean more towards a **Closed Weights** model. This suggests that factors like ease of use, managed services, scalability without infrastructure overhead, and vendor support are highly important to you.";
+            } else {
+                recommendation = "Your responses indicate a balanced preference between Open Weights and Closed Weights. A **hybrid approach** or further detailed analysis of specific critical factors might be beneficial for your project.";
+            }
+            recommendationText.innerHTML = recommendation; // Use innerHTML to allow for bold text
+        }
+
+        /**
+         * Resets the game to its initial state.
+         */
+        function resetGame() {
+            currentStatementIndex = 0;
+            openWeightsScore = 0;
+            closedWeightsScore = 0;
+            selectedRating = 0;
+
+            resultsScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+            resetRatingButtons(); // Ensure buttons are unselected for next game
+            nextButton.disabled = true; // Disable next button on reset
+            updateScoreDisplays(); // Reset score displays and bars
+        }
+
+        // Initialize the game when the window loads
+        window.onload = initGame;
+    </script>
+</body>
+</html>
