@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview with [Your Name]</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>Interview Practice Bot</h1>
+            <p>Ask me about my experience, skills, and career goals!</p>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot-message">
+                <p>Hello! I'm here to answer any questions you have about my background and experience. Feel free to ask me anything you'd ask in an interview!</p>
+            </div>
+        </div>
+        
+        <div class="typing-indicator" id="typingIndicator" style="display: none;">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        
+        <div class="chat-input-container">
+            <input 
+                type="text" 
+                id="chatInput" 
+                placeholder="Ask me an interview question..."
+                onkeypress="handleKeyPress(event)"
+            >
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
