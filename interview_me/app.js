@@ -67,7 +67,7 @@ async function sendMessage() {
     
     try {
         // Get embedding for the question
-        const embedResponse = await fetch('https://interview-dh6kw2zz1-natalie-lam-johnsons-projects.vercel.app', {
+        const embedResponse = await fetch('https://interview-dh6kw2zz1-natalie-lam-johnsons-projects.vercel.app/api/embed', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ text: question })
@@ -82,7 +82,7 @@ async function sendMessage() {
             .join('\n\n');
         
         // Stream response from API
-        const response = await fetch('https://interview-dh6kw2zz1-natalie-lam-johnsons-projects.vercel.app', {
+        const response = await fetch('https://interview-dh6kw2zz1-natalie-lam-johnsons-projects.vercel.app/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ question, context })

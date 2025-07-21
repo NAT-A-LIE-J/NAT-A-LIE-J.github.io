@@ -52,7 +52,7 @@
         const embeddingsData = [];
         
         for (const chunk of chunks) {
-            const response = await fetch('https://interview-dh6kw2zz1-natalie-lam-johnsons-projects.vercel.app', {
+            const response = await fetch('https://interview-dh6kw2zz1-natalie-lam-johnsons-projects.vercel.app/api/embed', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text: chunk.text })
