@@ -8,9 +8,13 @@
     <h2>Interview Bot Document Processor</h2>
     <input type="file" id="pdfInput" accept=".pdf" multiple>
     <button onclick="processDocuments()">Process Documents</button>
+    <button onclick="exportEmbeddings()" style="display:none; margin-left: 10px;" id="exportBtn">Export Embeddings</button>
     <div id="status"></div>
 
     <script>
+    // Set PDF.js worker
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    
     async function processDocuments() {
         const files = document.getElementById('pdfInput').files;
         const status = document.getElementById('status');
@@ -70,6 +74,9 @@
         // Store in IndexedDB
         await storeEmbeddings(embeddingsData);
         status.textContent = 'Complete! Embeddings stored in browser.';
+        
+        // Show export button
+        document.getElementById('exportBtn').style.display = 'inline-block';
     }
 
     async function storeEmbeddings(data) {
@@ -100,6 +107,35 @@
                 }
             };
         });
+    }
+    
+    // NEW: Export function
+    async function exportEmbeddings() {
+        try {
+            const db = await openDB();
+            const transaction = db.transaction(['embeddings'], 'readonly');
+            const store = transaction.objectStore('embeddings');
+            const allData = await store.getAll();
+            
+            if (allData.length === 0) {
+                alert('No embeddings to export!');
+                return;
+            }
+            
+            // Create downloadable file
+            const dataStr = JSON.stringify(allData);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            // Download
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = 'embeddings.json';
+            link.click();
+            
+            document.getElementById('status').textContent = `Exported ${allData.length} embeddings to embeddings.json`;
+        } catch (error) {
+            document.getElementById('status').textContent = `Export failed: ${error.message}`;
+        }
     }
     </script>
 </body>
