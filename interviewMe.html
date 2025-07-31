@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Maxed Out</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a1a;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Bubbles Background */
+        .bubbles-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .bubble {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+            opacity: 0;
+            filter: blur(1px);
+        }
+
+        .bubble:nth-child(1) {
+            width: 40px;
+            height: 40px;
+            left: 10%;
+            animation-delay: 0s;
+            animation-duration: 20s;
+        }
+
+        .bubble:nth-child(2) {
+            width: 60px;
+            height: 60px;
+            left: 20%;
+            animation-delay: 2s;
+            animation-duration: 18s;
+        }
+
+        .bubble:nth-child(3) {
+            width: 20px;
+            height: 20px;
+            left: 35%;
+            animation-delay: 4s;
+            animation-duration: 22s;
+        }
+
+        .bubble:nth-child(4) {
+            width: 80px;
+            height: 80px;
+            left: 50%;
+            animation-delay: 0s;
+            animation-duration: 25s;
+        }
+
+        .bubble:nth-child(5) {
+            width: 30px;
+            height: 30px;
+            left: 70%;
+            animation-delay: 6s;
+            animation-duration: 19s;
+        }
+
+        .bubble:nth-child(6) {
+            width: 50px;
+            height: 50px;
+            left: 80%;
+            animation-delay: 3s;
+            animation-duration: 16s;
+        }
+
+        .bubble:nth-child(7) {
+            width: 25px;
+            height: 25px;
+            left: 15%;
+            animation-delay: 8s;
+            animation-duration: 21s;
+        }
+
+        .bubble:nth-child(8) {
+            width: 70px;
+            height: 70px;
+            left: 90%;
+            animation-delay: 1s;
+            animation-duration: 23s;
+        }
+
+        .bubble:nth-child(9) {
+            width: 35px;
+            height: 35px;
+            left: 5%;
+            animation-delay: 5s;
+            animation-duration: 17s;
+        }
+
+        .bubble:nth-child(10) {
+            width: 45px;
+            height: 45px;
+            left: 65%;
+            animation-delay: 7s;
+            animation-duration: 24s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Chat Interface Background */
+        .chat-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #1a1a1a;
+            filter: blur(8px);
+            z-index: 1;
+        }
+
+        .chat-header {
+            background: #2d2d2d;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 1px solid #3d3d3d;
+        }
+
+        .chat-title {
+            color: #e0e0e0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .chat-container {
+            height: calc(100vh - 120px);
+            background: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #666;
+        }
+
+        .welcome-message {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .welcome-subtext {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        .chat-input-area {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #2d2d2d;
+            padding: 20px;
+            border-top: 1px solid #3d3d3d;
+        }
+
+        .chat-input-container {
+            background: #3d3d3d;
+            border-radius: 24px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .chat-input {
+            background: none;
+            border: none;
+            color: #e0e0e0;
+            font-size: 16px;
+            flex: 1;
+            outline: none;
+        }
+
+        .chat-input::placeholder {
+            color: #888;
+        }
+
+        .send-button {
+            background: #4a9eff;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            margin-left: 12px;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        /* Error Overlay */
+        .error-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .error-title {
+            color: white;
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+            line-height: 1.2;
+        }
+
+        .error-subtitle {
+            color: #e0e0e0;
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            font-weight: 400;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.8);
+            line-height: 1.4;
+        }
+
+        .home-link {
+            color: #4a9eff;
+            text-decoration: underline;
+            transition: color 0.2s ease;
+        }
+
+        .home-link:hover {
+            color: #66b3ff;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .error-overlay {
+                padding: 40px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Bubbles Background -->
+    <div class="bubbles-container">
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+        <div class="bubble"></div>
+    </div>
+
+    <!-- Blurred Chat Interface Background -->
+    <div class="chat-background">
+        <div class="chat-header">
+            <div class="chat-title">AI Assistant</div>
+        </div>
+        
+        <div class="chat-container">
+            <div class="welcome-message">Welcome to AI Assistant</div>
+            <div class="welcome-subtext">How can I help you today?</div>
+        </div>
+        
+        <div class="chat-input-area">
+            <div class="chat-input-container">
+                <input type="text" class="chat-input" placeholder="Type your message here..." disabled>
+                <button class="send-button">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M22 2L11 13"></path>
+                        <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Message Overlay -->
+    <div class="error-overlay">
+        <h1 class="error-title">Sorry! Server has been maxed out for the day</h1>
+        <p class="error-subtitle">try again tomorrow - or check me out from my <a href="#" class="home-link">home page</a></p>
+    </div>
+</body>
+</html>

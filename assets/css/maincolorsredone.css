@@ -1595,3 +1595,83 @@ body.is-preload #intro .inner {
     height: auto;
     transform: rotateY(180deg);
 }
+
+/* Chat Button Styling */
+.chat-button-container {
+    margin: 2rem 0;
+    width: calc(100% - 2rem);
+}
+
+.chat-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 1.2rem 1.5rem;
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 500;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.chat-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+    background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+    color: white;
+    text-decoration: none;
+}
+
+.chat-button:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.chat-button:hover:before {
+    left: 100%;
+}
+
+.chat-icon {
+    font-size: 1.3rem;
+    margin-right: 0.5rem;
+}
+
+.chat-text {
+    flex: 1;
+    text-align: center;
+}
+
+.chat-arrow {
+    font-size: 1.2rem;
+    margin-left: 0.5rem;
+    transition: transform 0.3s ease;
+}
+
+.chat-button:hover .chat-arrow {
+    transform: translateX(5px);
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .chat-button {
+        font-size: 1rem;
+        padding: 1rem 1.2rem;
+    }
+    
+    .chat-button-container {
+        width: calc(100% - 1rem);
+    }
+}

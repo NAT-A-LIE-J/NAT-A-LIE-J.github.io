@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DataSC - USC Data Science Club</title>
+    <title>DataSC - USC's Data Science Club</title>
     <style>
         * {
             margin: 0;
@@ -177,6 +177,7 @@
         /* Ways to Participate Table */
         .participate-table {
             margin-top: 40px;
+            margin-bottom: 40px;
             width: 100%;
             border: 2px solid #333333;
             border-collapse: collapse;
@@ -246,6 +247,55 @@
             visibility: visible;
         }
 
+        /* Eboard Table Styles */
+        .eboard-table {
+            margin-top: 30px;
+            width: 100%;
+            border: 2px solid #333333;
+            border-collapse: collapse;
+        }
+
+        .eboard-cell {
+            border: 1px solid #333333;
+            padding: 20px 15px;
+            text-align: center;
+            width: 25%;
+            position: relative;
+            transition: background-color 0.3s ease;
+        }
+
+        .eboard-cell:hover {
+            background: rgba(74, 144, 226, 0.1);
+        }
+
+        .eboard-photo {
+            width: 80px;
+            height: 80px;
+            background: #f0f0f0;
+            border: 2px solid #333333;
+            margin: 0 auto 15px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #666666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .eboard-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 5px;
+        }
+
+        .eboard-position {
+            font-size: 12px;
+            color: #666666;
+            font-style: italic;
+        }
+
         /* Content sections */
         .content-section {
             justify-content: center;
@@ -270,6 +320,22 @@
         .info-text a {
             color: #333333;
             text-decoration: underline;
+        }
+
+        /* Ordered list styling */
+        .info-text ol {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333333;
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .info-text li {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #333333;
+            margin-bottom: 8px;
         }
 
         /* Scroll indicator */
@@ -323,6 +389,21 @@
                 font-size: clamp(60px, 20vw, 120px);
                 margin: 40px 0 60px 0;
             }
+
+            .eboard-table {
+                margin-top: 20px;
+            }
+
+            .eboard-cell {
+                width: 50%;
+                padding: 15px 10px;
+            }
+
+            .eboard-photo {
+                width: 60px;
+                height: 60px;
+                margin-bottom: 10px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -347,18 +428,28 @@
             .hero-section {
                 padding-top: 80px;
             }
+
+            .eboard-cell {
+                width: 100%;
+                padding: 15px;
+            }
+
+            .eboard-photo {
+                width: 50px;
+                height: 50px;
+            }
         }
     </style>
 </head>
 <body>
     <!-- Fixed Header -->
     <header class="header">
-        <div class="club-name">USC DATA SCIENCE CLUB</div>
+        <div class="club-name">USC'S PREMIER DATA SCIENCE CLUB</div>
         <nav class="navigation">
             <a href="#info" class="nav-link">Info</a>
             <a href="#team" class="nav-link">Team</a>
             <a href="#contact" class="nav-link">Contact</a>
-            <a href="#" class="nav-link">Apply</a>
+            <a href="https://form.jotform.com/252057888227063" class="nav-link">Apply</a>
         </nav>
     </header>
 
@@ -377,7 +468,7 @@
     <section class="section content-section" id="info">
         <div class="section-content">
             <h2 class="section-heading">INFO</h2>
-            <p class="info-text">Creating an approachable and diverse environment for Data Science exploration at USC.</p>
+            <p class="info-text">No exclusivity, No BS.  Creating an approachable and diverse environment for Data Science exploration at USC.</p>
             <p class="info-text">DataSC fosters an environment where individuals across subjects and experience levels learn Data Science and collaboratively engage in cross-disciplinary topics. From ground-up curriculum to hands-on projects, industry speaker sessions with leaders from NVIDIA, Microsoft, Google, and Meta, to career support and genuinely fun social events. Whether you're a complete beginner or experienced practitioner, there's a place for you in our community of data enthusiasts.</p>
             
             <table class="participate-table">
@@ -411,6 +502,14 @@
                     </td>
                 </tr>
             </table>
+
+        <h2 class="section-heading">How to Join:</h2>
+        <ol class="info-text"> 
+            <li> Fill out our quick application. </li>
+            <li> Select a 15 minute time slot to meet our team. </li>
+            <li> Congratulations! </li>
+        </ol>
+
         </div>
     </section>
 
@@ -418,9 +517,56 @@
     <section class="section content-section" id="team">
         <div class="section-content">
             <h2 class="section-heading">MEET THE TEAM</h2>
-            <p class="info-text">Co-Presidents</p>
-            <p class="info-text">Selina Hui, Claire He, Sid Bansal</p>
-            <p class="info-text">Plus Directors of Curriculum, Finance, and Marketing, alongside dedicated Curriculum, Finance, and Logistics team members who make DataSC possible.</p>
+             <div class="apply-section">
+            <a href="javascript:void(window.open('https://form.jotform.com/252086518316054','blank','scrollbars=yes,toolbar=no,width=700,height=500'))" class="apply-button">APPLY FOR EBOARD</a>
+        </div>
+            
+            <table class="eboard-table">
+                <tr>
+                    <td class="eboard-cell">
+                        <div class="eboard-photo">Photo</div>
+                        <div class="eboard-name">Selina Hui</div>
+                        <div class="eboard-position">Co-President</div>
+                    </td>
+                    <td class="eboard-cell">
+                        <div class="eboard-photo">Photo</div>
+                        <div class="eboard-name">Claire He</div>
+                        <div class="eboard-position">Co-President</div>
+                    </td>
+                    <td class="eboard-cell">
+                        <div class="eboard-photo">Photo</div>
+                        <div class="eboard-name">Sid Bansal</div>
+                        <div class="eboard-position">Co-President</div>
+                    </td>
+                    <td class="eboard-cell">
+                        <div class="eboard-photo">Photo</div>
+                        <div class="eboard-name">Name</div>
+                        <div class="eboard-position">Director of Curriculum</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="eboard-cell">
+                        <div class="eboard-photo">Photo</div>
+                        <div class="eboard-name">Name</div>
+                        <div class="eboard-position">Director of Finance</div>
+                    </td>
+                    <td class="eboard-cell">
+                        <div class="eboard-photo">Photo</div>
+                        <div class="eboard-name">Name</div>
+                        <div class="eboard-position">Director of Marketing</div>
+                    </td>
+                    <td class="eboard-cell">
+                        <div class="eboard-photo">Photo</div>
+                        <div class="eboard-name">Name</div>
+                        <div class="eboard-position">Director of Logistics</div>
+                    </td>
+                    <td class="eboard-cell">
+                        <div class="eboard-photo">Photo</div>
+                        <div class="eboard-name">Name</div>
+                        <div class="eboard-position">Team Member</div>
+                    </td>
+                </tr>
+            </table>
         </div>
     </section>
 
@@ -428,16 +574,19 @@
     <section class="section content-section" id="contact">
         <div class="section-content">
             <h2 class="section-heading">CONTACT</h2>
-            <p class="info-text">Stay updated on meeting details, upcoming activities and events, and general club news.</p>
-            <p class="info-text">Join our <a href="#">Discord server</a>, sign up for our mailing list, follow our socials, or reach out directly through our contact form. We'll get back to you soon.</p>
+            <p class="info-text">Stay updated on meeting details, upcoming activities and events, and general club news.</p>            
             
-            <div style="margin-top: 40px;">
-                <h3 class="section-heading">CONNECT WITH US:</h3>
                 <div class="platform-links">
-                    <a href="#">Discord</a>, <a href="#">LinkedIn</a>, <a href="#">GitHub</a>
-                </div>
+                    <b>
+                    <a href="https://form.jotform.com/252087650120045">Mailing List</a>,  
+                    <a href="https://discord.gg/SfbpJsfkKk">Discord</a>,   <a href="https://www.instagram.com/datasc.official/">Instagram</a>,  <a href="https://www.linkedin.com/company/datasc">LinkedIn</a>,   <a href="#">GitHub (comming soon)</a>
+               </b>
+             
             </div>
         </div>
+       <div style="margin-top: 40px;">
+             <a href="javascript:void(window.open('https://form.jotform.com/252087030724047','blank','scrollbars=yes,toolbar=no,width=700,height=500'))" class="apply-button">anonymous feedback</a>
+       </div>
     </section>
 
     <script>
