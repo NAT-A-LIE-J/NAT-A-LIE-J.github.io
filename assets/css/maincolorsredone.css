@@ -1,7 +1,7 @@
 @import url(fontawesome-all.min.css);
 
 /*
-	Hyperspace by HTML5 UP - Cleaned and Optimized
+	Hyperspace by HTML5 UP - Dark Mode with Glowing Blue Edges + Top Navigation
 	html5up.net | @ajlkn
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 */
@@ -98,8 +98,28 @@ html {
 	box-sizing: inherit;
 }
 
+/* DARK MODE: Changed background to dark and added glowing blue edge */
 body {
-	background: #f8f9fa;
+	background: #1a1a1a;
+	position: relative;
+	overflow-x: hidden;
+}
+
+/* Glowing blue edge effect around the viewport */
+body::before {
+	content: '';
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	pointer-events: none;
+	z-index: 9999;
+	box-shadow: 
+		inset 0 0 30px rgba(52, 152, 219, 0.6),
+		inset 0 0 60px rgba(52, 152, 219, 0.4),
+		inset 0 0 100px rgba(52, 152, 219, 0.2);
+	border-radius: 0;
 }
 
 body.is-preload *, body.is-preload *:before, body.is-preload *:after {
@@ -113,9 +133,113 @@ body.is-preload *, body.is-preload *:before, body.is-preload *:after {
 	transition: none !important;
 }
 
-/* Typography */
+/* Top Navigation Header */
+.top-header {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 30px 40px;
+	z-index: 10000;
+	background: transparent;
+}
+
+.site-title {
+	font-size: 14px;
+	font-weight: 400;
+	color: #e8e8e8;
+	letter-spacing: 0.5px;
+	text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+.top-navigation {
+	display: flex;
+	gap: 30px;
+}
+
+.nav-link {
+	font-size: 14px;
+	color: #e8e8e8;
+	text-decoration: none;
+	font-weight: 400;
+	transition: all 0.3s ease;
+	cursor: pointer;
+	position: relative;
+	padding: 8px 16px;
+	border-radius: 6px;
+	text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+.nav-link:hover {
+	color: #3498db;
+	background: rgba(52, 152, 219, 0.1);
+	text-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+}
+
+/* Glowing effect for active navigation link */
+.nav-link.active {
+	color: #3498db;
+	background: rgba(52, 152, 219, 0.15);
+	box-shadow: 
+		0 0 10px rgba(52, 152, 219, 0.3),
+		0 0 20px rgba(52, 152, 219, 0.2),
+		0 0 30px rgba(52, 152, 219, 0.1);
+	text-shadow: 0 0 15px rgba(52, 152, 219, 0.8);
+}
+
+.nav-link.active:before {
+	content: '';
+	position: absolute;
+	top: -2px;
+	left: -2px;
+	right: -2px;
+	bottom: -2px;
+	background: linear-gradient(45deg, #3498db, #e74c3c, #3498db);
+	border-radius: 8px;
+	z-index: -1;
+	opacity: 0.3;
+	filter: blur(4px);
+}
+
+@media screen and (max-width: 768px) {
+	.top-header {
+		flex-direction: column;
+		gap: 20px;
+		align-items: flex-start;
+		padding: 20px;
+	}
+
+	.top-navigation {
+		gap: 20px;
+		flex-wrap: wrap;
+	}
+
+	.nav-link {
+		font-size: 12px;
+		padding: 6px 12px;
+	}
+}
+
+@media screen and (max-width: 480px) {
+	.top-header {
+		padding: 15px;
+	}
+
+	.top-navigation {
+		gap: 15px;
+	}
+
+	.site-title {
+		font-size: 12px;
+	}
+}
+
+/* Typography - DARK MODE: Changed text color from dark to light */
 body, input, select, textarea {
-	color: #2c3e50;
+	color: #e8e8e8; /* Changed from #2c3e50 to light color */
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 16.5pt;
 	font-weight: normal;
@@ -154,7 +278,6 @@ a:hover {
 }
 
 strong, b {
-	/* color: #f39c12; */
 	font-weight: bold;
 }
 
@@ -288,7 +411,7 @@ button,
 	grid-template-rows: repeat(3, 1fr);
 	gap: 0;
 	width: 100%;
-	height: 83vh; /* Increased from 80vh - conservative 3% increase */
+	height: 83vh;
 	margin: 0;
 	border: none;
 	background: none;
@@ -297,8 +420,8 @@ button,
 .features section {
 	display: flex;
 	flex-direction: column;
-	padding: 1.4em; /* Reduced from 2em - about 30% less padding */
-	border: 2px solid #2c3e50;
+	padding: 1.4em;
+	border: 2px solid #444444; /* Changed border color for dark mode */
 	border-radius: 0;
 	position: relative;
 	width: 100%;
@@ -362,7 +485,7 @@ button,
 	}
 	
 	.features section {
-		padding: 1.2em; /* Slightly reduced from 1.5em */
+		padding: 1.2em;
 		min-height: 150px;
 	}
 	
@@ -398,7 +521,7 @@ button,
 
 @media screen and (max-width: 480px) {
 	.features section {
-		padding: 1em; /* Slightly reduced from 1.2em */
+		padding: 1em;
 	}
 	
 	.features section .header-container {
@@ -480,7 +603,7 @@ button,
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	padding: 1.2em 0; /* Reduced from 2em */
+	padding: 1.2em 0;
 }
 
 #one .inner {
@@ -490,7 +613,7 @@ button,
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	padding: 0 1em; /* Reduced side padding */
+	padding: 0 1em;
 }
 
 /* Mobile adjustments for scroll snap */
@@ -498,7 +621,7 @@ button,
 	#one.wrapper.style2.spotlights {
 		height: auto;
 		min-height: 100vh;
-		padding: 1.5em 0; /* Reduced from 2em */
+		padding: 1.5em 0;
 	}
 }
 
@@ -655,7 +778,7 @@ ul.menu {
 }
 
 ul.menu > li {
-	border-left: solid 1px rgba(44, 62, 80, 0.3);
+	border-left: solid 1px rgba(255, 255, 255, 0.3); /* Changed for dark mode */
 	display: inline-block;
 	line-height: 1;
 	margin-left: 1.5em;
@@ -701,7 +824,7 @@ header h3 + p {
 	line-height: 1.5em;
 }
 
-/* Wrapper */
+/* Wrapper - DARK MODE: Updated background colors */
 .wrapper {
 	position: relative;
 	transition: opacity 0.3s ease;
@@ -727,8 +850,8 @@ header h3 + p {
 }
 
 .wrapper.style1 {
-	background-color: #ffffff;
-	color: #2c3e50;
+	background-color: #2a2a2a; /* Changed from #ffffff to dark */
+	color: #e8e8e8; /* Changed from #2c3e50 to light */
 }
 
 .wrapper.style1-alt {
@@ -737,8 +860,8 @@ header h3 + p {
 }
 
 .wrapper.style2 {
-	background-color: #ecf0f1;
-	color: #2c3e50;
+	background-color: #333333; /* Changed from #ecf0f1 to dark */
+	color: #e8e8e8; /* Changed from #2c3e50 to light */
 }
 
 .wrapper.style2-alt {
@@ -747,8 +870,8 @@ header h3 + p {
 }
 
 .wrapper.style3 {
-	background-color: #f8f9fa;
-	color: #2c3e50;
+	background-color: #2a2a2a; /* Changed from #f8f9fa to dark */
+	color: #e8e8e8; /* Changed from #2c3e50 to light */
 }
 
 .wrapper.style3-alt {
@@ -795,7 +918,6 @@ header h3 + p {
 	-ms-transform: translateY(0);
 	transform: translateY(0);
 	opacity: 1.0;
-	/* No transition - instant appearance */
 }
 
 /* Remove inactive state to prevent delays */
@@ -808,238 +930,30 @@ body.is-preload .wrapper.fade-up > .inner {
 	transform: translateY(0);
 }
 
-/* Sidebar */
-#sidebar {
-	padding: 2.5em 2.5em 0.5em 2.5em;
-	background: #2c3e50;
-	cursor: default;
-	height: 100vh;
-	left: 0;
+/* Main wrapper adjustments - Updated for transparent navigation */
+#wrapper {
+	width: 100vw;
+	max-width: 100vw;
 	overflow-x: hidden;
-	overflow-y: auto;
-	position: fixed;
-	text-align: right;
-	top: 0;
-	width: 18em;
-	z-index: 10000;
+	padding-top: 40px; /* Reduced padding since no background bar */
 }
 
-#sidebar > .inner {
-	display: -moz-flex;
-	display: -webkit-flex;
-	display: -ms-flex;
-	display: flex;
-	-moz-flex-direction: column;
-	-webkit-flex-direction: column;
-	-ms-flex-direction: column;
-	flex-direction: column;
-	-moz-justify-content: center;
-	-webkit-justify-content: center;
-	-ms-justify-content: center;
-	justify-content: center;
-	-moz-transform: translateY(0);
-	-webkit-transform: translateY(0);
-	-ms-transform: translateY(0);
-	transform: translateY(0);
-	-moz-transition: opacity 1s ease;
-	-webkit-transition: opacity 1s ease;
-	-ms-transition: opacity 1s ease;
-	transition: opacity 1s ease;
-	min-height: 100%;
-	opacity: 1;
+@media screen and (max-width: 768px) {
+	#wrapper {
+		padding-top: 60px; /* Less space needed for transparent header */
+	}
+}
+
+@media screen and (max-width: 480px) {
+	#wrapper {
+		padding-top: 50px;
+	}
+}
+
+/* Footer - Updated for top navigation */
+#footer {
 	width: 100%;
-}
-
-#sidebar nav > ul {
-	list-style: none;
-	padding: 0;
-}
-
-#sidebar nav > ul > li {
-	-moz-transform: translateY(0);
-	-webkit-transform: translateY(0);
-	-ms-transform: translateY(0);
-	transform: translateY(0);
-	-moz-transition: opacity 0.15s ease, -moz-transform 0.75s ease;
-	-webkit-transition: opacity 0.15s ease, -webkit-transform 0.75s ease;
-	-ms-transition: opacity 0.15s ease, -ms-transform 0.75s ease;
-	transition: opacity 0.15s ease, transform 0.75s ease;
-	margin: 1.5em 0 0 0;
-	opacity: 1;
-	padding: 0;
-	position: relative;
-}
-
-#sidebar nav > ul > li:first-child {
-	margin: 0;
-}
-
-#sidebar nav a {
-	-moz-transition: color 0.2s ease;
-	-webkit-transition: color 0.2s ease;
-	-ms-transition: color 0.2s ease;
-	transition: color 0.2s ease;
-	border: 0;
-	color: #f39c12;
-	display: block;
-	font-size: 0.6em;
-	font-weight: bold;
-	letter-spacing: 0.25em;
-	line-height: 1.75;
-	outline: 0;
-	padding: 1.35em 0;
-	position: relative;
-	text-decoration: none;
-	text-transform: uppercase;
-}
-
-#sidebar nav a:before, #sidebar nav a:after {
-	border-radius: 0.2em;
-	bottom: 0;
-	content: '';
-	height: 0.2em;
-	position: absolute;
-	right: 0;
-	width: 100%;
-}
-
-#sidebar nav a:before {
-	background: #34495e;
-}
-
-#sidebar nav a:after {
-	background-image: linear-gradient(to right, #3498db, #e74c3c);
-	-moz-transition: max-width 0.2s ease;
-	-webkit-transition: max-width 0.2s ease;
-	-ms-transition: max-width 0.2s ease;
-	transition: max-width 0.2s ease;
-	max-width: 0;
-}
-
-#sidebar nav a:hover {
-	color: #3498db;
-}
-
-#sidebar nav a.active {
-	color: #3498db;
-}
-
-#sidebar nav a.active:after {
-	max-width: 100%;
-}
-
-body.is-preload #sidebar > .inner {
-	opacity: 0;
-}
-
-body.is-preload #sidebar nav ul li {
-	-moz-transform: translateY(2em);
-	-webkit-transform: translateY(2em);
-	-ms-transform: translateY(2em);
-	transform: translateY(2em);
-	opacity: 0;
-}
-
-@media screen and (max-width: 1280px) {
-	#sidebar {
-		height: 3.5em;
-		left: 0;
-		line-height: 3.5em;
-		overflow: hidden;
-		padding: 0;
-		text-align: center;
-		top: 0;
-		width: 100%;
-	}
-
-	#sidebar > .inner {
-		-moz-flex-direction: row;
-		-webkit-flex-direction: row;
-		-ms-flex-direction: row;
-		flex-direction: row;
-		-moz-align-items: -moz-stretch;
-		-webkit-align-items: -webkit-stretch;
-		-ms-align-items: -ms-stretch;
-		align-items: stretch;
-		height: inherit;
-		line-height: inherit;
-	}
-
-	#sidebar nav {
-		height: inherit;
-		line-height: inherit;
-	}
-
-	#sidebar nav ul {
-		display: -moz-flex;
-		display: -webkit-flex;
-		display: -ms-flex;
-		display: flex;
-		height: inherit;
-		line-height: inherit;
-		margin: 0;
-	}
-
-	#sidebar nav ul li {
-		display: block;
-		height: inherit;
-		line-height: inherit;
-		margin: 0 0 0 2em;
-		padding: 0;
-	}
-
-	#sidebar nav a {
-		height: inherit;
-		line-height: inherit;
-		padding: 0;
-	}
-
-	#sidebar nav a:after {
-		background-image: none;
-		background-color: #3498db;
-	}
-}
-
-@media screen and (max-width: 736px) {
-	#sidebar {
-		display: none;
-	}
-}
-
-/* Main wrapper adjustments */
-#sidebar + #wrapper {
-	margin-left: 18em;
-	width: calc(100vw - 18em);
-	max-width: calc(100vw - 18em);
-	overflow-x: hidden;
-}
-
-@media screen and (max-width: 1280px) {
-	#sidebar + #wrapper {
-		margin-left: 0;
-		width: 100vw;
-		max-width: 100vw;
-		padding-top: 3.5em;
-	}
-}
-
-@media screen and (max-width: 736px) {
-	#sidebar + #wrapper {
-		padding-top: 0;
-		width: 100vw;
-		max-width: 100vw;
-	}
-}
-
-/* Footer */
-#sidebar + #wrapper + #footer {
-	margin-left: 18em;
-}
-
-@media screen and (max-width: 1280px) {
-	#sidebar + #wrapper + #footer {
-		margin-left: 0;
-	}
+	margin-left: 0;
 }
 
 #footer > .inner a {
@@ -1056,7 +970,7 @@ body.is-preload #sidebar nav ul li {
 }
 
 #footer.wrapper.style1-alt {
-	background: #2c3e50;
+	background: #1f1f1f; /* Changed for dark mode */
 	color: #bdc3c7;
 	padding: 1em 0;
 }
@@ -1095,15 +1009,24 @@ body.is-preload #sidebar nav ul li {
 
 /* Section-specific styles */
 #intro {
-	background-attachment: fixed;
-	background-image: url("images/intro.svg");
-	background-position: top right;
-	background-repeat: no-repeat;
-	background-size: 100% 100%;
+	/* Removed background image to eliminate grid/map lines */
+	background: none;
 }
 
 #intro p {
 	font-size: 1.25em;
+}
+
+/* Headshot in intro section */
+#intro .headshot-container {
+	margin-bottom: 2em;
+}
+
+#intro .headshot {
+	width: 150px;
+	height: 200px;
+	object-fit: cover;
+	border-radius: 8px;
 }
 
 @media screen and (max-width: 980px) {
@@ -1116,11 +1039,10 @@ body.is-preload #sidebar nav ul li {
 	#intro p {
 		font-size: 1em;
 	}
-}
-
-@media screen and (max-width: 1280px) {
-	#intro {
-		background-attachment: scroll;
+	
+	#intro .headshot {
+		width: 120px;
+		height: 160px;
 	}
 }
 
@@ -1274,29 +1196,6 @@ html, body {
 	max-width: 100vw;
 }
 
-/* Optional scroll indicator */
-body::before {
-	content: '';
-	position: fixed;
-	top: 50%;
-	right: 20px;
-	transform: translateY(-50%);
-	width: 3px;
-	height: 100px;
-	background: linear-gradient(to bottom, transparent, rgba(52, 152, 219, 0.3), transparent);
-	z-index: 1001;
-	pointer-events: none;
-}
-
-@media screen and (max-width: 768px) {
-	body::before {
-		display: none;
-	}
-}
-
-
-/* Add this CSS to your stylesheet */
-
 /* Lets Connect heading with dots */
 #three h3 {
 	transition: font-size 1.2s ease, transform 1.2s ease;
@@ -1317,14 +1216,13 @@ body::before {
 .contact-hover-zone {
 	display: inline-block;
 	padding: 1.5em 2em;
-	/* Invisible zone - no visual styling */
 }
 
 /* Scale up the entire heading to 2x size when hovering the contact area */
 .contact-hover-zone:hover ~ h3,
 .contact-hover-zone:hover + * h3,
 #three:has(.contact-hover-zone:hover) h3 {
-	font-size: 5.5em; /* 2x h1 size (2.75em * 2) */
+	font-size: 5.5em;
 	transform: scale(1);
 }
 
@@ -1341,17 +1239,17 @@ body::before {
 /* Dots slowly appear in sequence during scaling animation */
 .contact-links-container:hover .connect-heading .connect-dots .dot:nth-child(1) {
 	opacity: 1;
-	transition: opacity 0.2s ease 0.3s; /* Faster fade in - 0.2s instead of 0.4s */
+	transition: opacity 0.2s ease 0.3s;
 }
 
 .contact-links-container:hover .connect-heading .connect-dots .dot:nth-child(2) {
 	opacity: 1;
-	transition: opacity 0.2s ease 0.6s; /* Faster fade in - 0.2s instead of 0.4s */
+	transition: opacity 0.2s ease 0.6s;
 }
 
 .contact-links-container:hover .connect-heading .connect-dots .dot:nth-child(3) {
 	opacity: 1;
-	transition: opacity 0.2s ease 0.9s; /* Faster fade in - 0.2s instead of 0.4s */
+	transition: opacity 0.2s ease 0.9s;
 }
 
 /* When not hovering, dots fade out immediately */
@@ -1477,39 +1375,24 @@ body::before {
 	100% { opacity: 0; transform: translateX(50px) translateY(-90px) rotate(270deg) scale(0.3); }
 }
 
-/* Arrow button pulse animation */
+/* Arrow button positioned at bottom */
 #intro .button.scrolly {
-	position: relative;
+	position: absolute;
+	bottom: 40px;
+	left: 50%;
+	transform: translateX(-50%);
 	transition: all 0.3s ease;
-	animation: none; /* Start without animation */
+	z-index: 100;
 }
 
-/* Trigger pulse when intro section is in view */
-#intro.in-view .button.scrolly {
-	animation: arrow-pulse 2s ease-in-out 1s infinite;
-}
-
-/* Pulse animation with glow effect */
-@keyframes arrow-pulse {
-	0% {
-		transform: scale(1);
-		box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7);
-	}
-	50% {
-		transform: scale(1.05);
-		box-shadow: 0 0 0 10px rgba(52, 152, 219, 0);
-	}
-	100% {
-		transform: scale(1);
-		box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
-	}
-}
-
-/* Enhanced glow effect on hover */
 #intro .button.scrolly:hover {
+	transform: translateX(-50%) scale(1.1);
 	box-shadow: 0 0 20px rgba(52, 152, 219, 0.6);
-	transform: scale(1.1);
-	animation-play-state: paused; /* Pause pulse on hover */
+}
+
+/* Make sure intro section is positioned relatively */
+#intro {
+	position: relative;
 }
 
 
@@ -1555,11 +1438,11 @@ body.is-preload #intro .inner {
 
 /* Profile picture flip effect */
 .headshot-container {
-    perspective: 1000px; /* Creates the 3D space for the flip */
+    perspective: 1000px;
     width: 100%;
     margin-bottom: 1em;
     display: flex;
-    justify-content: center; /* Centers the flipper */
+    justify-content: center;
 }
 
 .headshot-flipper {
@@ -1568,7 +1451,7 @@ body.is-preload #intro .inner {
     height: auto;
     transition: transform 0.3s ease-in-out;
     transform-style: preserve-3d;
-    transform-origin: center center; /* Ensures rotation happens from center */
+    transform-origin: center center;
 }
 
 .headshot-container:hover .headshot-flipper {
@@ -1580,7 +1463,6 @@ body.is-preload #intro .inner {
     display: block;
     max-width: 100%;
     height: auto;
-    /* Keeps original rectangular shape - no border-radius */
 }
 
 .headshot-front {
