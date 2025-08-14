@@ -1,6 +1,44 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
+		
+		<script>
+// Custom URL routing for clean URLs
+const routes = {
+    // ThankYou pages
+    'ThankYouB': '/archive/ThankYouB/ThankYouB.html',
+    'ThankYouKS': '/archive/ThankYouKS/ThankYouKS.html',
+    'ThankYouL': '/archive/ThankYouL/ThankYouL.html',
+    
+    // Decision Helper
+    'DecisionHelperLLM': '/archive/DecisionHelperLLM/prem.html',
+    
+    // Root level pages (if you want clean URLs for these too)
+    '3Dmodel': '/3Dmodel.html',
+    'caseComps': '/caseComps.html',
+    'sweetheartBubble': '/sweetheartBubble.html',
+    'AdvantesPoster': '/AdvantesPoster.html',
+    'interviewMe': '/interviewMe.html'
+};
+
+function handleRouting() {
+    // Get the path without leading slash
+    const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
+    
+    // Check if this path should be routed
+    if (routes[path]) {
+        console.log(`Redirecting ${path} to ${routes[path]}`);
+        window.location.replace(routes[path]);
+        return;
+    }
+    
+    // If no route found, let the existing 404 page show
+}
+
+// Run routing when page loads
+window.addEventListener('load', handleRouting);
+</script>
+
 		<title>404 - Page Not Found | NatalieLamJohnson</title>
 		<link rel="icon" type="image/x-icon" href="images/Gemini_Generated_Image_9nucck9nucck9nuc.png">
 		<meta charset="utf-8" />
@@ -231,6 +269,7 @@
 				}
 			}
 		</style>
+		
 	</head>
 	<body class="is-preload">
 
