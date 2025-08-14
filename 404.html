@@ -2,23 +2,31 @@
 <html>
 	<head>
 		
-		<script>
-// Custom URL routing for clean URLs
+		<script>// Custom URL routing for clean URLs
 const routes = {
-    // ThankYou pages
+    // ThankYou pages - supporting both with and without .html
     'ThankYouB': '/archive/ThankYouB/ThankYouB.html',
+    'ThankYouB.html': '/archive/ThankYouB/ThankYouB.html',
     'ThankYouKS': '/archive/ThankYouKS/ThankYouKS.html',
+    'ThankYouKS.html': '/archive/ThankYouKS/ThankYouKS.html',
     'ThankYouL': '/archive/ThankYouL/ThankYouL.html',
+    'ThankYouL.html': '/archive/ThankYouL/ThankYouL.html',
     
     // Decision Helper
     'DecisionHelperLLM': '/archive/DecisionHelperLLM/prem.html',
+    'DecisionHelperLLM.html': '/archive/DecisionHelperLLM/prem.html',
     
     // Root level pages (if you want clean URLs for these too)
     '3Dmodel': '/3Dmodel.html',
+    '3Dmodel.html': '/3Dmodel.html',
     'caseComps': '/caseComps.html',
+    'caseComps.html': '/caseComps.html',
     'sweetheartBubble': '/sweetheartBubble.html',
+    'sweetheartBubble.html': '/sweetheartBubble.html',
     'AdvantesPoster': '/AdvantesPoster.html',
-    'interviewMe': '/interviewMe.html'
+    'AdvantesPoster.html': '/AdvantesPoster.html',
+    'interviewMe': '/interviewMe.html',
+    'interviewMe.html': '/interviewMe.html'
 };
 
 function handleRouting() {
@@ -33,6 +41,7 @@ function handleRouting() {
     }
     
     // If no route found, let the existing 404 page show
+    console.log(`No route found for: ${path}`);
 }
 
 // Run routing when page loads
