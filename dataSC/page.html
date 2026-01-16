@@ -24,22 +24,20 @@
         }
 
         /* Blur overlay effect */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, 
-                rgba(216, 238, 245, 0.85) 0%, 
-                rgba(196, 221, 208, 0.85) 30%,
-                rgba(232, 213, 184, 0.85) 60%,
-                rgba(216, 238, 245, 0.85) 100%
-            );
-            backdrop-filter: blur(40px);
-            z-index: -1;
-        }
+     body::before {
+	content: '';
+	position: fixed;
+	inset: 0;
+	background: linear-gradient(
+		135deg,
+		rgba(216, 238, 245, 0.85) 0%,
+		rgba(196, 221, 208, 0.85) 30%,
+		rgba(232, 213, 184, 0.85) 60%,
+		rgba(216, 238, 245, 0.85) 100%
+	);
+	backdrop-filter: blur(40px);
+	z-index: -1;
+}
 
         /* Header - Fixed position */
         .header {

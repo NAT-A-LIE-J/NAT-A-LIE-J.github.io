@@ -26,7 +26,7 @@
 		<div id="wrapper">
 
 			<!-- Intro Section -->
-			<section id="intro" class="wrapper style1 fullscreen fade-up">
+			<section id="intro" class="fullscreen-panel">
 				<div class="inner">
 
 					<!-- 
@@ -38,29 +38,26 @@
 					</div>
 					-->
 
-					<h1>Hi, I'm Natalie Lam Johnson. <span class="wave-emoji">👋</span></h1>
-					<p>Every algorithm tells a story about human behavior. As an AI for Business student at USC, I'm learning to listen to data while keeping people at the center of every solution I build.</p>
+					<h1>Hi, </h1>
+					<h1> I'm Natalie Lam Johnson. <span class="wave-emoji">👋</span></h1>
 
-					<div class="chat-button-container">
-						<a href="https://natalielamjohnson.com/interviewMe.html" class="chat-button">
-							<span class="chat-icon"></span>
-							<span class="chat-text">Chat with me! Really, try my custom AI model.</span>
-							<span class="chat-arrow">→</span>
-						</a>
-					</div>
+				<p> <a href="https://www.marshall.usc.edu/programs/undergraduate-programs/undergraduate-degrees/bs-artificial-intelligence-for-business-buai"> AI for Business student @ USC. </a> Find me at the interection of tech & people. </p> 
+
+					<!-- <p>Every algorithm tells a story about human behavior. As an AI for Business student @ USC, I'm learning to listen to data while keeping people at the center of every solution I build.</p> -->
+
+
 
 
 				</div>
-				<ul class="actions">
-				<li><a href="#one" class="button scrolly"> ↓ </a></li>
-				</ul>
+
 			</section>
 
 			<!-- Projects -->
-			<section id="one" class="wrapper style2 spotlights">
+			<section id="one" class="fullscreen-panel">
 				<div class="inner">
 					<div class="features">
 
+							<h1>  <span class="wave-emoji">compiling...</span></h1>
 						<!-- 
 
 						<section onclick="window.open('https://natalielamjohnson.com/archive/3Dmodel.html', '_blank')">
@@ -118,7 +115,7 @@
 			</section>
 
 			<!-- Resume Section -->
-			<section id="two" class="wrapper style3 fade-up fullscreen-section">
+			<section id="two" class="fullscreen-panel">
 				<div class="center-content">
 					<ul class="actions">
 						<li>
@@ -141,7 +138,7 @@
 			</section>
 
 			<!-- Contact Section -->
-			<section id="three" class="wrapper style1 fade-up">
+			<section id="three" class="fullscreen-panel">
 				<div class="inner">
 					<div class="contact-links-container">
 						<h3 class="connect-heading">Let's Connect<span class="connect-dots"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span></h3>
@@ -171,28 +168,7 @@
 
 		</div>
 
-		<!-- Footer -->
-		<footer id="footer" class="wrapper style1-alt">
-			<div class="inner">
-				<ul class="menu">
-					<li>
-						<a href="mailto:natalie.l.johnson@usc.edu" class="icon solid fa-envelope" target="_blank">
-							<span class="label">Email</span>
-						</a>
-						<span class="copy-text" onclick="copyToClipboard('natalie.l.johnson@usc.edu')" title="Click to copy">
-							natalie.l.johnson@usc.edu
-						</span>
-					</li>
-					<li>
-						<a href="https://www.linkedin.com/in/natalie-lam-johnson" class="link-text" target="_blank">LinkedIn</a>
-						<a href="https://www.linkedin.com/in/natalie-lam-johnson" class="icon brands fa-linkedin-in" target="_blank">
-							<span class="label">LinkedIn</span>
-						</a>
-					</li>
-					<li>&copy; NLJ.</li>
-				</ul>
-			</div>
-		</footer>
+
 
 		<!-- Scripts -->
 		<script src="assets/js/jquery.min.js"></script>
@@ -265,11 +241,9 @@ $(document).ready(function() {
             $('.nav-link').removeClass('active');
             $(this).addClass('active');
             
-            // Smooth scroll to section
-            $target[0].scrollIntoView({ 
-                behavior: 'smooth',
-                block: 'start'
-            });
+         $target[0].scrollIntoView({ 
+	block: 'start'
+});
         }
     });
 });
