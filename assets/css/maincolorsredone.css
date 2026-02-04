@@ -1,4 +1,4 @@
-@import url(fontawesome-all.min.css);
+\@import url(fontawesome-all.min.css);
 
 /* =========================
    Base Reset (Clean)
@@ -14,44 +14,13 @@
 
 html {
 	scroll-behavior: smooth;
-	scroll-snap-type: y mandatory;
 	overflow-x: hidden;
 	max-width: 100vw;
 }
 
 /* =========================
-   Scroll Snap – Section Based
-   ========================= */
-
-/* Scroll container */
-html {
-	scroll-snap-type: y mandatory;
-}
-
-/* Each full screen section snaps */
-.fullscreen-panel {
-	scroll-snap-align: start;
-	scroll-snap-stop: always;
-}
-
-/* Ensure wrapper does not interfere */
-#wrapper {
-	scroll-snap-type: inherit;
-}
-
-/* Tablet / mobile: soften snapping */
-@media (max-width: 1024px) {
-	html {
-		scroll-snap-type: y proximity;
-	}
-}
-
-.fullscreen-panel {
-	scroll-margin-top: 80px; /* match header height */
-}
-
-/* =========================
-   Body + Background (MATCHES DATASC)
+   Body = Scroll Container with Scroll Snap
+   Sections are now DIRECT CHILDREN of body
    ========================= */
 
 body {
@@ -67,9 +36,60 @@ body {
 	);
 	position: relative;
 	overflow-x: hidden;
+	
+	/* SCROLL SNAP ON BODY */
+	scroll-snap-type: y mandatory;
+	scroll-snap-stop: normal;
+	scroll-padding-top: 12vh;
+	scroll-padding-bottom: 12vh;
+	height: 100vh;
+	overflow-y: scroll;
 }
 
-/* Soft blurred overlay – reduced compression */
+/* Mobile: gentler snapping */
+@media (max-width: 768px) {
+	body {
+		scroll-snap-type: y proximity;
+	}
+}
+
+/* Sections snap to start */
+.fullscreen-panel {
+	min-height: 100vh;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	scroll-snap-align: start;
+	scroll-margin-top: 12vh;
+	scroll-margin-bottom: 12vh;
+	position: relative;
+}
+
+a,
+a:visited,
+a:hover,
+a:active {
+	color: #333333;
+}
+
+a {
+	display: inline-block;
+	transition: transform 0.5s ease;
+}
+
+a:hover {
+	font-style: italic;
+	transform: skew(-10deg);
+}
+
+.top-header a:hover,
+.top-navigation .nav-link:hover {
+	font-style: normal;
+	transform: none;
+}
+
+/* Soft blurred overlay */
 body::before {
 	content: '';
 	position: fixed;
@@ -83,6 +103,7 @@ body::before {
 	);
 	backdrop-filter: blur(40px);
 	z-index: -1;
+	pointer-events: none;
 }
 
 /* Disable animations during preload */
@@ -119,33 +140,7 @@ h3 { font-size: 1.1em; }
 }
 
 /* =========================
-   Layout
-   ========================= */
-
-#wrapper {
-	width: 100vw;
-	max-width: 100vw;
-	overflow-x: hidden;
-	padding-top: 40px;
-}
-
-@media (max-width: 768px) {
-	#wrapper {
-		padding-top: 60px;
-		scroll-snap-type: y proximity;
-	}
-}
-
-.fullscreen-panel {
-	min-height: 100vh;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	scroll-snap-align: start;
-}
-
-/* =========================
-   Top Navigation (DATASC-LIKE)
+   Top Navigation
    ========================= */
 
 .top-header {
@@ -158,6 +153,8 @@ h3 { font-size: 1.1em; }
 	align-items: center;
 	padding: 30px 40px;
 	z-index: 10000;
+	background: rgba(255, 255, 255, 0.1);
+	backdrop-filter: blur(10px);
 }
 
 .site-title {
@@ -179,11 +176,12 @@ h3 { font-size: 1.1em; }
 	transition: all 0.3s ease;
 	color: #333333;
 	text-shadow: none;
+	text-decoration: none;
 }
 
 .nav-link:hover,
 .nav-link.active {
-	color: #4A90E2;
+	color: #333333;
 	background: rgba(74, 144, 226, 0.12);
 	box-shadow: none;
 }
@@ -193,7 +191,6 @@ h3 { font-size: 1.1em; }
    ========================= */
 
 #intro {
-	position: relative;
 	text-align: center;
 }
 
@@ -239,6 +236,7 @@ h3 { font-size: 1.1em; }
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	height: 83vh;
+	width: 100%;
 }
 
 .features section {
@@ -268,6 +266,23 @@ h3 { font-size: 1.1em; }
 }
 
 /* =========================
+   Inner content containers
+   ========================= */
+
+.inner {
+	width: 100%;
+	max-width: 1200px;
+	padding: 0 2em;
+}
+
+.center-content {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+}
+
+/* =========================
    Resume Button – Large, Clean, With Confetti
    ========================= */
 
@@ -284,12 +299,12 @@ h3 { font-size: 1.1em; }
 	justify-content: center;
 
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-	font-size: 16px;              /* LARGER TEXT */
+	font-size: 16px;
 	font-weight: 600;
 	letter-spacing: 0.6px;
 	text-transform: uppercase;
 
-	padding: 18px 40px;           /* LARGER BUTTON */
+	padding: 18px 40px;
 	border-radius: 50px;
 
 	background: transparent;
@@ -398,15 +413,6 @@ h3 { font-size: 1.1em; }
 	will-change: transform;
 }
 
-/* Confetti layering preserved */
-.resume-button-container {
-	position: relative;
-}
-
-.button.large {
-	position: relative;
-	z-index: 1;
-}
 /* =========================
    Contact Section
    ========================= */
@@ -459,6 +465,12 @@ ul.icons {
 	margin: 0;
 }
 
+ul.actions {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
 ul.icons li {
 	display: inline-flex;
 	align-items: center;
@@ -491,70 +503,3 @@ ul.icons li {
 
 .icon.solid::before { font-weight: 900; }
 .icon.brands::before { font-family: 'Font Awesome 5 Brands'; }
-
-/* =========================
-   Resume Confetti
-   ========================= */
-
-.resume-button-container {
-	position: relative;
-	display: inline-block;
-}
-
-.confetti-particle {
-	position: absolute;
-	width: 8px;
-	height: 8px;
-	opacity: 0;
-}
-
-.resume-button-container:hover .confetti-particle {
-	opacity: 1;
-	animation: confetti 2s ease-out forwards;
-}
-
-@keyframes confetti {
-	0% { transform: translate(0,0) rotate(0); opacity: 1; }
-	100% { transform: translate(80px,-80px) rotate(720deg); opacity: 0; }
-}
-
-
-/* =========================
-   Scroll Snap – Global
-   ========================= */
-
-/* Main scroll container */
-html, body {
-	scroll-snap-type: y mandatory;
-	height: 100%;
-	overflow-y: scroll;
-}
-
-/* Ensure wrapper does not block snapping */
-#wrapper {
-	scroll-snap-type: inherit;
-}
-
-.fullscreen-panel {
-	height: 100vh;              /* NOT min-height */
-	display: flex;
-	align-items: center;
-	justify-content: center;
-
-	scroll-snap-align: start;
-	scroll-snap-stop: always;
-
-	/* Compensate for fixed header */
-	scroll-margin-top: 90px;
-}
-
-/* =========================
-   Responsive adjustment
-   ========================= */
-
-/* Softer snapping on touch devices */
-@media (max-width: 1024px) {
-	html {
-		scroll-snap-type: y proximity;
-	}
-}
