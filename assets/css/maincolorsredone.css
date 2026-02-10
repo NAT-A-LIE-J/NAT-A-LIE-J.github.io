@@ -1,4 +1,4 @@
-\@import url(fontawesome-all.min.css);
+@import url(fontawesome-all.min.css);
 
 /* =========================
    Base Reset (Clean)
@@ -140,6 +140,26 @@ h3 { font-size: 1.1em; }
 }
 
 /* =========================
+   MOUSE SHADOW EFFECT
+   ========================= */
+
+/* Apply shadow effect to specific text elements */
+.shadow-text {
+	text-shadow: 
+		var(--shadow-x, 0px) var(--shadow-y, 0px) 30px rgba(0, 0, 0, 0.7),
+		var(--shadow-x, 0px) var(--shadow-y, 0px) 60px rgba(0, 0, 0, 0.5),
+		var(--shadow-x, 0px) var(--shadow-y, 0px) 90px rgba(0, 0, 0, 0.3);
+}
+
+/* Lighter shadow for smaller text */
+.shadow-text-light {
+	text-shadow: 
+		var(--shadow-x, 0px) var(--shadow-y, 0px) 20px rgba(0, 0, 0, 0.5),
+		var(--shadow-x, 0px) var(--shadow-y, 0px) 40px rgba(0, 0, 0, 0.3),
+		var(--shadow-x, 0px) var(--shadow-y, 0px) 60px rgba(0, 0, 0, 0.2);
+}
+
+/* =========================
    Top Navigation
    ========================= */
 
@@ -191,7 +211,12 @@ h3 { font-size: 1.1em; }
    ========================= */
 
 #intro {
-	text-align: center;
+	text-align: left;
+}
+
+#intro .intro-hi {
+	text-align: left;
+	width: 100%;
 }
 
 #intro p {

@@ -37,10 +37,11 @@
 				</div>
 				-->
 
-				<h1>Hi, </h1>
-				<h1> I'm Natalie Lam Johnson. <span class="wave-emoji">👋</span></h1>
+				<h1 class="shadow-text intro-hi">Hi, </h1>
+				<h1 class="shadow-text"> I'm Natalie Lam Johnson.</h1>
+				<!--<span class="wave-emoji">👋</span>-->
 
-			<p> <a href="https://www.marshall.usc.edu/programs/undergraduate-programs/undergraduate-degrees/bs-artificial-intelligence-for-business-buai"> AI for Business student @ USC. </a> Find me at the intersection of tech & people. </p> 
+			<p class="shadow-text-light"> <a href="https://www.marshall.usc.edu/programs/undergraduate-programs/undergraduate-degrees/bs-artificial-intelligence-for-business-buai"> AI for Business student @ USC. </a> Find me at the intersection of tech & people. </p> 
 
 				<!-- <p>Every algorithm tells a story about human behavior. As an AI for Business student @ USC, I'm learning to listen to data while keeping people at the center of every solution I build.</p> -->
 
@@ -52,7 +53,7 @@
 			<div class="inner">
 				<div class="features">
 
-						<h1>  <span class="wave-emoji">compiling...</span></h1>
+						<h1 class="shadow-text">  <span class="wave-emoji">compiling...</span></h1>
 					<!-- 
 
 					<section onclick="window.open('https://natalielamjohnson.com/archive/3Dmodel.html', '_blank')">
@@ -136,7 +137,7 @@
 		<section id="three" class="fullscreen-panel">
 			<div class="inner">
 				<div class="contact-links-container">
-					<h3 class="connect-heading">Let's Connect<span class="connect-dots"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span></h3>
+					<h3 class="connect-heading shadow-text">Let's Connect<span class="connect-dots"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span></h3>
 					
 					<div class="contact-hover-zone">
 						<ul class="icons">
@@ -144,7 +145,7 @@
 								<a href="mailto:natalie.l.johnson@usc.edu" class="icon solid fa-envelope" target="_blank">
 									<span class="label">Email</span>
 								</a>
-								<span class="copy-text" onclick="copyToClipboard('natalie.l.johnson@usc.edu')" title="Click to copy">
+								<span class="copy-text shadow-text-light" onclick="copyToClipboard('natalie.l.johnson@usc.edu')" title="Click to copy">
 									natalie.l.johnson@usc.edu
 								</span>
 							</li>
@@ -282,6 +283,82 @@ const observer = new MutationObserver((mutations) => {
 });
 
 observer.observe(document.body, { attributes: true });
+</script>
+
+<!-- MOUSE SHADOW EFFECT SCRIPT -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const shadowElements = document.querySelectorAll('.shadow-text, .shadow-text-light');
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let currentMouseX = mouseX;
+    let currentMouseY = mouseY;
+
+    // Cache element positions for better performance
+    const elementData = [];
+    
+    function cacheElementPositions() {
+        elementData.length = 0;
+        shadowElements.forEach(element => {
+            const rect = element.getBoundingClientRect();
+            elementData.push({
+                element: element,
+                centerX: rect.left + rect.width / 2,
+                centerY: rect.top + rect.height / 2
+            });
+        });
+    }
+
+    // Recache on scroll and resize
+    window.addEventListener('scroll', cacheElementPositions);
+    window.addEventListener('resize', cacheElementPositions);
+    cacheElementPositions();
+
+    // Update mouse position on move
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
+
+    // Smooth interpolation function (lerp)
+    function lerp(start, end, factor) {
+        return start + (end - start) * factor;
+    }
+
+    // Continuous animation loop for smooth shadows
+    function animate() {
+        // Smoothly interpolate current position toward target mouse position
+        const smoothFactor = 0.15; // Lower = smoother but slower, higher = more responsive (0.1-0.3 is good)
+        currentMouseX = lerp(currentMouseX, mouseX, smoothFactor);
+        currentMouseY = lerp(currentMouseY, mouseY, smoothFactor);
+
+        elementData.forEach(data => {
+            // Calculate vector from mouse to element
+            const distanceX = data.centerX - currentMouseX;
+            const distanceY = data.centerY - currentMouseY;
+            const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+
+            // Prevent division by zero
+            if (distance === 0) return;
+
+            // Calculate shadow projection (away from mouse)
+            const maxShadowDistance = 200;
+            const shadowStrength = Math.min(1, 800 / distance);
+            const shadowX = (distanceX / distance) * maxShadowDistance * shadowStrength;
+            const shadowY = (distanceY / distance) * maxShadowDistance * shadowStrength;
+
+            // Apply shadow to element
+            data.element.style.setProperty('--shadow-x', `${shadowX}px`);
+            data.element.style.setProperty('--shadow-y', `${shadowY}px`);
+        });
+
+        // Continue animation loop
+        requestAnimationFrame(animate);
+    }
+
+    // Start the animation loop
+    animate();
+});
 </script>
 
 	</body>
