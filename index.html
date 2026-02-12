@@ -5,7 +5,9 @@
 		<title>NatalieLamJohnson</title>
 		<link rel="icon" type="image/x-icon" href="images/Gemini_Generated_Image_9nucck9nucck9nuc copy.png">
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 		<link rel="stylesheet" href="assets/css/maincolorsredone.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 	</head>
@@ -14,36 +16,29 @@
 		<!-- Top Navigation Header -->
 		<header class="top-header">
 			<div class="site-title"> <a href="https://natalielamjohnson.com/"> NATALIE LAM JOHNSON</a>  </div>
+			
+			<!-- Hamburger Menu Button (Mobile Only) -->
+			<button class="hamburger" aria-label="Menu" aria-expanded="false">
+				<span class="hamburger-line"></span>
+				<span class="hamburger-line"></span>
+				<span class="hamburger-line"></span>
+			</button>
+			
 			<nav class="top-navigation">
-				<!-- <a href="#intro" class="nav-link">Hello!</a>. --> 
 				<a href="#one" class="nav-link">Projects</a>
 				<a href="#two" class="nav-link">Resume</a>
 				<a href="#three" class="nav-link">Contact</a>
 			</nav>
 		</header>
 
-		<!-- NO MORE WRAPPER! Sections are now direct children of body -->
-
 		<!-- Intro Section -->
 		<section id="intro" class="fullscreen-panel">
 			<div class="inner">
 
-				<!-- 
-				<div class="headshot-container">
-					<div class="headshot-flipper">
-						<img src="images/natalieHeadshotwhtitebackground.jpg" alt="Natalie Headshot" class="headshot headshot-front">
-						<img src="images/natalie_silly.jpg" alt="Natalie Fun Photo" class="headshot headshot-back">
-					</div>
-				</div>
-				-->
-
 				<h1 class="shadow-text intro-hi">Hi, </h1>
 				<h1 class="shadow-text"> I'm Natalie Lam Johnson.</h1>
-				<!--<span class="wave-emoji">👋</span>-->
 
 			<p class="shadow-text-light"> <a href="https://www.marshall.usc.edu/programs/undergraduate-programs/undergraduate-degrees/bs-artificial-intelligence-for-business-buai"> AI for Business student @ USC. </a> Find me at the intersection of tech & people. </p> 
-
-				<!-- <p>Every algorithm tells a story about human behavior. As an AI for Business student @ USC, I'm learning to listen to data while keeping people at the center of every solution I build.</p> -->
 
 			</div>
 		</section>
@@ -145,7 +140,7 @@
 								<a href="mailto:natalie.l.johnson@usc.edu" class="icon solid fa-envelope" target="_blank">
 									<span class="label">Email</span>
 								</a>
-								<span class="copy-text shadow-text-light" onclick="copyToClipboard('natalie.l.johnson@usc.edu')" title="Click to copy">
+								<span class="copy-text shadow-text-light">
 									natalie.l.johnson@usc.edu
 								</span>
 							</li>
@@ -171,14 +166,43 @@
 		<script src="assets/js/main.js"></script>
 
 		<script>
-			function copyToClipboard(text) {
-				navigator.clipboard.writeText(text).then(() => {
-					alert('Email copied to clipboard!');
-				}).catch(err => {
-					console.error('Failed to copy text: ', err);
-				});
+// Hamburger Menu Toggle
+document.addEventListener('DOMContentLoaded', function() {
+	const hamburger = document.querySelector('.hamburger');
+	const topNav = document.querySelector('.top-navigation');
+	const body = document.body;
+	
+	if (hamburger) {
+		hamburger.addEventListener('click', function(e) {
+			e.stopPropagation();
+			const isOpen = hamburger.classList.toggle('is-active');
+			topNav.classList.toggle('is-open');
+			body.classList.toggle('nav-open');
+			hamburger.setAttribute('aria-expanded', isOpen);
+		});
+		
+		// Close menu when clicking nav link
+		document.querySelectorAll('.nav-link').forEach(link => {
+			link.addEventListener('click', function() {
+				hamburger.classList.remove('is-active');
+				topNav.classList.remove('is-open');
+				body.classList.remove('nav-open');
+				hamburger.setAttribute('aria-expanded', 'false');
+			});
+		});
+		
+		// Close menu when clicking outside
+		document.addEventListener('click', function(e) {
+			if (!topNav.contains(e.target) && !hamburger.contains(e.target)) {
+				hamburger.classList.remove('is-active');
+				topNav.classList.remove('is-open');
+				body.classList.remove('nav-open');
+				hamburger.setAttribute('aria-expanded', 'false');
 			}
-		</script>
+		});
+	}
+});
+</script>
 
 		<script>
 // Active link tracking for top navigation with glow effect
@@ -285,79 +309,88 @@ const observer = new MutationObserver((mutations) => {
 observer.observe(document.body, { attributes: true });
 </script>
 
-<!-- MOUSE SHADOW EFFECT SCRIPT -->
+<!-- MOUSE SHADOW EFFECT SCRIPT - Desktop Only -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const shadowElements = document.querySelectorAll('.shadow-text, .shadow-text-light');
-    let mouseX = window.innerWidth / 2;
-    let mouseY = window.innerHeight / 2;
-    let currentMouseX = mouseX;
-    let currentMouseY = mouseY;
+	// Check if device is touch-enabled (mobile)
+	const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+	
+	// Only run shadow effect on non-touch devices (desktop)
+	if (!isTouchDevice) {
+		const shadowElements = document.querySelectorAll('.shadow-text, .shadow-text-light');
+		let mouseX = window.innerWidth / 2;
+		let mouseY = window.innerHeight / 2;
+		let currentMouseX = mouseX;
+		let currentMouseY = mouseY;
 
-    // Cache element positions for better performance
-    const elementData = [];
-    
-    function cacheElementPositions() {
-        elementData.length = 0;
-        shadowElements.forEach(element => {
-            const rect = element.getBoundingClientRect();
-            elementData.push({
-                element: element,
-                centerX: rect.left + rect.width / 2,
-                centerY: rect.top + rect.height / 2
-            });
-        });
-    }
+		// Cache element positions for better performance
+		const elementData = [];
+		
+		function cacheElementPositions() {
+			elementData.length = 0;
+			shadowElements.forEach(element => {
+				const rect = element.getBoundingClientRect();
+				elementData.push({
+					element: element,
+					centerX: rect.left + rect.width / 2,
+					centerY: rect.top + rect.height / 2
+				});
+			});
+		}
 
-    // Recache on scroll and resize
-    window.addEventListener('scroll', cacheElementPositions);
-    window.addEventListener('resize', cacheElementPositions);
-    cacheElementPositions();
+		// Recache on scroll and resize
+		window.addEventListener('scroll', cacheElementPositions);
+		window.addEventListener('resize', cacheElementPositions);
+		cacheElementPositions();
 
-    // Update mouse position on move
-    document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-    });
+		// Update mouse position on move
+		document.addEventListener('mousemove', (e) => {
+			mouseX = e.clientX;
+			mouseY = e.clientY;
+		});
 
-    // Smooth interpolation function (lerp)
-    function lerp(start, end, factor) {
-        return start + (end - start) * factor;
-    }
+		// Smooth interpolation function (lerp)
+		function lerp(start, end, factor) {
+			return start + (end - start) * factor;
+		}
 
-    // Continuous animation loop for smooth shadows
-    function animate() {
-        // Smoothly interpolate current position toward target mouse position
-        const smoothFactor = 0.15; // Lower = smoother but slower, higher = more responsive (0.1-0.3 is good)
-        currentMouseX = lerp(currentMouseX, mouseX, smoothFactor);
-        currentMouseY = lerp(currentMouseY, mouseY, smoothFactor);
+		// Continuous animation loop for smooth shadows
+		function animate() {
+			// Smoothly interpolate current position toward target mouse position
+			const smoothFactor = 0.15;
+			currentMouseX = lerp(currentMouseX, mouseX, smoothFactor);
+			currentMouseY = lerp(currentMouseY, mouseY, smoothFactor);
 
-        elementData.forEach(data => {
-            // Calculate vector from mouse to element
-            const distanceX = data.centerX - currentMouseX;
-            const distanceY = data.centerY - currentMouseY;
-            const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+			elementData.forEach(data => {
+				// Calculate vector from mouse to element
+				const distanceX = data.centerX - currentMouseX;
+				const distanceY = data.centerY - currentMouseY;
+				const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
 
-            // Prevent division by zero
-            if (distance === 0) return;
+				// Prevent division by zero
+				if (distance === 0) return;
 
-            // Calculate shadow projection (away from mouse)
-            const maxShadowDistance = 200;
-            const shadowStrength = Math.min(1, 800 / distance);
-            const shadowX = (distanceX / distance) * maxShadowDistance * shadowStrength;
-            const shadowY = (distanceY / distance) * maxShadowDistance * shadowStrength;
+				// Calculate shadow projection (away from mouse)
+				const maxShadowDistance = 200;
+				const shadowStrength = Math.min(1, 800 / distance);
+				const shadowX = (distanceX / distance) * maxShadowDistance * shadowStrength;
+				const shadowY = (distanceY / distance) * maxShadowDistance * shadowStrength;
 
-            // Apply shadow to element
-            data.element.style.setProperty('--shadow-x', `${shadowX}px`);
-            data.element.style.setProperty('--shadow-y', `${shadowY}px`);
-        });
+				// Apply shadow to element
+				data.element.style.setProperty('--shadow-x', `${shadowX}px`);
+				data.element.style.setProperty('--shadow-y', `${shadowY}px`);
+			});
 
-        // Continue animation loop
-        requestAnimationFrame(animate);
-    }
+			// Continue animation loop
+			requestAnimationFrame(animate);
+		}
 
-    // Start the animation loop
-    animate();
+		// Start the animation loop
+		animate();
+	} else {
+		// On mobile, add a static shadow class for better readability
+		document.body.classList.add('mobile-shadows');
+	}
 });
 </script>
 
