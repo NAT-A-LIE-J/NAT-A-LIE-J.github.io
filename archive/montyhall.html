@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monty Hall</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #000000;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        function MontyHallGame() {
+            const [gameStarted, setGameStarted] = useState(false);
+            const [numTeams, setNumTeams] = useState(2);
+            const [roundsPerTeam, setRoundsPerTeam] = useState(5);
+            const [teams, setTeams] = useState([]);
+            const [currentTeamIndex, setCurrentTeamIndex] = useState(0);
+            const [currentRound, setCurrentRound] = useState(0);
+            const [totalRounds, setTotalRounds] = useState(10);
+            const [gamePhase, setGamePhase] = useState('setup');
+            
+            const [doors, setDoors] = useState([
+                { id: 1, opened: false, hasPrize: false },
+                { id: 2, opened: false, hasPrize: false },
+                { id: 3, opened: false, hasPrize: false }
+            ]);
+            const [selectedDoor, setSelectedDoor] = useState(null);
+            const [revealedDoor, setRevealedDoor] = useState(null);
+            const [roundResult, setRoundResult] = useState(null);
+
+            const startGame = () => {
+                const newTeams = Array.from({ length: numTeams }, (_, i) => ({
+                    id: i + 1,
+                    name: `Team ${i + 1}`,
+                    score: 0,
+                    stayWins: 0,
+                    stayAttempts: 0,
+                    switchWins: 0,
+                    switchAttempts: 0
+                }));
+                setTeams(newTeams);
+                setTotalRounds(numTeams * roundsPerTeam);
+                setGameStarted(true);
+                startNewRound();
+            };
+
+            const startNewRound = () => {
+                const prizePosition = Math.floor(Math.random() * 3);
+                const newDoors = [
+                    { id: 1, opened: false, hasPrize: prizePosition === 0 },
+                    { id: 2, opened: false, hasPrize: prizePosition === 1 },
+                    { id: 3, opened: false, hasPrize: prizePosition === 2 }
+                ];
+                
+                setDoors(newDoors);
+                setSelectedDoor(null);
+                setRevealedDoor(null);
+                setRoundResult(null);
+                setGamePhase('pick');
+                setCurrentRound(prev => prev + 1);
+            };
+
+            const pickDoor = (doorId) => {
+                if (gamePhase !== 'pick') return;
+                
+                setSelectedDoor(doorId);
+                
+                setTimeout(() => {
+                    const availableDoors = doors.filter(d => 
+                        d.id !== doorId && !d.hasPrize
+                    );
+                    const doorToReveal = availableDoors[Math.floor(Math.random() * availableDoors.length)].id;
+                    
+                    setRevealedDoor(doorToReveal);
+                    const newDoors = doors.map(d => 
+                        d.id === doorToReveal ? { ...d, opened: true } : d
+                    );
+                    setDoors(newDoors);
+                    setGamePhase('decide');
+                }, 600);
+            };
+
+            const makeDecision = (shouldSwitch) => {
+                if (gamePhase !== 'decide') return;
+                
+                let finalDoor = selectedDoor;
+                if (shouldSwitch) {
+                    finalDoor = doors.find(d => !d.opened && d.id !== selectedDoor).id;
+                }
+                
+                setTimeout(() => {
+                    const wonPrize = doors.find(d => d.id === finalDoor).hasPrize;
+                    setRoundResult(wonPrize);
+                    
+                    const newTeams = [...teams];
+                    const team = newTeams[currentTeamIndex];
+                    
+                    if (shouldSwitch) {
+                        team.switchAttempts++;
+                        if (wonPrize) {
+                            team.switchWins++;
+                            team.score++;
+                        }
+                    } else {
+                        team.stayAttempts++;
+                        if (wonPrize) {
+                            team.stayWins++;
+                            team.score++;
+                        }
+                    }
+                    
+                    setTeams(newTeams);
+                    setGamePhase('result');
+                    
+                    const allDoorsOpen = doors.map(d => ({ ...d, opened: true }));
+                    setDoors(allDoorsOpen);
+                }, 600);
+            };
+
+            const nextTurn = () => {
+                if (currentRound >= totalRounds) {
+                    setGamePhase('stats');
+                    return;
+                }
+                
+                const nextTeam = (currentTeamIndex + 1) % numTeams;
+                setCurrentTeamIndex(nextTeam);
+                startNewRound();
+            };
+
+            const resetGame = () => {
+                setGameStarted(false);
+                setGamePhase('setup');
+                setCurrentRound(0);
+                setCurrentTeamIndex(0);
+            };
+
+            if (!gameStarted) {
+                return (
+                    <div className="min-h-screen bg-black flex items-center justify-center p-8">
+                        <div className="max-w-md w-full space-y-8">
+                            <h1 className="text-6xl font-light text-white text-center tracking-wider">
+                                MONTY HALL
+                            </h1>
+                            
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="block text-gray-400 text-sm font-medium mb-2 uppercase tracking-wide">
+                                        Teams
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        max="6"
+                                        value={numTeams}
+                                        onChange={(e) => setNumTeams(Math.max(1, Math.min(6, parseInt(e.target.value) || 1)))}
+                                        className="w-full px-4 py-3 bg-gray-900 border border-gray-700 text-white text-center text-2xl focus:outline-none focus:border-gray-500"
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-gray-400 text-sm font-medium mb-2 uppercase tracking-wide">
+                                        Rounds Per Team
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        max="10"
+                                        value={roundsPerTeam}
+                                        onChange={(e) => setRoundsPerTeam(Math.max(1, Math.min(10, parseInt(e.target.value) || 1)))}
+                                        className="w-full px-4 py-3 bg-gray-900 border border-gray-700 text-white text-center text-2xl focus:outline-none focus:border-gray-500"
+                                    />
+                                </div>
+                                
+                                <div className="text-center text-gray-500 text-sm">
+                                    Total Rounds: {numTeams * roundsPerTeam}
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={startGame}
+                                className="w-full bg-white hover:bg-gray-200 text-black font-medium py-4 text-lg tracking-wide transition-colors"
+                            >
+                                START
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (gamePhase === 'stats') {
+                const sortedTeams = [...teams].sort((a, b) => b.score - a.score);
+                
+                const totalStayAttempts = teams.reduce((sum, t) => sum + t.stayAttempts, 0);
+                const totalStayWins = teams.reduce((sum, t) => sum + t.stayWins, 0);
+                const totalSwitchAttempts = teams.reduce((sum, t) => sum + t.switchAttempts, 0);
+                const totalSwitchWins = teams.reduce((sum, t) => sum + t.switchWins, 0);
+                
+                const stayWinRate = totalStayAttempts > 0 ? ((totalStayWins / totalStayAttempts) * 100).toFixed(1) : 0;
+                const switchWinRate = totalSwitchAttempts > 0 ? ((totalSwitchWins / totalSwitchAttempts) * 100).toFixed(1) : 0;
+
+                return (
+                    <div className="min-h-screen bg-black p-8">
+                        <div className="max-w-4xl mx-auto space-y-12">
+                            <h1 className="text-5xl font-light text-white text-center tracking-wider">
+                                RESULTS
+                            </h1>
+
+                            <div className="grid md:grid-cols-2 gap-8">
+                                <div className="space-y-4">
+                                    <h2 className="text-gray-400 text-sm font-medium uppercase tracking-wide mb-6">
+                                        Final Scores
+                                    </h2>
+                                    {sortedTeams.map((team) => (
+                                        <div
+                                            key={team.id}
+                                            className="flex items-center justify-between p-4 bg-gray-900 border border-gray-800"
+                                        >
+                                            <span className="text-white text-xl font-light">
+                                                {team.name}
+                                            </span>
+                                            <span className="text-white text-3xl font-light">
+                                                {team.score}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="space-y-6">
+                                    <h2 className="text-gray-400 text-sm font-medium uppercase tracking-wide mb-6">
+                                        Strategy Performance
+                                    </h2>
+                                    
+                                    <div className="space-y-6">
+                                        <div>
+                                            <div className="flex items-center justify-between mb-2">
+                                                <span className="text-white text-lg font-light">Stay</span>
+                                                <span className="text-white text-2xl font-light">{stayWinRate}%</span>
+                                            </div>
+                                            <div className="text-sm text-gray-500 mb-2">
+                                                {totalStayWins} / {totalStayAttempts}
+                                            </div>
+                                            <div className="w-full bg-gray-900 h-2">
+                                                <div 
+                                                    className="bg-gray-600 h-2 transition-all duration-1000"
+                                                    style={{width: `${stayWinRate}%`}}
+                                                ></div>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <div className="flex items-center justify-between mb-2">
+                                                <span className="text-white text-lg font-light">Switch</span>
+                                                <span className="text-white text-2xl font-light">{switchWinRate}%</span>
+                                            </div>
+                                            <div className="text-sm text-gray-500 mb-2">
+                                                {totalSwitchWins} / {totalSwitchAttempts}
+                                            </div>
+                                            <div className="w-full bg-gray-900 h-2">
+                                                <div 
+                                                    className="bg-white h-2 transition-all duration-1000"
+                                                    style={{width: `${switchWinRate}%`}}
+                                                ></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={resetGame}
+                                className="w-full bg-white hover:bg-gray-200 text-black font-medium py-4 text-lg tracking-wide transition-colors"
+                            >
+                                RESET
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentTeam = teams[currentTeamIndex];
+
+            return (
+                <div className="min-h-screen bg-black p-8">
+                    <div className="max-w-6xl mx-auto space-y-12">
+                        <div className="flex items-center justify-between">
+                            <h1 className="text-4xl font-light text-white tracking-wider">
+                                MONTY HALL
+                            </h1>
+                            <div className="text-gray-400 text-lg">
+                                Round {currentRound} / {totalRounds}
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                            {teams.map((team, index) => (
+                                <div
+                                    key={team.id}
+                                    className={`p-4 border transition-all ${
+                                        index === currentTeamIndex
+                                            ? 'bg-white border-white'
+                                            : 'bg-gray-900 border-gray-800'
+                                    }`}
+                                >
+                                    <div className={`text-sm mb-2 ${
+                                        index === currentTeamIndex ? 'text-black' : 'text-gray-400'
+                                    }`}>
+                                        {team.name}
+                                    </div>
+                                    <div className={`text-3xl font-light ${
+                                        index === currentTeamIndex ? 'text-black' : 'text-white'
+                                    }`}>
+                                        {team.score}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="text-center py-8 border-t border-b border-gray-800">
+                            <div className="text-2xl font-light text-white mb-2">
+                                {currentTeam.name}
+                            </div>
+                            {gamePhase === 'pick' && (
+                                <div className="text-gray-400">Select a door</div>
+                            )}
+                            {gamePhase === 'decide' && (
+                                <div className="text-gray-400">Stay or switch</div>
+                            )}
+                            {gamePhase === 'result' && roundResult && (
+                                <div className="text-white text-lg">Win</div>
+                            )}
+                            {gamePhase === 'result' && !roundResult && (
+                                <div className="text-gray-500 text-lg">Loss</div>
+                            )}
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-8 max-w-4xl mx-auto py-12">
+                            {doors.map((door) => (
+                                <div key={door.id} className="space-y-4">
+                                    <div className="text-center text-gray-400 text-sm">
+                                        {door.id}
+                                    </div>
+                                    
+                                    <button
+                                        onClick={() => pickDoor(door.id)}
+                                        disabled={gamePhase !== 'pick' || selectedDoor !== null}
+                                        className={`w-full aspect-[2/3] border-2 transition-all ${
+                                            door.opened 
+                                                ? 'bg-black border-gray-900' 
+                                                : 'bg-gray-900 border-gray-700 hover:border-gray-500'
+                                        } ${
+                                            selectedDoor === door.id && !door.opened 
+                                                ? 'border-white' 
+                                                : ''
+                                        }`}
+                                    >
+                                        {door.opened && (
+                                            <div className="flex items-center justify-center h-full">
+                                                {door.hasPrize ? (
+                                                    <div className="text-white text-4xl font-light">PRIZE</div>
+                                                ) : (
+                                                    <div className="text-gray-600 text-4xl font-light">GOAT</div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+
+                        {gamePhase === 'decide' && (
+                            <div className="grid grid-cols-2 gap-6 max-w-2xl mx-auto">
+                                <button
+                                    onClick={() => makeDecision(false)}
+                                    className="bg-gray-900 hover:bg-gray-800 border border-gray-700 text-white py-6 text-lg tracking-wide transition-colors"
+                                >
+                                    STAY
+                                </button>
+                                <button
+                                    onClick={() => makeDecision(true)}
+                                    className="bg-white hover:bg-gray-200 text-black py-6 text-lg tracking-wide transition-colors"
+                                >
+                                    SWITCH
+                                </button>
+                            </div>
+                        )}
+
+                        {gamePhase === 'result' && (
+                            <div className="text-center">
+                                <button
+                                    onClick={nextTurn}
+                                    className="bg-white hover:bg-gray-200 text-black font-medium py-4 px-16 text-lg tracking-wide transition-colors"
+                                >
+                                    {currentRound >= totalRounds ? 'RESULTS' : 'NEXT'}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<MontyHallGame />);
+    </script>
+</body>
+</html>
