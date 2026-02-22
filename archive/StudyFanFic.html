@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Study Scriptorium</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@0;1&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #1a1209;
+    --parchment: #f5ead6;
+    --parchment-dark: #e8d9bc;
+    --gold: #c9922a;
+    --gold-light: #e8b84b;
+    --crimson: #8b1a1a;
+    --muted: #6b5a3e;
+    --shadow: rgba(26,18,9,0.4);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: #120d06;
+    background-image:
+      radial-gradient(ellipse at 20% 20%, rgba(139,75,20,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 80%, rgba(100,40,10,0.10) 0%, transparent 60%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    min-height: 100vh;
+    font-family: 'Crimson Pro', Georgia, serif;
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem 4rem;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    animation: fadeDown 0.9s ease both;
+  }
+
+  .header-ornament {
+    color: var(--gold);
+    font-size: 1.2rem;
+    letter-spacing: 0.5rem;
+    opacity: 0.7;
+    font-family: 'IM Fell English', serif;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 6vw, 4rem);
+    color: var(--parchment);
+    line-height: 1.1;
+    text-shadow: 0 2px 20px rgba(201,146,42,0.4), 0 0 60px rgba(201,146,42,0.1);
+    margin: 0.3rem 0;
+  }
+
+  .subtitle {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    color: var(--gold);
+    font-size: 1.05rem;
+    opacity: 0.85;
+    letter-spacing: 0.03rem;
+  }
+
+  .scroll {
+    background: var(--parchment);
+    background-image:
+      linear-gradient(to bottom, var(--parchment-dark) 0%, var(--parchment) 4%, var(--parchment) 96%, var(--parchment-dark) 100%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+    border-radius: 4px;
+    box-shadow:
+      0 0 0 1px rgba(139,90,20,0.3),
+      0 0 0 3px rgba(139,90,20,0.1),
+      0 8px 40px var(--shadow),
+      0 2px 8px var(--shadow);
+    padding: 2.5rem 2.5rem 2rem;
+    width: 100%;
+    max-width: 700px;
+    animation: fadeUp 0.9s ease 0.15s both;
+  }
+
+  .scroll-section {
+    margin-bottom: 1.6rem;
+  }
+
+  label {
+    display: block;
+    font-family: 'Playfair Display', serif;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12rem;
+    color: var(--muted);
+    margin-bottom: 0.45rem;
+  }
+
+  .label-note {
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.8rem;
+    text-transform: none;
+    letter-spacing: 0;
+    font-style: italic;
+    color: #9a8060;
+    margin-left: 0.4rem;
+  }
+
+  input[type="text"], input[type="password"], textarea, select {
+    width: 100%;
+    background: rgba(255,255,255,0.45);
+    border: 1px solid rgba(139,90,20,0.35);
+    border-bottom: 2px solid rgba(139,90,20,0.5);
+    border-radius: 3px;
+    padding: 0.6rem 0.8rem;
+    font-family: 'Crimson Pro', serif;
+    font-size: 1rem;
+    color: var(--ink);
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    outline: none;
+    resize: vertical;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201,146,42,0.15);
+    background: rgba(255,255,255,0.7);
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  @media (max-width: 520px) { .two-col { grid-template-columns: 1fr; } }
+
+  .divider {
+    border: none;
+    border-top: 1px solid rgba(139,90,20,0.25);
+    margin: 1.8rem 0;
+  }
+
+  button#generate {
+    width: 100%;
+    padding: 0.85rem 2rem;
+    background: var(--crimson);
+    background-image: linear-gradient(135deg, #a02020 0%, #6b1010 100%);
+    color: var(--parchment);
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.08rem;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(139,26,26,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+    transition: transform 0.15s, box-shadow 0.15s, background-image 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  button#generate:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 28px rgba(139,26,26,0.55), inset 0 1px 0 rgba(255,255,255,0.15);
+    background-image: linear-gradient(135deg, #b52525 0%, #7a1515 100%);
+  }
+
+  button#generate:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  button#generate .btn-shimmer {
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+  }
+  button#generate:hover:not(:disabled) .btn-shimmer { transform: translateX(100%); }
+
+  #output-section {
+    display: none;
+    margin-top: 2rem;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  #output-section.visible { display: block; }
+
+  .output-header {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15rem;
+    color: var(--muted);
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .output-header::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(139,90,20,0.25);
+  }
+
+  #story-output {
+    font-family: 'IM Fell English', serif;
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: #2a1f0e;
+    white-space: pre-wrap;
+    min-height: 3rem;
+  }
+
+  #story-output .term-highlight {
+    background: linear-gradient(120deg, rgba(201,146,42,0.25) 0%, rgba(201,146,42,0.15) 100%);
+    border-bottom: 1.5px solid var(--gold);
+    border-radius: 2px;
+    padding: 0 2px;
+    font-style: italic;
+    font-weight: bold;
+    color: #5c3a00;
+    cursor: help;
+    position: relative;
+  }
+
+  .cursor-blink {
+    display: inline-block;
+    width: 2px;
+    height: 1.1em;
+    background: var(--gold);
+    vertical-align: text-bottom;
+    animation: blink 0.8s step-end infinite;
+  }
+
+  .error-msg {
+    color: var(--crimson);
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    padding: 0.6rem 0.8rem;
+    border-left: 3px solid var(--crimson);
+    background: rgba(139,26,26,0.06);
+    border-radius: 0 3px 3px 0;
+    margin-top: 0.8rem;
+  }
+
+  .legend {
+    margin-top: 1.2rem;
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.88rem;
+    color: var(--muted);
+    font-style: italic;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .legend-swatch {
+    display: inline-block;
+    padding: 0 6px;
+    background: linear-gradient(120deg, rgba(201,146,42,0.25), rgba(201,146,42,0.15));
+    border-bottom: 1.5px solid var(--gold);
+    border-radius: 2px;
+    font-style: italic;
+    font-weight: bold;
+    color: #5c3a00;
+    font-size: 0.85rem;
+  }
+
+  footer {
+    margin-top: 3rem;
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    color: rgba(245,234,214,0.2);
+    font-size: 0.85rem;
+    text-align: center;
+    animation: fadeUp 1s ease 0.4s both;
+  }
+
+  @keyframes fadeDown { from { opacity:0; transform: translateY(-16px); } to { opacity:1; transform: none; } }
+  @keyframes fadeUp   { from { opacity:0; transform: translateY(16px);  } to { opacity:1; transform: none; } }
+  @keyframes blink    { 50% { opacity: 0; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
+  <h1>The Study Scriptorium</h1>
+  <p class="subtitle">Turn your flashcards into forbidden fanfiction</p>
+</header>
+
+<div class="scroll">
+
+  <!-- API Key -->
+  <div class="scroll-section">
+    <label>Your Anthropic API Key <span class="label-note">— stays in your browser, never leaves this page</span></label>
+    <input type="password" id="api-key" placeholder="sk-ant-..." autocomplete="off" spellcheck="false" />
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Terms -->
+  <div class="scroll-section">
+    <label>Terms to Memorize <span class="label-note">— one per line, or "term: definition" format</span></label>
+    <textarea id="terms" rows="6" placeholder="mitosis: cell division into two identical daughter cells&#10;ATP: adenosine triphosphate, the cell's energy currency&#10;osmosis&#10;photosynthesis: light energy converted to glucose"></textarea>
+  </div>
+
+  <!-- Fandom + Style -->
+  <div class="two-col">
+    <div class="scroll-section">
+      <label>Fandom / Universe</label>
+      <input type="text" id="fandom" placeholder="e.g. Harry Potter, Naruto, Bridgerton…" />
+    </div>
+    <div class="scroll-section">
+      <label>Story Style</label>
+      <select id="style">
+        <option value="humor">Humor / Parody</option>
+        <option value="romance">Romance / Drama</option>
+        <option value="both">Both (chaotic blend)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Length -->
+  <div class="scroll-section">
+    <label>Story Length</label>
+    <select id="length">
+      <option value="short">Short (~200 words)</option>
+      <option value="medium" selected>Medium (~400 words)</option>
+      <option value="long">Long (~700 words)</option>
+    </select>
+  </div>
+
+  <hr class="divider" />
+
+  <button id="generate">
+    <span class="btn-shimmer"></span>
+    ✦ &nbsp; Conjure the Story &nbsp; ✦
+  </button>
+
+  <div id="error-display"></div>
+
+  <div id="output-section">
+    <hr class="divider" />
+    <div class="output-header">✦ Your Story</div>
+    <div id="story-output"></div>
+    <div class="legend">
+      <span class="legend-swatch">highlighted terms</span> are your study vocabulary — hover for their definition.
+    </div>
+  </div>
+
+</div>
+
+<footer>The ink fades, but the knowledge remains &nbsp;✦</footer>
+
+<script>
+const generateBtn = document.getElementById('generate');
+const storyOutput = document.getElementById('story-output');
+const outputSection = document.getElementById('output-section');
+const errorDisplay = document.getElementById('error-display');
+
+generateBtn.addEventListener('click', async () => {
+  errorDisplay.innerHTML = '';
+
+  const apiKey = document.getElementById('api-key').value.trim();
+  const termsRaw = document.getElementById('terms').value.trim();
+  const fandom = document.getElementById('fandom').value.trim();
+  const style = document.getElementById('style').value;
+  const length = document.getElementById('length').value;
+
+  // Validation
+  if (!apiKey) return showError('Please enter your Anthropic API key.');
+  if (!termsRaw) return showError('Please enter at least one term to study.');
+
+  // Parse terms
+  const termsList = termsRaw.split('\n').filter(l => l.trim()).map(line => {
+    const [term, ...defParts] = line.split(':');
+    return { term: term.trim(), definition: defParts.join(':').trim() || null };
+  });
+
+  const termsForPrompt = termsList.map(t =>
+    t.definition ? `- ${t.term}: ${t.definition}` : `- ${t.term}`
+  ).join('\n');
+
+  const lengthGuide = { short: '200', medium: '400', long: '700' }[length];
+  const styleGuide = {
+    humor: 'comedic and absurdist — the characters are aware of how silly the situation is, with running jokes and punchlines',
+    romance: 'romantic and emotionally dramatic — slow burn tension, meaningful glances, heartfelt confessions',
+    both: 'a chaotic blend of romance and comedy — emotionally earnest moments that are accidentally hilarious, or jokes that accidentally turn tender'
+  }[style];
+
+  const fandomLine = fandom
+    ? `Set the story in the world of "${fandom}", using characters and settings from that universe.`
+    : 'Create your own original fantasy/drama world and characters.';
+
+  const systemPrompt = `You are a creative writing assistant who specializes in educational fanfiction. Your stories are memorable, engaging, and cleverly embed vocabulary terms so readers naturally absorb their meanings through context. You write in a literary style appropriate to the genre.`;
+
+  const userPrompt = `Write a ${lengthGuide}-word fanfiction story that naturally and memorably incorporates ALL of the following study terms. The story should be ${styleGuide}. ${fandomLine}
+
+STUDY TERMS TO INCLUDE:
+${termsForPrompt}
+
+RULES:
+1. Every single term must appear in the story, used correctly and in a way that makes its meaning clear from context.
+2. Wrap each study term in the story with [[ ]] brackets like this: [[mitosis]] or [[ATP]]. This is critical — do not skip this.
+3. Don't define terms awkwardly ("as you know, mitosis means...") — let the story context make the meaning clear naturally.
+4. Make it genuinely fun and memorable so the reader actually wants to finish it.
+5. Output ONLY the story text. No title, no notes, no preamble.`;
+
+  generateBtn.disabled = true;
+  generateBtn.textContent = '✦ Conjuring…';
+  storyOutput.innerHTML = '';
+  outputSection.classList.add('visible');
+
+  // Add blinking cursor
+  const cursor = document.createElement('span');
+  cursor.className = 'cursor-blink';
+  storyOutput.appendChild(cursor);
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-opus-4-6',
+        max_tokens: 1200,
+        stream: true,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userPrompt }]
+      })
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err?.error?.message || `API error ${response.status}`);
+    }
+
+    // Stream the response
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let fullText = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value, { stream: true });
+      const lines = chunk.split('\n').filter(l => l.startsWith('data: '));
+
+      for (const line of lines) {
+        const data = line.slice(6);
+        if (data === '[DONE]') continue;
+        try {
+          const parsed = JSON.parse(data);
+          if (parsed.type === 'content_block_delta' && parsed.delta?.text) {
+            fullText += parsed.delta.text;
+            // Re-render with cursor at end
+            storyOutput.innerHTML = highlightTerms(fullText, termsList) + '<span class="cursor-blink"></span>';
+          }
+        } catch {}
+      }
+    }
+
+    // Final render without cursor
+    storyOutput.innerHTML = highlightTerms(fullText, termsList);
+
+  } catch (err) {
+    storyOutput.innerHTML = '';
+    showError(err.message || 'Something went wrong. Check your API key and try again.');
+  } finally {
+    generateBtn.disabled = false;
+    generateBtn.innerHTML = '<span class="btn-shimmer"></span>✦ &nbsp; Conjure the Story &nbsp; ✦';
+  }
+});
+
+function highlightTerms(text, termsList) {
+  // Replace [[term]] markers with highlighted spans
+  return text.replace(/\[\[(.+?)\]\]/g, (match, term) => {
+    const found = termsList.find(t => t.term.toLowerCase() === term.toLowerCase());
+    const title = found?.definition ? `${found.term}: ${found.definition}` : found?.term || term;
+    return `<span class="term-highlight" title="${escapeHtml(title)}">${escapeHtml(term)}</span>`;
+  }).replace(/\n/g, '<br>');
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showError(msg) {
+  errorDisplay.innerHTML = `<div class="error-msg">⚠ ${escapeHtml(msg)}</div>`;
+}
+</script>
+</body>
+</html>
