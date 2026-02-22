@@ -38,21 +38,16 @@ body {
 	overflow-x: hidden;
 	
 	/* SCROLL SNAP ON BODY */
-	scroll-snap-type: y mandatory;
-	scroll-snap-stop: normal;
-	scroll-padding-top: 12vh;
-	scroll-padding-bottom: 12vh;
+	scroll-snap-type: y proximity;
+	scroll-behavior: smooth;
+	scroll-padding-top: 6vh;
 	height: 100vh;
 	overflow-y: scroll;
-	
-	/* Prevent overscroll bounce on iOS */
-	-webkit-overflow-scrolling: touch;
 }
 
-/* Mobile: gentler snapping */
+/* Mobile font size */
 @media (max-width: 768px) {
 	body {
-		scroll-snap-type: y proximity;
 		font-size: 14pt;
 	}
 }
@@ -70,8 +65,7 @@ body.nav-open {
 	align-items: center;
 	justify-content: center;
 	scroll-snap-align: start;
-	scroll-margin-top: 12vh;
-	scroll-margin-bottom: 12vh;
+	scroll-margin-top: 6vh;
 	position: relative;
 }
 
@@ -195,7 +189,8 @@ h3 { font-size: 1.1em; }
 
 /* Apply shadow effect to specific text elements */
 .shadow-text {
-	text-shadow: 
+	will-change: text-shadow;
+	text-shadow:
 		var(--shadow-x, 0px) var(--shadow-y, 0px) 30px rgba(0, 0, 0, 0.7),
 		var(--shadow-x, 0px) var(--shadow-y, 0px) 60px rgba(0, 0, 0, 0.5),
 		var(--shadow-x, 0px) var(--shadow-y, 0px) 90px rgba(0, 0, 0, 0.3);
@@ -203,7 +198,8 @@ h3 { font-size: 1.1em; }
 
 /* Lighter shadow for smaller text */
 .shadow-text-light {
-	text-shadow: 
+	will-change: text-shadow;
+	text-shadow:
 		var(--shadow-x, 0px) var(--shadow-y, 0px) 20px rgba(0, 0, 0, 0.5),
 		var(--shadow-x, 0px) var(--shadow-y, 0px) 40px rgba(0, 0, 0, 0.3),
 		var(--shadow-x, 0px) var(--shadow-y, 0px) 60px rgba(0, 0, 0, 0.2);

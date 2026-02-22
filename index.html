@@ -333,7 +333,9 @@ document.addEventListener('DOMContentLoaded', function() {
 				elementData.push({
 					element: element,
 					centerX: rect.left + rect.width / 2,
-					centerY: rect.top + rect.height / 2
+					centerY: rect.top + rect.height / 2,
+					currentShadowX: 0,
+					currentShadowY: 0
 				});
 			});
 		}
@@ -357,7 +359,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		// Continuous animation loop for smooth shadows
 		function animate() {
 			// Smoothly interpolate current position toward target mouse position
-			const smoothFactor = 0.15;
+			const smoothFactor = 0.05;
 			currentMouseX = lerp(currentMouseX, mouseX, smoothFactor);
 			currentMouseY = lerp(currentMouseY, mouseY, smoothFactor);
 
@@ -373,12 +375,16 @@ document.addEventListener('DOMContentLoaded', function() {
 				// Calculate shadow projection (away from mouse)
 				const maxShadowDistance = 200;
 				const shadowStrength = Math.min(1, 800 / distance);
-				const shadowX = (distanceX / distance) * maxShadowDistance * shadowStrength;
-				const shadowY = (distanceY / distance) * maxShadowDistance * shadowStrength;
+				const targetShadowX = (distanceX / distance) * maxShadowDistance * shadowStrength;
+				const targetShadowY = (distanceY / distance) * maxShadowDistance * shadowStrength;
+
+				// Lerp shadow values for an additional layer of smoothing
+				data.currentShadowX = lerp(data.currentShadowX, targetShadowX, 0.07);
+				data.currentShadowY = lerp(data.currentShadowY, targetShadowY, 0.07);
 
 				// Apply shadow to element
-				data.element.style.setProperty('--shadow-x', `${shadowX}px`);
-				data.element.style.setProperty('--shadow-y', `${shadowY}px`);
+				data.element.style.setProperty('--shadow-x', `${data.currentShadowX}px`);
+				data.element.style.setProperty('--shadow-y', `${data.currentShadowY}px`);
 			});
 
 			// Continue animation loop
