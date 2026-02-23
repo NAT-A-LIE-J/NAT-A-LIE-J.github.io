@@ -468,6 +468,8 @@ body.mobile-shadows .shadow-text-light {
 .linkedin-carousel-wrapper {
 	width: 100%;
 	max-width: 1100px;
+	/* Clip the overflowing cards so the track scrolls inside */
+	overflow: hidden;
 }
 
 /* Scrollable track */
@@ -481,7 +483,7 @@ body.mobile-shadows .shadow-text-light {
 	/* Hide scrollbar but keep functionality */
 	scrollbar-width: none;
 	-ms-overflow-style: none;
-	flex: 1;
+	width: 100%;
 	/* Prevent the horizontal scroll from triggering vertical page scroll */
 	touch-action: pan-x;
 }
