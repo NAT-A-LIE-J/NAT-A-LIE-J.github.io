@@ -454,7 +454,8 @@ body.mobile-shadows .shadow-text-light {
 
 .projects-heading {
 	font-size: 2.5em;
-	text-align: center;
+	text-align: left;
+	align-self: flex-start;
 	margin: 0;
 }
 
@@ -501,8 +502,8 @@ body.mobile-shadows .shadow-text-light {
 	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
 	transition: box-shadow 0.3s ease, transform 0.3s ease;
 	/* Fixed card height so cards are uniform — iframe scrolls inside */
-	height: min(72vh, 700px);
-	width: 504px;
+	height: min(54vh, 468px);
+	width: 378px;
 	overflow-y: auto;
 	-webkit-overflow-scrolling: touch;
 }
@@ -515,14 +516,14 @@ body.mobile-shadows .shadow-text-light {
 .linkedin-card iframe {
 	display: block;
 	/* Let iframe be its natural height; card clips/scrolls it */
-	width: 504px !important;
+	width: 100% !important;
 }
 
 /* Mobile: narrower cards */
 @media (max-width: 600px) {
 	.linkedin-card {
-		width: calc(100vw - 80px);
-		height: min(65vh, 560px);
+		width: calc(100vw - 58px);
+		height: min(49.5vh, 432px);
 	}
 
 	.linkedin-card iframe {
