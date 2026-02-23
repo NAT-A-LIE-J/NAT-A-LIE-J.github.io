@@ -45,64 +45,58 @@
 
 		<!-- Projects -->
 		<section id="one" class="fullscreen-panel">
-			<div class="inner">
-				<div class="features">
+			<div class="projects-outer">
+				<h2 class="shadow-text projects-heading">Projects</h2>
 
-						<h1 class="shadow-text">  <span class="wave-emoji">compiling...</span></h1>
-					<!-- 
+				<div class="linkedin-carousel-wrapper">
+					<button class="carousel-btn carousel-btn--prev" aria-label="Previous post">&#8592;</button>
 
-					<section onclick="window.open('https://natalielamjohnson.com/archive/3Dmodel.html', '_blank')">
-						<div class="header-container">
-							<span class="icon solid major fa-cube"></span>
-							<h3>Architectural Social Commentary in 3D</h3>
-						</div>
-						<p>Reimagined Frank Lloyd Wright's Fallingwater as urban tenement housing—a provocative 3D critique of class inequality in American architecture. This digital art piece challenges romanticized notions of "architectural greatness" through immersive visual storytelling.</p>
-					</section>
+					<div class="linkedin-carousel" id="linkedinCarousel">
 
-					<section onclick="window.open('https://docs.google.com/presentation/d/17xFqjXLvbOq0s87kzbV-SvrH8ix-Jsj-vMdtUNMjwhM/edit?usp=sharing', '_blank')">
-						<div class="header-container">
-							<span class="icon solid major fa-chart-line"></span>
-							<h3>Johnson & Johnson and ... Johnson?</h3>
+						<!-- Post 1 -->
+						<div class="linkedin-card">
+							<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7424247700897890305?collapsed=1"
+								height="670" width="504" frameborder="0" allowfullscreen=""
+								title="LinkedIn Post 1" loading="lazy"></iframe>
 						</div>
-						<p>Competed in J&J's business case competition, leading financial analysis and strategic recommendations. See how we tackled real-world healthcare challenges!</p>
-					</section>
-					
-					<section onclick="window.open('https://docs.google.com/presentation/d/1DiZtIaW2MjotBYbjySmcJsgWE2mZRb54WOgVGoIYTJ4/edit?usp=sharing', '_blank')">
-						<div class="header-container">
-							<span class="icon solid major fa-heartbeat"></span>
-							<h3>Global Health Tech & Budget Strategy</h3>
-						</div>
-						<p>Led technical implementation and budget planning for Team AION for 2025 Emory Global Health Case Competition. Our solution addresses real healthcare access challenges.</p>
-					</section>
-					
-					<section onclick="window.open('https://www.instagram.com/trojanaitalks/', '_blank')">
-						<div class="header-container">
-							<span class="icon solid major fa-brain"></span>
-							<h3>Making AI Accessible on Trojan AI Talks</h3>
-						</div>
-						<p>Creating engaging 1-minute videos that break down complex AI concepts. My feature explores AI applications in finance—just a taste of my deeper expertise presentation in the field.</p>
-					</section>
 
-					<section onclick="window.open('https://www.instagram.com/datasc.official/', '_blank')">
-						<div class="header-container">
-							<span class="icon solid major fa-chart-bar"></span>
-							<h3> DataSC Operations Officer</h3>
+						<!-- Post 2 -->
+						<div class="linkedin-card">
+							<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7402529678072483840?collapsed=1"
+								height="1445" width="504" frameborder="0" allowfullscreen=""
+								title="LinkedIn Post 2" loading="lazy"></iframe>
 						</div>
-						<p>Driving operational strategy for USC's premier data science club. I amplify our voice across social platforms and coordinate high-profile speaker events—our upcoming Perplexity event is just the beginning.</p>
-					</section>
-					
-					<section onclick="alert('Water polo adventures! 🤽‍♀️')">
-						<div class="header-container">
-							<span class="icon solid major fa-trophy"></span>
-							<h3>USC Water Polo Champion</h3>
+
+						<!-- Post 3 -->
+						<div class="linkedin-card">
+							<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7359631593314963459?collapsed=1"
+								height="895" width="504" frameborder="0" allowfullscreen=""
+								title="LinkedIn Post 3" loading="lazy"></iframe>
 						</div>
-						<p>Competing with USC Women's Intramural Water Polo while cheering on our #1 ranked varsity team. Balance and teamwork translate everywhere—from pool to desk.</p>
-					</section>
 
-					-->
+						<!-- Post 4 -->
+						<div class="linkedin-card">
+							<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7346309270943997952?collapsed=1"
+								height="895" width="504" frameborder="0" allowfullscreen=""
+								title="LinkedIn Post 4" loading="lazy"></iframe>
+						</div>
 
-				</div>
-			</div>
+						<!-- Post 5 -->
+						<div class="linkedin-card">
+							<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7362889845855170560?collapsed=1"
+								height="670" width="504" frameborder="0" allowfullscreen=""
+								title="LinkedIn Post 5" loading="lazy"></iframe>
+						</div>
+
+					</div><!-- /.linkedin-carousel -->
+
+					<button class="carousel-btn carousel-btn--next" aria-label="Next post">&#8594;</button>
+				</div><!-- /.linkedin-carousel-wrapper -->
+
+				<!-- Dot indicators -->
+				<div class="carousel-dots" id="carouselDots"></div>
+
+			</div><!-- /.projects-outer -->
 		</section>
 
 		<!-- Resume Section -->
@@ -164,6 +158,60 @@
 		<script src="assets/js/breakpoints.min.js"></script>
 		<script src="assets/js/util.js"></script>
 		<script src="assets/js/main.js"></script>
+
+		<script>
+// LinkedIn Carousel
+document.addEventListener('DOMContentLoaded', function() {
+	const carousel = document.getElementById('linkedinCarousel');
+	const prevBtn  = document.querySelector('.carousel-btn--prev');
+	const nextBtn  = document.querySelector('.carousel-btn--next');
+	const dotsContainer = document.getElementById('carouselDots');
+
+	if (!carousel) return;
+
+	const cards = carousel.querySelectorAll('.linkedin-card');
+	const total = cards.length;
+
+	// Build dots
+	cards.forEach((_, i) => {
+		const dot = document.createElement('button');
+		dot.className = 'carousel-dot';
+		dot.setAttribute('aria-label', 'Go to post ' + (i + 1));
+		dot.addEventListener('click', () => scrollToCard(i));
+		dotsContainer.appendChild(dot);
+	});
+
+	function getCardWidth() {
+		if (!cards[0]) return 0;
+		const gap = parseInt(getComputedStyle(carousel).gap) || 24;
+		return cards[0].offsetWidth + gap;
+	}
+
+	function currentIndex() {
+		return Math.round(carousel.scrollLeft / getCardWidth());
+	}
+
+	function scrollToCard(index) {
+		index = Math.max(0, Math.min(total - 1, index));
+		carousel.scrollTo({ left: index * getCardWidth(), behavior: 'smooth' });
+	}
+
+	function updateDots() {
+		const idx = currentIndex();
+		dotsContainer.querySelectorAll('.carousel-dot').forEach((dot, i) => {
+			dot.classList.toggle('active', i === idx);
+		});
+		prevBtn.disabled = idx === 0;
+		nextBtn.disabled = idx === total - 1;
+	}
+
+	prevBtn.addEventListener('click', () => scrollToCard(currentIndex() - 1));
+	nextBtn.addEventListener('click', () => scrollToCard(currentIndex() + 1));
+	carousel.addEventListener('scroll', updateDots, { passive: true });
+
+	updateDots();
+});
+</script>
 
 		<script>
 // Hamburger Menu Toggle

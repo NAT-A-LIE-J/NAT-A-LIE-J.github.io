@@ -440,7 +440,158 @@ body.mobile-shadows .shadow-text-light {
 }
 
 /* =========================
-   Features Grid
+   LinkedIn Carousel (Projects)
+   ========================= */
+
+.projects-outer {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1.5em;
+	padding: 0 1em;
+}
+
+.projects-heading {
+	font-size: 2.5em;
+	text-align: center;
+	margin: 0;
+}
+
+@media (max-width: 768px) {
+	.projects-heading {
+		font-size: 1.8em;
+	}
+}
+
+/* Wrapper: arrows + track */
+.linkedin-carousel-wrapper {
+	display: flex;
+	align-items: center;
+	gap: 1em;
+	width: 100%;
+	max-width: 1100px;
+}
+
+/* Scrollable track */
+.linkedin-carousel {
+	display: flex;
+	gap: 24px;
+	overflow-x: scroll;
+	scroll-snap-type: x mandatory;
+	-webkit-overflow-scrolling: touch;
+	scroll-behavior: smooth;
+	/* Hide scrollbar but keep functionality */
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+	flex: 1;
+	/* Prevent the horizontal scroll from triggering vertical page scroll */
+	touch-action: pan-x;
+}
+
+.linkedin-carousel::-webkit-scrollbar {
+	display: none;
+}
+
+/* Individual card */
+.linkedin-card {
+	scroll-snap-align: center;
+	flex-shrink: 0;
+	border-radius: 12px;
+	overflow: hidden;
+	background: rgba(255, 255, 255, 0.6);
+	backdrop-filter: blur(8px);
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+	transition: box-shadow 0.3s ease, transform 0.3s ease;
+	/* Fixed card height so cards are uniform — iframe scrolls inside */
+	height: min(72vh, 700px);
+	width: 504px;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+.linkedin-card:hover {
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+	transform: translateY(-2px);
+}
+
+.linkedin-card iframe {
+	display: block;
+	/* Let iframe be its natural height; card clips/scrolls it */
+	width: 504px !important;
+}
+
+/* Mobile: narrower cards */
+@media (max-width: 600px) {
+	.linkedin-card {
+		width: calc(100vw - 80px);
+		height: min(65vh, 560px);
+	}
+
+	.linkedin-card iframe {
+		width: 100% !important;
+	}
+}
+
+/* Arrow buttons */
+.carousel-btn {
+	background: rgba(255, 255, 255, 0.7);
+	border: 2px solid #333;
+	border-radius: 50%;
+	width: 44px;
+	height: 44px;
+	font-size: 18px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	transition: background 0.2s ease, transform 0.2s ease;
+	color: #333;
+}
+
+.carousel-btn:hover:not(:disabled) {
+	background: rgba(74, 144, 226, 0.2);
+	transform: scale(1.1);
+}
+
+.carousel-btn:disabled {
+	opacity: 0.3;
+	cursor: default;
+}
+
+/* Mobile: hide arrows (swipe instead) */
+@media (max-width: 600px) {
+	.carousel-btn {
+		display: none;
+	}
+}
+
+/* Dot indicators */
+.carousel-dots {
+	display: flex;
+	gap: 8px;
+	justify-content: center;
+}
+
+.carousel-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	border: none;
+	background: rgba(51, 51, 51, 0.3);
+	cursor: pointer;
+	padding: 0;
+	transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.carousel-dot.active {
+	background: #333;
+	transform: scale(1.3);
+}
+
+/* =========================
+   Features Grid (archived)
    ========================= */
 
 .features {
