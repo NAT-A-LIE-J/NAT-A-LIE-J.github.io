@@ -49,8 +49,6 @@
 				<h2 class="shadow-text projects-heading">Projects</h2>
 
 				<div class="linkedin-carousel-wrapper">
-					<button class="carousel-btn carousel-btn--prev" aria-label="Previous post">&#8592;</button>
-
 					<div class="linkedin-carousel" id="linkedinCarousel">
 
 						<!-- Post 1 -->
@@ -89,12 +87,7 @@
 						</div>
 
 					</div><!-- /.linkedin-carousel -->
-
-					<button class="carousel-btn carousel-btn--next" aria-label="Next post">&#8594;</button>
 				</div><!-- /.linkedin-carousel-wrapper -->
-
-				<!-- Dot indicators -->
-				<div class="carousel-dots" id="carouselDots"></div>
 
 			</div><!-- /.projects-outer -->
 		</section>
@@ -159,61 +152,7 @@
 		<script src="assets/js/util.js"></script>
 		<script src="assets/js/main.js"></script>
 
-		<script>
-// LinkedIn Carousel
-document.addEventListener('DOMContentLoaded', function() {
-	const carousel = document.getElementById('linkedinCarousel');
-	const prevBtn  = document.querySelector('.carousel-btn--prev');
-	const nextBtn  = document.querySelector('.carousel-btn--next');
-	const dotsContainer = document.getElementById('carouselDots');
-
-	if (!carousel) return;
-
-	const cards = carousel.querySelectorAll('.linkedin-card');
-	const total = cards.length;
-
-	// Build dots
-	cards.forEach((_, i) => {
-		const dot = document.createElement('button');
-		dot.className = 'carousel-dot';
-		dot.setAttribute('aria-label', 'Go to post ' + (i + 1));
-		dot.addEventListener('click', () => scrollToCard(i));
-		dotsContainer.appendChild(dot);
-	});
-
-	function getCardWidth() {
-		if (!cards[0]) return 0;
-		const gap = parseInt(getComputedStyle(carousel).gap) || 24;
-		return cards[0].offsetWidth + gap;
-	}
-
-	function currentIndex() {
-		return Math.round(carousel.scrollLeft / getCardWidth());
-	}
-
-	function scrollToCard(index) {
-		index = Math.max(0, Math.min(total - 1, index));
-		carousel.scrollTo({ left: index * getCardWidth(), behavior: 'smooth' });
-	}
-
-	function updateDots() {
-		const idx = currentIndex();
-		dotsContainer.querySelectorAll('.carousel-dot').forEach((dot, i) => {
-			dot.classList.toggle('active', i === idx);
-		});
-		prevBtn.disabled = idx === 0;
-		nextBtn.disabled = idx === total - 1;
-	}
-
-	prevBtn.addEventListener('click', () => scrollToCard(currentIndex() - 1));
-	nextBtn.addEventListener('click', () => scrollToCard(currentIndex() + 1));
-	carousel.addEventListener('scroll', updateDots, { passive: true });
-
-	updateDots();
-});
-</script>
-
-		<script>
+				<script>
 // Hamburger Menu Toggle
 document.addEventListener('DOMContentLoaded', function() {
 	const hamburger = document.querySelector('.hamburger');
