@@ -8,398 +8,159 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1" />
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-		<link rel="stylesheet" href="assets/css/maincolorsredone.css" />
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Permanent+Marker&display=swap" rel="stylesheet">
+		<link rel="stylesheet" href="assets/css/graphpaper.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 	</head>
 	<body class="is-preload">
 
-		<!-- Top Navigation Header -->
-		<header class="top-header">
-			<div class="site-title"> <a href="https://natalielamjohnson.com/"> NATALIE LAM JOHNSON</a>  </div>
-			
-			<!-- Hamburger Menu Button (Mobile Only) -->
-			<button class="hamburger" aria-label="Menu" aria-expanded="false">
-				<span class="hamburger-line"></span>
-				<span class="hamburger-line"></span>
-				<span class="hamburger-line"></span>
-			</button>
-			
-			<nav class="top-navigation">
-				<a href="#one" class="nav-link">Projects</a>
-				<a href="#two" class="nav-link">Resume</a>
-				<a href="#three" class="nav-link">Contact</a>
-			</nav>
-		</header>
+		<a href="#intro" class="site-mark">NATALIE LAM JOHNSON</a>
 
-		<!-- Intro Section -->
-		<section id="intro" class="fullscreen-panel">
-			<div class="inner">
+		<nav class="todo-nav" aria-label="Section navigation">
+			<ul class="todo-list">
+				<li><button class="todo-item" data-index="0">Intro</button></li>
+				<li><button class="todo-item" data-index="1">Projects</button></li>
+				<li><button class="todo-item" data-index="2">Resume</button></li>
+				<li><button class="todo-item" data-index="3">Contact</button></li>
+			</ul>
+			<button class="todo-overview" data-index="4">+ overview</button>
+		</nav>
 
-				<h1 class="shadow-text intro-hi">Hi, </h1>
-				<h1 class="shadow-text"> I'm Natalie Lam Johnson.</h1>
+		<div class="scroll-track" id="scrollTrack">
 
-			<p class="shadow-text-light"> <a href="https://www.marshall.usc.edu/programs/undergraduate-programs/undergraduate-degrees/bs-artificial-intelligence-for-business-buai"> AI for Business student @ USC. </a> Find me at the intersection of tech & people. </p> 
-
+			<!-- Sticky FLIP stage (desktop only); stays pinned to the viewport
+			     while the snap-points below it drive real scroll/scroll-snap. -->
+			<div id="stage" data-mode="solo">
+				<div id="stage-grid"></div>
 			</div>
-		</section>
 
-		<!-- Projects -->
-		<section id="one" class="fullscreen-panel">
-			<div class="projects-outer">
-				<h2 class="shadow-text projects-heading">projects compiling...</h2>
+			<!-- Overview -->
+			<section class="snap-point" id="intro">
+				<div class="box" data-box="overview">
+					<div class="box-inner">
+						<h1 class="box-heading intro-hi">Hi, </h1>
+						<h1 class="box-heading"> I'm Natalie Lam Johnson.</h1>
 
-				<div class="linkedin-carousel-wrapper">
-					<div class="linkedin-carousel" id="linkedinCarousel">
-					<!-- Post 9 -->
-					<div class="linkedin-card">
-						<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7457253319120691201?collapsed=1" height="628" width="504" frameborder="0" allowfullscreen="" title="LinkedIn Post 9" loading="lazy"></iframe>
+						<p> <a href="https://www.marshall.usc.edu/programs/undergraduate-programs/undergraduate-degrees/bs-artificial-intelligence-for-business-buai"> AI for Business student @ USC. </a> Find me at the intersection of tech & people. </p>
 					</div>
-					<!-- Post 8 -->
-					<div class="linkedin-card">
-						<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7454037749054996480" height="1027" width="504" frameborder="0" allowfullscreen="" title="LinkedIn Post 8" loading="lazy"></iframe>
+				</div>
+			</section>
+
+			<!-- Projects -->
+			<section class="snap-point" id="one">
+				<div class="box" data-box="projects">
+					<div class="box-inner">
+						<div class="projects-outer">
+							<h2 class="box-heading projects-heading">things i've made</h2>
+
+							<div class="linkedin-carousel-wrapper">
+								<div class="linkedin-carousel" id="linkedinCarousel">
+								<!-- Post 9 -->
+								<div class="linkedin-card">
+									<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7457253319120691201?collapsed=1" height="628" width="504" frameborder="0" allowfullscreen="" title="LinkedIn Post 9" loading="lazy"></iframe>
+								</div>
+								<!-- Post 8 -->
+								<div class="linkedin-card">
+									<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7454037749054996480" height="1027" width="504" frameborder="0" allowfullscreen="" title="LinkedIn Post 8" loading="lazy"></iframe>
+								</div>
+								<!-- Post 7 -->
+								<div class="linkedin-card">
+									<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7449877841741258753?collapsed=1" height="421" width="504" frameborder="0" allowfullscreen="" title="LinkedIn Post 7" loading="lazy"></iframe>
+								</div>
+									<!-- Post 6 -->
+									<div class="linkedin-card">
+										<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7441931949037936640?collapsed=1"
+										height="670" width="504" frameborder="0" allowfullscreen=""
+										title="LinkedIn Post 6" loading="lazy"></iframe>
+									</div>
+
+									<!-- Post 5 -->
+									<div class="linkedin-card">
+										<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7424247700897890305?collapsed=1"
+											height="670" width="504" frameborder="0" allowfullscreen=""
+											title="LinkedIn Post 5" loading="lazy"></iframe>
+									</div>
+
+									<!-- Post 4 -->
+									<div class="linkedin-card">
+										<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7402529678072483840?collapsed=1"
+											height="1445" width="504" frameborder="0" allowfullscreen=""
+											title="LinkedIn Post 4" loading="lazy"></iframe>
+									</div>
+
+									<!-- Post 3 -->
+									<div class="linkedin-card">
+										<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7359631593314963459?collapsed=1"
+											height="895" width="504" frameborder="0" allowfullscreen=""
+											title="LinkedIn Post 3" loading="lazy"></iframe>
+									</div>
+
+									<!-- Post 2 -->
+									<div class="linkedin-card">
+										<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7346309270943997952?collapsed=1"
+											height="895" width="504" frameborder="0" allowfullscreen=""
+											title="LinkedIn Post 2" loading="lazy"></iframe>
+									</div>
+
+									<!-- Post 1 -->
+									<div class="linkedin-card">
+										<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7362889845855170560?collapsed=1"
+											height="670" width="504" frameborder="0" allowfullscreen=""
+											title="LinkedIn Post 1" loading="lazy"></iframe>
+									</div>
+
+								</div><!-- /.linkedin-carousel -->
+							</div><!-- /.linkedin-carousel-wrapper -->
+
+						</div><!-- /.projects-outer -->
 					</div>
-					<!-- Post 7 -->
-					<div class="linkedin-card">
-						<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7449877841741258753?collapsed=1" height="421" width="504" frameborder="0" allowfullscreen="" title="LinkedIn Post 7" loading="lazy"></iframe>
-					</div>
-						<!-- Post 6 -->
-						<div class="linkedin-card">
-							<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7441931949037936640?collapsed=1" 
-							height="670" width="504" frameborder="0" allowfullscreen="" 
-							title="LinkedIn Post 6" loading="lazy"></iframe>
-						</div>
+				</div>
+			</section>
 
-						<!-- Post 5 -->
-						<div class="linkedin-card">
-							<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7424247700897890305?collapsed=1"
-								height="670" width="504" frameborder="0" allowfullscreen=""
-								title="LinkedIn Post 5" loading="lazy"></iframe>
-						</div>
-
-						<!-- Post 4 -->
-						<div class="linkedin-card">
-							<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7402529678072483840?collapsed=1"
-								height="1445" width="504" frameborder="0" allowfullscreen=""
-								title="LinkedIn Post 4" loading="lazy"></iframe>
-						</div>
-
-						<!-- Post 3 -->
-						<div class="linkedin-card">
-							<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7359631593314963459?collapsed=1"
-								height="895" width="504" frameborder="0" allowfullscreen=""
-								title="LinkedIn Post 3" loading="lazy"></iframe>
-						</div>
-
-						<!-- Post 2 -->
-						<div class="linkedin-card">
-							<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7346309270943997952?collapsed=1"
-								height="895" width="504" frameborder="0" allowfullscreen=""
-								title="LinkedIn Post 2" loading="lazy"></iframe>
-						</div>
-
-						<!-- Post 1 -->
-						<div class="linkedin-card">
-							<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:share:7362889845855170560?collapsed=1"
-								height="670" width="504" frameborder="0" allowfullscreen=""
-								title="LinkedIn Post 1" loading="lazy"></iframe>
-						</div>
-
-						
-
-					</div><!-- /.linkedin-carousel -->
-				</div><!-- /.linkedin-carousel-wrapper -->
-
-			</div><!-- /.projects-outer -->
-		</section>
-
-		<!-- Resume Section -->
-		<section id="two" class="fullscreen-panel">
-			<div class="center-content">
-				<ul class="actions">
-					<li>
-						<div class="resume-button-container">
-							<a href="LamJohnson_Natalie_Resume.pdf" class="button large" target="_blank">Resume</a>
-							
-							<!-- Confetti particles -->
-							<div class="confetti-particle"></div>
-							<div class="confetti-particle"></div>
-							<div class="confetti-particle"></div>
-							<div class="confetti-particle"></div>
-							<div class="confetti-particle"></div>
-							<div class="confetti-particle"></div>
-							<div class="confetti-particle"></div>
-							<div class="confetti-particle"></div>
-						</div>
-					</li>
-				</ul>
-			</div>
-		</section>
-
-		<!-- Contact Section -->
-		<section id="three" class="fullscreen-panel">
-			<div class="inner">
-				<div class="contact-links-container">
-					<h3 class="connect-heading shadow-text">Let's Connect<span class="connect-dots"><span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></span></h3>
-					
-					<div class="contact-hover-zone">
-						<ul class="icons">
+			<!-- Resume -->
+			<section class="snap-point" id="two">
+				<div class="box" data-box="resume">
+					<div class="box-inner">
+						<ul class="actions">
 							<li>
-								<a href="mailto:natalie.l.johnson@usc.edu" class="icon solid fa-envelope" target="_blank">
-									<span class="label">Email</span>
-								</a>
-								<span class="copy-text shadow-text-light">
-									natalie.l.johnson@usc.edu
-								</span>
-							</li>
-							<li><span class="separator">|</span></li>
-							<li>
-								<a href="https://www.linkedin.com/in/natalie-lam-johnson" class="icon brands fa-linkedin-in" target="_blank">
-									<span class="label">LinkedIn</span>
-								</a>
+								<div class="resume-button-container">
+									<a href="LamJohnson_Natalie_Resume.pdf" class="box-heading resume-link" target="_blank">Resume</a>
+
+									<svg class="resume-circle" viewBox="0 0 220 100" preserveAspectRatio="none" aria-hidden="true">
+										<path d="M18,52 C14,24 54,6 110,7 C168,8 204,22 202,51 C204,80 164,94 110,93 C56,94 16,79 18,52 Z"
+											pathLength="1" />
+									</svg>
+								</div>
 							</li>
 						</ul>
 					</div>
 				</div>
-			</div>
-		</section>
+			</section>
 
-		<!-- Scripts -->
-		<script src="assets/js/jquery.min.js"></script>
-		<script src="assets/js/jquery.scrollex.min.js"></script>
-		<script src="assets/js/jquery.scrolly.min.js"></script>
-		<script src="assets/js/browser.min.js"></script>
-		<script src="assets/js/breakpoints.min.js"></script>
-		<script src="assets/js/util.js"></script>
-		<script src="assets/js/main.js"></script>
+			<!-- Contact -->
+			<section class="snap-point" id="three">
+				<div class="box" data-box="contact">
+					<div class="box-inner">
+						<div class="contact-links-container">
+							<h3 class="connect-heading box-heading">Let's Connect</h3>
 
-				<script>
-// Hamburger Menu Toggle
-document.addEventListener('DOMContentLoaded', function() {
-	const hamburger = document.querySelector('.hamburger');
-	const topNav = document.querySelector('.top-navigation');
-	const body = document.body;
-	
-	if (hamburger) {
-		hamburger.addEventListener('click', function(e) {
-			e.stopPropagation();
-			const isOpen = hamburger.classList.toggle('is-active');
-			topNav.classList.toggle('is-open');
-			body.classList.toggle('nav-open');
-			hamburger.setAttribute('aria-expanded', isOpen);
-		});
-		
-		// Close menu when clicking nav link
-		document.querySelectorAll('.nav-link').forEach(link => {
-			link.addEventListener('click', function() {
-				hamburger.classList.remove('is-active');
-				topNav.classList.remove('is-open');
-				body.classList.remove('nav-open');
-				hamburger.setAttribute('aria-expanded', 'false');
-			});
-		});
-		
-		// Close menu when clicking outside
-		document.addEventListener('click', function(e) {
-			if (!topNav.contains(e.target) && !hamburger.contains(e.target)) {
-				hamburger.classList.remove('is-active');
-				topNav.classList.remove('is-open');
-				body.classList.remove('nav-open');
-				hamburger.setAttribute('aria-expanded', 'false');
-			}
-		});
-	}
-});
-</script>
+							<ul class="contact-notes">
+								<li><a href="mailto:natalie.l.johnson@usc.edu" class="contact-note" target="_blank">Email — natalie.l.johnson@usc.edu</a></li>
+								<li><a href="https://www.linkedin.com/in/natalie-lam-johnson" class="contact-note" target="_blank">LinkedIn — natalie-lam-johnson</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</section>
 
-		<script>
-// Active link tracking for top navigation with glow effect
-$(document).ready(function() {
-    console.log('Active link tracking started');
-    
-    function updateActiveLink() {
-        var scrollTop = $(window).scrollTop();
-        var windowHeight = $(window).height();
-        var found = false;
-        
-        // Check each section
-        $('.nav-link').each(function() {
-            var href = $(this).attr('href');
-            var $section = $(href);
-            
-            if ($section.length > 0) {
-                var sectionTop = $section.offset().top;
-                var sectionHeight = $section.outerHeight();
-                var sectionBottom = sectionTop + sectionHeight;
-                
-                // For full-height sections, use middle-based detection
-                var sectionMiddle = sectionTop + (sectionHeight / 2);
-                var viewportMiddle = scrollTop + (windowHeight / 2);
-                
-                // Check if viewport middle is within this section
-                if (viewportMiddle >= sectionTop && viewportMiddle <= sectionBottom && !found) {
-                    $('.nav-link').removeClass('active');
-                    $(this).addClass('active');
-                    found = true;
-                    console.log('✓ Activated:', href);
-                }
-            }
-        });
-    }
-    
-    // Update on scroll
-    $(window).on('scroll', updateActiveLink);
-    
-    // Update on page load
-    updateActiveLink();
-    
-    // Handle clicks
-    $('.nav-link').on('click', function(e) {
-        e.preventDefault();
-        var href = $(this).attr('href');
-        var $target = $(href);
-        
-        if ($target.length) {
-            // Update navigation
-            $('.nav-link').removeClass('active');
-            $(this).addClass('active');
-            
-         $target[0].scrollIntoView({ 
-	block: 'start'
-});
-        }
-    });
-});
-</script>
+			<!-- Grid-overview scroll target (desktop only; empty spacer) -->
+			<section class="snap-point" id="grid"></section>
 
-<script>
-// Intersection Observer to detect when intro section is in view
-document.addEventListener('DOMContentLoaded', function() {
-    const introSection = document.querySelector('#intro');
-    
-    if (introSection) {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('in-view');
-                } else {
-                    entry.target.classList.remove('in-view');
-                }
-            });
-        }, {
-            threshold: 0.5
-        });
-        
-        observer.observe(introSection);
-    }
-});
-</script>
+		</div><!-- /.scroll-track -->
 
-<script>
-// Trigger intro fade-in when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(() => {
-        document.querySelector('#intro .inner').classList.add('fade-in');
-    }, 100);
-});
-
-// Also trigger when preload class is removed
-const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-            if (!document.body.classList.contains('is-preload')) {
-                document.querySelector('#intro .inner').classList.add('fade-in');
-            }
-        }
-    });
-});
-
-observer.observe(document.body, { attributes: true });
-</script>
-
-<!-- MOUSE SHADOW EFFECT SCRIPT - Desktop Only -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-	// Check if device is touch-enabled (mobile)
-	const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-	
-	// Only run shadow effect on non-touch devices (desktop)
-	if (!isTouchDevice) {
-		const shadowElements = document.querySelectorAll('.shadow-text, .shadow-text-light');
-		let mouseX = window.innerWidth / 2;
-		let mouseY = window.innerHeight / 2;
-		let currentMouseX = mouseX;
-		let currentMouseY = mouseY;
-
-		// Cache element positions for better performance
-		const elementData = [];
-		
-		function cacheElementPositions() {
-			elementData.length = 0;
-			shadowElements.forEach(element => {
-				const rect = element.getBoundingClientRect();
-				elementData.push({
-					element: element,
-					centerX: rect.left + rect.width / 2,
-					centerY: rect.top + rect.height / 2
-				});
-			});
-		}
-
-		// Recache on scroll and resize
-		window.addEventListener('scroll', cacheElementPositions);
-		window.addEventListener('resize', cacheElementPositions);
-		cacheElementPositions();
-
-		// Update mouse position on move
-		document.addEventListener('mousemove', (e) => {
-			mouseX = e.clientX;
-			mouseY = e.clientY;
-		});
-
-		// Smooth interpolation function (lerp)
-		function lerp(start, end, factor) {
-			return start + (end - start) * factor;
-		}
-
-		// Continuous animation loop for smooth shadows
-		function animate() {
-			// Smoothly interpolate current position toward target mouse position
-			const smoothFactor = 0.15;
-			currentMouseX = lerp(currentMouseX, mouseX, smoothFactor);
-			currentMouseY = lerp(currentMouseY, mouseY, smoothFactor);
-
-			elementData.forEach(data => {
-				// Calculate vector from mouse to element
-				const distanceX = data.centerX - currentMouseX;
-				const distanceY = data.centerY - currentMouseY;
-				const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-
-				// Prevent division by zero
-				if (distance === 0) return;
-
-				// Calculate shadow projection (away from mouse)
-				const maxShadowDistance = 200;
-				const shadowStrength = Math.min(1, 800 / distance);
-				const shadowX = (distanceX / distance) * maxShadowDistance * shadowStrength;
-				const shadowY = (distanceY / distance) * maxShadowDistance * shadowStrength;
-
-				// Apply shadow to element
-				data.element.style.setProperty('--shadow-x', `${shadowX}px`);
-				data.element.style.setProperty('--shadow-y', `${shadowY}px`);
-			});
-
-			// Continue animation loop
-			requestAnimationFrame(animate);
-		}
-
-		// Start the animation loop
-		animate();
-	} else {
-		// On mobile, add a static shadow class for better readability
-		document.body.classList.add('mobile-shadows');
-	}
-});
-</script>
+		<script src="assets/js/graphpaper.js"></script>
 
 	</body>
 </html>
