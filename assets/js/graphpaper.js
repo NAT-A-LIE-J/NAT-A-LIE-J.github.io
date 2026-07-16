@@ -319,8 +319,11 @@
 		// No natural scrolling at all — the wheel/trackpad only ever pages
 		// straight to the next or previous view (same FLIP transition as
 		// everything else), debounced so one gesture doesn't fire more than
-		// one page change.
+		// one page change. Exception: the LinkedIn carousel still needs its
+		// own native horizontal scroll, so let wheel events starting inside
+		// it through untouched.
 		scrollTrack.addEventListener('wheel', function (e) {
+			if (e.target.closest('.linkedin-carousel')) return;
 			e.preventDefault();
 			if (wheelCooldown) return;
 			if (Math.abs(e.deltaY) < 4) return;
@@ -406,6 +409,25 @@
 				var cDist = Math.sqrt(cdx * cdx + cdy * cdy);
 				connectArrow.classList.toggle('is-near', cDist < CONNECT_NEAR_RADIUS);
 			}
+		});
+	}
+
+	// Contact: copy the email address instead of letting the mailto: link
+	// open a new tab.
+	var emailLink = document.querySelector('.copy-email');
+	if (emailLink && navigator.clipboard) {
+		var emailAddress = emailLink.href.replace('mailto:', '');
+		var emailOriginalText = emailLink.textContent;
+		var emailRevertTimer = null;
+		emailLink.addEventListener('click', function (e) {
+			e.preventDefault();
+			navigator.clipboard.writeText(emailAddress).then(function () {
+				emailLink.textContent = 'Copied!';
+				window.clearTimeout(emailRevertTimer);
+				emailRevertTimer = window.setTimeout(function () {
+					emailLink.textContent = emailOriginalText;
+				}, 1500);
+			});
 		});
 	}
 
