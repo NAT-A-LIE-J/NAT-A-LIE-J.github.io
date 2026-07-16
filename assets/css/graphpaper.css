@@ -130,6 +130,36 @@ em { font-style: italic; }
 }
 
 /* =========================
+   Easter egg: double-click "things i've made" to reveal
+   ========================= */
+
+/* Small and muted on purpose — a quiet aside, not a shout — but genuinely
+   legible whenever it's shown, never relying on being unreadable. */
+.easter-egg {
+	position: fixed;
+	top: var(--grid-size-y);
+	right: var(--grid-size-x);
+	z-index: 300;
+	max-width: calc(var(--grid-size-x) * 7);
+	font-family: var(--font-kalam);
+	font-size: 11px;
+	line-height: 1.4;
+	text-align: right;
+	color: var(--ink-soft);
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.5s ease;
+}
+
+.easter-egg.is-visible {
+	opacity: 1;
+}
+
+@media (max-width: 860px) {
+	.easter-egg { display: none; }
+}
+
+/* =========================
    Nav: handwritten to-do list, top-left under the site mark
    ========================= */
 
@@ -233,6 +263,14 @@ em { font-style: italic; }
 	padding: 0 2.5em;
 	max-height: 100%;
 	overflow-y: auto;
+	/* Keep the ability to scroll if content ever runs long, without the
+	   scrollbar itself showing up inside the box. */
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+.box .box-inner::-webkit-scrollbar {
+	display: none;
 }
 
 .box-heading {
@@ -246,18 +284,17 @@ em { font-style: italic; }
 
 @media (min-width: 861px) {
 
+	/* No real scrolling happens here at all — the wheel/trackpad is read as
+	   discrete forward/backward paging (see graphpaper.js) and every
+	   transition is driven by the FLIP animation instead of scroll
+	   position. This is just a fixed full-viewport wrapper. */
 	.scroll-track {
 		height: 100vh;
-		overflow-y: scroll;
-		overflow-x: hidden;
-		scroll-snap-type: y mandatory;
-		scroll-snap-stop: always;
-		overscroll-behavior: none;
+		overflow: hidden;
 	}
 
 	.snap-point {
-		height: 100vh;
-		scroll-snap-align: start;
+		height: 0;
 	}
 
 	/* Top-anchor box content (instead of vertical centering) so every section,
@@ -271,17 +308,10 @@ em { font-style: italic; }
 		padding-top: calc(var(--grid-size-y) * 9);
 	}
 
-	/* #stage is a sticky (not fixed) child of .scroll-track: it stays pinned to the
-	   viewport as you scroll, but — unlike position:fixed — it remains a real DOM
-	   descendant of the scroll container, so wheel/trackpad gestures over its boxes
-	   still scroll-chain up to .scroll-track instead of being swallowed. The
-	   negative bottom margin cancels the 100vh it would otherwise reserve in flow,
-	   so it doesn't add extra scroll distance beyond the 5 snap-points. */
 	#stage {
-		position: sticky;
-		top: 0;
+		position: fixed;
+		inset: 0;
 		height: 100vh;
-		margin-bottom: -100vh;
 		overflow: hidden;
 		z-index: 10;
 		pointer-events: none;
@@ -346,6 +376,15 @@ em { font-style: italic; }
 		font-size: 0.6em;
 	}
 
+	#stage[data-mode="grid"] #stage-grid .box[data-box="overview"] .intro-list li {
+		font-size: 0.55em;
+	}
+
+	#stage[data-mode="grid"] #stage-grid .box[data-box="overview"] .exclaim-mark {
+		width: 10px;
+		height: 22px;
+	}
+
 	/* Shrink the LinkedIn carousel to a small thumbnail strip in the grid
 	   overview instead of showing an oversized, clipped embed. The wrapper
 	   keeps its real (small, fixed) footprint and clips; the row of cards
@@ -403,19 +442,92 @@ em { font-style: italic; }
 
 .box[data-box="overview"] .box-inner { text-align: left; }
 
-/* Matches the other three box headings (1.7em, 2-grid-line-height) for
-   consistent heading size site-wide. Note: at 1.7em the text no longer
-   fits within a single grid row without clipping, so "Hi," and "I'm
-   Natalie Lam Johnson." now sit two grid lines apart (line-height) rather
-   than one — margin-bottom stays 0 so they're still tighter than other
-   sections' heading-to-content gap. */
+/* Scaled back down from the other sections' 1.7em/2-grid-line heading —
+   with the full bio + achievement list below, everything needs to fit in
+   one screen, so the heading trades a little size for room. */
 .box[data-box="overview"] h1 {
-	font-size: 1.7em;
-	line-height: calc(var(--grid-size-y) * 2);
+	font-size: 1.3em;
+	line-height: var(--grid-size-y);
 	margin-bottom: 0;
 }
 
-.box[data-box="overview"] p { font-size: 1.2em; color: var(--ink-soft); margin-top: var(--grid-size-y); }
+.box[data-box="overview"] p {
+	font-size: 1em;
+	color: var(--ink);
+	margin-top: 0.5em;
+	line-height: 1.3;
+}
+
+.intro-list {
+	list-style: none;
+	margin-top: 0.55em;
+	display: flex;
+	flex-direction: column;
+	gap: 0.25em;
+}
+
+.intro-list li {
+	font-family: var(--font-kalam);
+	font-size: 0.9em;
+	line-height: 1.3;
+	color: var(--ink);
+	padding-left: 1.1em;
+	position: relative;
+}
+
+.intro-list li::before {
+	content: '\2013\a0';
+	position: absolute;
+	left: 0;
+}
+
+/* A hand-drawn exclamation point after "show" — stem first, then the dot
+   pops in right after, like someone punctuating it by hand. Reset (not
+   just drawn) when you leave Intro, and replayable on hover. */
+.show-word {
+	position: relative;
+	display: inline-block;
+}
+
+.exclaim-mark {
+	display: inline-block;
+	width: 15px;
+	height: 34px;
+	margin-left: 2px;
+	vertical-align: -8px;
+	overflow: visible;
+	cursor: default;
+}
+
+.exclaim-stem {
+	fill: none;
+	stroke: var(--ink);
+	stroke-width: 2.4;
+	stroke-linecap: round;
+	stroke-dasharray: 1;
+	stroke-dashoffset: 1;
+	filter: url(#dry-brush);
+	transition: stroke-dashoffset 0.3s ease;
+}
+
+.exclaim-dot {
+	fill: var(--ink);
+	opacity: 0;
+	transform-box: fill-box;
+	transform-origin: center;
+	transform: scale(0);
+	transition: opacity 0.2s ease, transform 0.2s ease;
+	transition-delay: 0.3s;
+}
+
+.exclaim-mark.is-active .exclaim-stem {
+	stroke-dashoffset: 0;
+}
+
+.exclaim-mark.is-active .exclaim-dot {
+	opacity: 1;
+	transform: scale(1);
+}
 
 .box[data-box="overview"] .box-inner {
 	opacity: 0;
@@ -444,6 +556,54 @@ em { font-style: italic; }
 	text-align: left;
 	align-self: flex-start;
 	margin: 0;
+}
+
+/* A little celebratory flourish off the top-right of the final "e" — like
+   a few quick action lines flicked in by hand, trailing off the end of the
+   word. Positioned relative to the glyph's actual visible top, not the
+   (taller) line-box it sits in — the heading's line-height is 2 grid units
+   but the letter itself is only ~1.7em, so it's vertically centered with
+   room above it we have to account for. Mirrored horizontally so the fanned
+   tips point up and away to the right, past the end of the word, instead
+   of back over the letter. */
+.made-e {
+	position: relative;
+	display: inline-block;
+}
+
+.celebrate-lines {
+	position: absolute;
+	top: -14px;
+	right: -30px;
+	width: 46px;
+	height: 46px;
+	overflow: visible;
+	/* Auto (not none) so this whole box — not just the thin drawn strokes —
+	   is a hoverable target that replays the animation (see graphpaper.js). */
+	pointer-events: auto;
+	cursor: default;
+}
+
+.celebrate-lines path {
+	fill: none;
+	stroke: var(--cell-border);
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-dasharray: 1;
+	stroke-dashoffset: 1;
+	filter: url(#dry-brush);
+	transition: stroke-dashoffset 0.35s ease;
+}
+
+/* Drawn one at a time, like someone flicking them in by hand, each a beat
+   after the last. Reset (not just "already drawn") each time you leave
+   Projects, so scrolling back in plays it again. */
+.celebrate-lines.is-active path:nth-child(1) { transition-delay: 0.15s; }
+.celebrate-lines.is-active path:nth-child(2) { transition-delay: 0.4s; }
+.celebrate-lines.is-active path:nth-child(3) { transition-delay: 0.65s; }
+
+.celebrate-lines.is-active path {
+	stroke-dashoffset: 0;
 }
 
 .linkedin-carousel-wrapper {
@@ -493,6 +653,9 @@ em { font-style: italic; }
 /* =========================
    Resume link + hover circle
    ========================= */
+
+/* Centered on the page, same treatment as Contact's heading + notes. */
+.box[data-box="resume"] .box-inner { text-align: center; }
 
 .resume-button-container {
 	position: relative;
@@ -546,10 +709,14 @@ em { font-style: italic; }
 	stroke-linecap: round;
 	stroke-dasharray: 1;
 	stroke-dashoffset: 1;
+	filter: url(#dry-brush);
 	transition: stroke-dashoffset 0.6s ease;
 }
 
-.resume-button-container:hover .resume-circle path {
+/* Triggered by JS proximity (see graphpaper.js) rather than a plain :hover,
+   so the circle starts drawing well before the cursor actually reaches the
+   tightly-sized text. */
+.resume-circle.is-near path {
 	stroke-dashoffset: 0;
 }
 
@@ -561,6 +728,49 @@ em { font-style: italic; }
 
 /* No font-size override here anymore — inherits .box-heading's 1.7em so
    it matches the other three section headings. */
+
+.contact-links-container {
+	position: relative;
+	display: inline-block;
+}
+
+/* Hand-drawn arrow from "Let's Connect" down to the bullets below it,
+   sitting in the empty space to the left. It draws itself in (rather than
+   just fading) whenever the cursor comes near — not just a direct hover —
+   using the same pathLength/stroke-dashoffset trick as the resume circle. */
+.connect-arrow {
+	position: absolute;
+	top: 0;
+	left: -100px;
+	width: 100px;
+	height: 100%;
+	overflow: visible;
+	pointer-events: none;
+}
+
+.connect-arrow path {
+	fill: none;
+	stroke: var(--cell-border);
+	stroke-width: 3;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-dasharray: 1;
+	stroke-dashoffset: 1;
+	filter: url(#dry-brush);
+	transition: stroke-dashoffset 1.4s ease;
+}
+
+.connect-arrow.is-near path {
+	stroke-dashoffset: 0;
+}
+
+.connect-arrow-head {
+	transition-delay: 0.2s;
+}
+
+@media (max-width: 860px) {
+	.connect-arrow { display: none; }
+}
 
 ul.actions { list-style: none; }
 

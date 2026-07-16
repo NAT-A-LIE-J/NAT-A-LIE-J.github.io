@@ -19,7 +19,6 @@
 		var track = document.getElementById('scrollTrack');
 		return track ? track.getBoundingClientRect().width : 0;
 	}
-	function lerp(a, b, t) { return a + (b - a) * t; }
 	function clamp(v, lo, hi) { return Math.min(Math.max(v, lo), hi); }
 
 	// Pick a cell size close to 32px that divides the viewport exactly, so a
@@ -79,6 +78,62 @@
 	}, 100);
 
 	/* =========================
+	   Easter egg: double-click "things i've made" to reveal, hidden again
+	   as soon as you leave Projects (all breakpoints)
+	   ========================= */
+
+	var easterEgg = document.querySelector('.easter-egg');
+	var projectsHeading = document.querySelector('.projects-heading');
+	function hideEasterEgg() {
+		if (easterEgg) easterEgg.classList.remove('is-visible');
+	}
+	if (easterEgg && projectsHeading) {
+		projectsHeading.addEventListener('dblclick', function () {
+			easterEgg.classList.add('is-visible');
+		});
+	}
+
+	/* =========================
+	   Drawn-in accents: line-drawing reveals that play as soon as their
+	   section becomes current, reset when you leave so they replay next
+	   visit, and are also replayable on demand by hovering them directly.
+	   Shared by the celebration lines (Projects) and the exclamation point
+	   (Intro).
+	   ========================= */
+
+	function makeReplayableDrawing(el) {
+		function play() {
+			if (!el) return;
+			el.classList.remove('is-active');
+			// Force a reflow so the browser "forgets" the finished transition
+			// state before we re-add the class — otherwise re-adding a class
+			// that's already applied is a no-op and nothing redraws.
+			// eslint-disable-next-line no-unused-expressions
+			el.offsetWidth;
+			el.classList.add('is-active');
+		}
+		function set(active) {
+			if (!el) return;
+			if (active) {
+				play();
+			} else {
+				el.classList.remove('is-active');
+			}
+		}
+		if (el) el.addEventListener('mouseenter', play);
+		return { play: play, set: set };
+	}
+
+	var celebrateLines = document.querySelector('.celebrate-lines');
+	var celebrateLinesFx = makeReplayableDrawing(celebrateLines);
+	function setCelebrateLines(active) { celebrateLinesFx.set(active); }
+	function playCelebrateLines() { celebrateLinesFx.play(); }
+
+	var exclaimMark = document.querySelector('.exclaim-mark');
+	var exclaimMarkFx = makeReplayableDrawing(exclaimMark);
+	function setExclaimMark(active) { exclaimMarkFx.set(active); }
+
+	/* =========================
 	   Desktop: stage + FLIP state machine
 	   ========================= */
 
@@ -87,29 +142,29 @@
 
 		var mode = 'solo';
 		var currentIndex = 0;
-		var settleTimer = null;
-		var wrapCooldown = false;
+		var wheelCooldown = false;
 
-		// Arrow keys just mirror what scrolling does: down/right = forward,
-		// up/left = backward, including the same wrap-at-the-ends behavior
-		// as the wheel (Intro backward -> grid overview; grid backward ->
-		// Contact, since that's the section right before it in scroll order;
-		// grid forward -> nothing, since scrolling further down does nothing).
+		// Arrow keys and wheel/trackpad both just mean "forward" or
+		// "backward" now — down/right/scroll-down = forward, up/left/
+		// scroll-up = backward, including the same wrap-at-the-ends
+		// behavior (Intro backward -> grid overview; grid backward ->
+		// Contact, since that's the section right before it; grid forward
+		// -> nothing, matching "you can't go past the end").
 		var FORWARD_KEYS = { ArrowDown: true, ArrowRight: true };
 		var BACKWARD_KEYS = { ArrowUp: true, ArrowLeft: true };
 
-		function soloTransform(progress) {
-			var f = Math.floor(progress);
-			var c = Math.min(f + 1, 3);
-			var t = progress - f;
-			var x = lerp(CORNERS[f].x, CORNERS[c].x, t);
-			var y = lerp(CORNERS[f].y, CORNERS[c].y, t);
-			return { x: x, y: y };
+		function goForward() {
+			if (mode !== 'grid') goTo(currentIndex + 1);
 		}
 
-		function applySoloTransform(progress) {
-			var pos = soloTransform(clamp(progress, 0, 3));
-			stageGrid.style.transform = 'translate(' + pos.x + 'vw, ' + pos.y + 'vh)';
+		function goBackward() {
+			if (mode === 'grid') {
+				goTo(3);
+			} else if (currentIndex === 0) {
+				goTo(4);
+			} else {
+				goTo(currentIndex - 1);
+			}
 		}
 
 		function setActiveDot(index) {
@@ -122,6 +177,9 @@
 					dot.classList.toggle('is-done', index < 4 && i < index);
 				}
 			});
+			if (index !== 1) hideEasterEgg();
+			setCelebrateLines(index === 1);
+			setExclaimMark(index === 0);
 		}
 
 		function flip(elements, applyFinalState, duration) {
@@ -200,64 +258,20 @@
 			setActiveDot(targetIndex);
 		}
 
+		// No scrolling happens anywhere anymore — this always jumps straight
+		// to the FLIP transition for whatever the target is. Scroll wheel,
+		// arrow keys, nav-dot clicks, and box clicks all funnel through here.
 		function goTo(targetIndex) {
 			targetIndex = clamp(targetIndex, 0, 4);
 			if (targetIndex === 4) {
 				if (mode === 'grid') return;
-				if (currentIndex === 3) {
-					// Adjacent step forward (Contact -> grid overview): let the
-					// natural scroll+settle machinery drive it, same as any other
-					// single-step move, so the down arrow follows the scroll into
-					// the zoom instead of teleporting then animating.
-					scrollTrack.scrollTo({ top: 4 * vh(), behavior: 'smooth' });
-					return;
-				}
-				// scroll-snap-stop:always pauses at every intermediate snap point
-				// along the way, so a distant programmatic jump would crawl
-				// through each section instead of arriving directly. Jump the
-				// scroll position instantly and let the FLIP animation (already
-				// tuned) provide the motion instead.
-				scrollTrack.scrollTop = 4 * vh();
 				flipToGrid();
 			} else if (mode === 'grid') {
-				scrollTrack.scrollTop = targetIndex * vh();
 				flipToSolo(targetIndex);
-			} else if (Math.abs(targetIndex - currentIndex) <= 1) {
-				scrollTrack.scrollTo({ top: targetIndex * vh(), behavior: 'smooth' });
-			} else {
-				scrollTrack.scrollTop = targetIndex * vh();
+			} else if (targetIndex !== currentIndex) {
 				flipToSolo(targetIndex);
 			}
 		}
-
-		function onScroll() {
-			var raw = scrollTrack.scrollTop / vh();
-			if (mode === 'solo') {
-				var clamped = clamp(raw, 0, 3);
-				applySoloTransform(clamped);
-				setActiveDot(Math.round(clamped));
-			}
-
-			window.clearTimeout(settleTimer);
-			settleTimer = window.setTimeout(onSettle, 120);
-		}
-
-		function onSettle() {
-			var raw = scrollTrack.scrollTop / vh();
-			var settledIndex = clamp(Math.round(raw), 0, 4);
-
-			if (settledIndex === 4 && mode !== 'grid') {
-				flipToGrid();
-			} else if (settledIndex < 4 && mode === 'grid') {
-				flipToSolo(settledIndex);
-			} else if (mode === 'solo') {
-				currentIndex = settledIndex;
-				applySoloTransform(settledIndex);
-				setActiveDot(settledIndex);
-			}
-		}
-
-		scrollTrack.addEventListener('scroll', onScroll, { passive: true });
 
 		// Click a box while in grid mode -> zoom into it.
 		boxes.forEach(function (box, i) {
@@ -268,6 +282,15 @@
 				goTo(i);
 			});
 		});
+
+		// The celebration-lines flourish is tiny at grid-card scale, so
+		// hovering the whole Projects card (not just the flourish itself)
+		// replays it while in the grid overview.
+		if (boxes[1]) {
+			boxes[1].addEventListener('mouseenter', function () {
+				if (stage.dataset.mode === 'grid') playCelebrateLines();
+			});
+		}
 
 		// Nav dots + keyboard.
 		navDots.forEach(function (dot) {
@@ -280,16 +303,10 @@
 
 			if (FORWARD_KEYS[e.key]) {
 				e.preventDefault();
-				if (mode !== 'grid') goTo(currentIndex + 1);
+				goForward();
 			} else if (BACKWARD_KEYS[e.key]) {
 				e.preventDefault();
-				if (mode === 'grid') {
-					goTo(3);
-				} else if (currentIndex === 0) {
-					goTo(4);
-				} else {
-					goTo(currentIndex - 1);
-				}
+				goBackward();
 			} else if (e.key === 'Home') {
 				e.preventDefault();
 				goTo(0);
@@ -299,23 +316,29 @@
 			}
 		});
 
-		// At Intro (the first box), scrolling up further loops to the grid overview.
+		// No natural scrolling at all — the wheel/trackpad only ever pages
+		// straight to the next or previous view (same FLIP transition as
+		// everything else), debounced so one gesture doesn't fire more than
+		// one page change.
 		scrollTrack.addEventListener('wheel', function (e) {
-			if (mode !== 'solo' || currentIndex !== 0) return;
-			if (scrollTrack.scrollTop > 1 || e.deltaY >= 0) return;
-			if (wrapCooldown) return;
-			wrapCooldown = true;
-			window.setTimeout(function () { wrapCooldown = false; }, 800);
-			scrollTrack.scrollTop = 4 * vh();
-			flipToGrid();
-		}, { passive: true });
+			e.preventDefault();
+			if (wheelCooldown) return;
+			if (Math.abs(e.deltaY) < 4) return;
+			wheelCooldown = true;
+			window.setTimeout(function () { wheelCooldown = false; }, 700);
+			if (e.deltaY > 0) {
+				goForward();
+			} else {
+				goBackward();
+			}
+		}, { passive: false });
 
 		window.addEventListener('resize', function () {
 			if (mode === 'grid') boxes.forEach(alignBoxGridToPage);
 		});
 
 		// Initial paint.
-		applySoloTransform(0);
+		stageGrid.style.transform = 'translate(0vw, 0vh)';
 		setActiveDot(0);
 	} else if (navDots.length) {
 		/* =========================
@@ -343,11 +366,47 @@
 								dot.classList.toggle('is-done', i < idx);
 							}
 						});
+						if (idx !== 1) hideEasterEgg();
+						setCelebrateLines(idx === 1);
+						setExclaimMark(idx === 0);
 					}
 				});
 			}, { threshold: 0.5 });
 			points.forEach(function (p) { io.observe(p); });
 		}
+	}
+
+	/* =========================
+	   Resume + Contact: draw the hand-drawn accents in when the cursor
+	   comes near (not just a direct hover), since both sit in empty space
+	   beside comparatively small text — a single mousemove listener drives
+	   both proximity checks.
+	   ========================= */
+
+	var resumeCircle = document.querySelector('.resume-circle');
+	var resumeContainer = document.querySelector('.resume-button-container');
+	var connectArrow = document.querySelector('.connect-arrow');
+	var connectCluster = document.querySelector('.contact-links-container');
+	var RESUME_NEAR_RADIUS = 260;
+	var CONNECT_NEAR_RADIUS = 280;
+
+	if ((resumeCircle && resumeContainer) || (connectArrow && connectCluster)) {
+		document.addEventListener('mousemove', function (e) {
+			if (resumeCircle && resumeContainer) {
+				var rRect = resumeContainer.getBoundingClientRect();
+				var rdx = e.clientX - (rRect.left + rRect.width / 2);
+				var rdy = e.clientY - (rRect.top + rRect.height / 2);
+				var rDist = Math.sqrt(rdx * rdx + rdy * rdy);
+				resumeCircle.classList.toggle('is-near', rDist < RESUME_NEAR_RADIUS);
+			}
+			if (connectArrow && connectCluster) {
+				var cRect = connectCluster.getBoundingClientRect();
+				var cdx = e.clientX - cRect.left;
+				var cdy = e.clientY - (cRect.top + cRect.height / 2);
+				var cDist = Math.sqrt(cdx * cdx + cdy * cdy);
+				connectArrow.classList.toggle('is-near', cDist < CONNECT_NEAR_RADIUS);
+			}
+		});
 	}
 
 	} // end init
