@@ -614,7 +614,7 @@ em { font-style: italic; }
 
 .linkedin-carousel {
 	display: flex;
-	gap: 20px;
+	gap: 30px;
 	overflow-x: scroll;
 	scroll-snap-type: x mandatory;
 	-webkit-overflow-scrolling: touch;
@@ -623,19 +623,40 @@ em { font-style: italic; }
 	-ms-overflow-style: none;
 	width: 100%;
 	touch-action: pan-x;
+	/* Room so rotated notes don't get visually clipped against the
+	   wrapper's edges at rest. */
+	padding: 20px 14px 34px;
 }
 
 .linkedin-carousel::-webkit-scrollbar { display: none; }
 
+/* Each card reads as a post-it note stuck to the page: a flat pastel
+   square, slightly off-true, lifted off the paper with a soft shadow.
+   Straightens and lifts further on hover, like picking it up. */
 .linkedin-card {
 	scroll-snap-align: center;
 	flex-shrink: 0;
-	border: 1.5px solid var(--grid-line-bold);
-	background: var(--paper);
+	position: relative;
+	border: none;
+	background: #fef3a1;
 	height: min(50vh, 430px);
 	width: 340px;
 	overflow-y: auto;
 	-webkit-overflow-scrolling: touch;
+	padding: 14px 12px 12px;
+	box-shadow: 3px 5px 0 rgba(28, 36, 48, 0.08), 5px 10px 16px rgba(28, 36, 48, 0.22);
+	transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.linkedin-card:nth-child(4n+1) { background: #fef3a1; transform: rotate(-2.5deg); }
+.linkedin-card:nth-child(4n+2) { background: #ffd6e8; transform: rotate(1.8deg); }
+.linkedin-card:nth-child(4n+3) { background: #cdf0d0; transform: rotate(-1.4deg); }
+.linkedin-card:nth-child(4n+4) { background: #cfe8fb; transform: rotate(2.3deg); }
+
+.linkedin-card:hover {
+	transform: rotate(0deg) translateY(-5px) scale(1.03);
+	box-shadow: 4px 7px 0 rgba(28, 36, 48, 0.1), 7px 14px 22px rgba(28, 36, 48, 0.28);
+	z-index: 2;
 }
 
 .linkedin-card iframe {
