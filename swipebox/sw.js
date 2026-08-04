@@ -1,4 +1,4 @@
-const CACHE_NAME = 'swipebox-shell-v1';
+const CACHE_NAME = 'swipebox-shell-v2';
 const SHELL_FILES = [
   './',
   './index.html',

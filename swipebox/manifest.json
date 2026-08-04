@@ -1,6 +1,6 @@
 {
-  "name": "Swipebox",
-  "short_name": "Swipebox",
+  "name": "Inbox Zero",
+  "short_name": "Inbox Zero",
   "description": "Swipe-triage your Gmail inbox",
   "start_url": "/swipebox/",
   "scope": "/swipebox/",
