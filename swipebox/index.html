@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<title>Swipebox</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a73e8">
+
+<!-- iOS home-screen PWA support -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Swipebox">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="app">
+
+  <header class="topbar">
+    <h1 class="brand">
+      <span class="dot dot-blue"></span><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span>
+      Swipebox
+    </h1>
+    <button id="signOutBtn" class="icon-btn" hidden aria-label="Sign out">Sign out</button>
+  </header>
+
+  <main id="main">
+
+    <!-- Signed-out state -->
+    <section id="signedOutView" class="view">
+      <div class="center-panel">
+        <p class="tagline">Swipe-triage your inbox.</p>
+        <button id="signInBtn" class="primary-btn">Sign in with Google</button>
+        <p id="authError" class="error-text" hidden></p>
+      </div>
+    </section>
+
+    <!-- Loading state -->
+    <section id="loadingView" class="view" hidden>
+      <div class="center-panel">
+        <div class="spinner" aria-hidden="true"></div>
+        <p id="loadingText">Loading inbox…</p>
+      </div>
+    </section>
+
+    <!-- Error state -->
+    <section id="errorView" class="view" hidden>
+      <div class="center-panel">
+        <p class="error-text" id="errorText">Something went wrong.</p>
+        <button id="retryBtn" class="primary-btn">Retry</button>
+      </div>
+    </section>
+
+    <!-- Empty state -->
+    <section id="emptyView" class="view" hidden>
+      <div class="center-panel">
+        <div class="empty-badge">✓</div>
+        <p class="tagline">Inbox zero.</p>
+        <button id="refreshBtn" class="secondary-btn">Refresh</button>
+      </div>
+    </section>
+
+    <!-- Card stack -->
+    <section id="stackView" class="view" hidden>
+      <div id="cardStack" class="card-stack"></div>
+
+      <div class="swipe-hints" aria-hidden="true">
+        <span class="hint hint-left">← Delete</span>
+        <span class="hint hint-up">↑ Star</span>
+        <span class="hint hint-down">↓ Unread</span>
+        <span class="hint hint-right">Archive →</span>
+      </div>
+
+      <div class="toolbar">
+        <button id="undoBtn" class="undo-btn" disabled>
+          <span class="undo-icon">↺</span> Undo
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="toast" class="toast" hidden></div>
+
+</div>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
