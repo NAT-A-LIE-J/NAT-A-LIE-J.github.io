@@ -166,7 +166,19 @@
 		var introInner = document.querySelector('.box[data-box="overview"] .box-inner');
 		if (introInner) introInner.classList.add('fade-in');
 		console.log('[grid-intro] 100ms timer fired, starting draw:', !!(gridDrawSvg && gridIntroLines));
-		if (gridDrawSvg && gridIntroLines) startGridIntroDraw(gridDrawSvg, gridIntroLines);
+		if (gridDrawSvg && gridIntroLines) {
+			var bodyStyle = window.getComputedStyle(document.body);
+			var svgStyle = window.getComputedStyle(gridDrawSvg);
+			var firstLine = gridIntroLines[0];
+			var lineStyle = firstLine ? window.getComputedStyle(firstLine) : null;
+			console.log('[grid-intro] body.backgroundImage:', bodyStyle.backgroundImage);
+			console.log('[grid-intro] svg:', svgStyle.position, svgStyle.zIndex, svgStyle.opacity, svgStyle.display, svgStyle.width, svgStyle.height);
+			console.log('[grid-intro] svg rect:', JSON.stringify(gridDrawSvg.getBoundingClientRect()));
+			if (lineStyle) {
+				console.log('[grid-intro] first line stroke:', lineStyle.stroke, 'dasharray:', lineStyle.strokeDasharray, 'dashoffset:', lineStyle.strokeDashoffset, 'opacity:', lineStyle.opacity);
+			}
+			startGridIntroDraw(gridDrawSvg, gridIntroLines);
+		}
 	}, 100);
 
 	/* =========================
