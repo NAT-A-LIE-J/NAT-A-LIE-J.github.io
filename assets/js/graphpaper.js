@@ -136,13 +136,23 @@
 
 	var gridDrawSvg = document.getElementById('grid-draw');
 	var gridIntroLines = null;
+	// How long the vertical sweep takes before the horizontals start —
+	// used below to time the intro text so it rises in step with the
+	// horizontal lines instead of finishing while they're still verticals-
+	// only.
+	var horizontalStartDelay = 0;
 	if (gridDrawSvg) {
 		if (reduceMotion) {
 			document.body.classList.remove('grid-intro');
 			gridDrawSvg.parentNode.removeChild(gridDrawSvg);
 		} else {
 			gridIntroLines = buildGridIntroLines(gridDrawSvg);
-			if (!gridIntroLines) document.body.classList.remove('grid-intro');
+			if (!gridIntroLines) {
+				document.body.classList.remove('grid-intro');
+			} else {
+				var verticalCount = Math.max(1, Math.round(vw() / BASE_GRID)) + 1;
+				horizontalStartDelay = verticalCount * GRID_DRAW_STAGGER_MS;
+			}
 		}
 	}
 
@@ -161,7 +171,17 @@
 	window.setTimeout(function () {
 		document.body.classList.remove('is-preload');
 		var introInner = document.querySelector('.box[data-box="overview"] .box-inner');
-		if (introInner) introInner.classList.add('fade-in');
+		if (introInner) {
+			if (gridIntroLines) {
+				// Rise in step with the horizontal sweep: start the moment it
+				// begins, take about as long as one line's own draw (a touch
+				// slower), instead of the CSS default that finishes almost
+				// immediately, long before the grid's done.
+				introInner.style.transitionDelay = horizontalStartDelay + 'ms';
+				introInner.style.transitionDuration = (GRID_DRAW_MS + 200) + 'ms';
+			}
+			introInner.classList.add('fade-in');
+		}
 		if (gridDrawSvg && gridIntroLines) startGridIntroDraw(gridDrawSvg, gridIntroLines);
 	}, 100);
 
