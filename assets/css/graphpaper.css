@@ -1,15 +1,27 @@
 /* =========================
+   Fonts
+   ========================= */
+
+@font-face {
+	font-family: 'Sean';
+	src: url('../fonts/handsean.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
+
+/* =========================
    Palette
    ========================= */
 
 :root {
 	color-scheme: light;
 	--paper: #faf6ec;
-	--grid-line: rgba(93, 138, 186, 0.32);
+	--grid-line: rgba(170, 185, 255, 0.7);
 	--grid-line-bold: #4a7ab0;
 	--cell-border: #3d6690;
-	--ink: #1c2430;
-	--ink-soft: rgba(28, 36, 48, 0.68);
+	--ink: #171e36;
+	--ink-soft: rgba(23, 30, 54, 0.68);
 	--grid-size: 32px;
 	/* Overwritten by JS to whatever cell size divides the current viewport
 	   exactly, so box borders always land precisely on a grid line instead
@@ -17,7 +29,7 @@
 	--grid-size-x: var(--grid-size);
 	--grid-size-y: var(--grid-size);
 	--box-bg: rgba(250, 246, 236, 0.94);
-	--font-marker: 'Permanent Marker', cursive;
+	--font-marker: 'Sean', cursive;
 	--font-kalam: 'Kalam', cursive;
 }
 
@@ -58,6 +70,28 @@ body {
 body.is-preload * {
 	animation: none !important;
 	transition: none !important;
+}
+
+/* While the ruling is being hand-drawn on first load, hide the real
+   (instant, always-on) CSS grid background so the drawn-in SVG lines are
+   the only thing visible — see #grid-draw and playGridIntro() in
+   graphpaper.js. Removed the moment the drawing finishes. */
+body.grid-intro {
+	background-image: none;
+}
+
+#grid-draw {
+	position: fixed;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	z-index: 0;
+}
+
+#grid-draw line {
+	stroke: var(--grid-line);
+	stroke-width: 1px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -117,7 +151,9 @@ em { font-style: italic; }
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 	font-size: 13px;
 	letter-spacing: 0.6px;
-	color: var(--ink);
+	/* Pinned to the original ink tone (not var(--ink)) so this box stays
+	   put while the rest of the page's text shifts to the pen-ink color. */
+	color: #1c2430;
 	text-decoration: none;
 	border: 1.5px solid var(--cell-border);
 	background: var(--box-bg);
@@ -829,4 +865,33 @@ ul.actions { list-style: none; }
 
 @media (max-width: 480px) {
 	.contact-note { font-size: 1.1em; word-break: break-word; }
+}
+
+/* =========================
+   404 page
+   ========================= */
+
+/* Same .box treatment as every homepage section, just centered on its own
+   full-height page instead of living inside the scroll-track/stage system
+   (this page has neither). */
+.notfound-wrap {
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: calc(var(--grid-size-y) * 4) 20px calc(var(--grid-size-y) * 2);
+}
+
+.notfound-wrap .box {
+	width: min(720px, 100%);
+	height: auto;
+	min-height: calc(var(--grid-size-y) * 10);
+}
+
+.notfound-wrap .box-inner {
+	text-align: center;
+}
+
+.notfound-wrap .contact-notes {
+	align-items: center;
 }

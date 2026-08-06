@@ -50,14 +50,101 @@
 		document.documentElement.style.setProperty('--grid-card-gap', gap + 'px');
 	}
 
+	// Recompute on every viewport change. ResizeObserver on the root element
+	// catches things a bare window 'resize' listener misses (mobile browser
+	// chrome show/hide, pinch-zoom, OS-level text scaling), so the grid
+	// re-syncs whenever the layout actually changes size, not just on resize.
+	function watchGridSize() {
+		function syncAll() { syncGridSize(); syncGridCardSize(); }
+		if ('ResizeObserver' in window) {
+			new ResizeObserver(syncAll).observe(document.documentElement);
+		} else {
+			window.addEventListener('resize', syncAll);
+		}
+	}
+
+	// One-time "hand-drawn" intro: builds a vertical + horizontal <line> for
+	// every rule the real CSS grid will show, each starting fully hidden
+	// via stroke-dasharray/dashoffset. #grid-draw sits on top of the (here,
+	// hidden — see body.grid-intro) CSS grid so this is the only ruling
+	// visible until the draw finishes. Line order (verticals, then
+	// horizontals) and the draw itself (flat 15ms stagger, 600ms, expo-in)
+	// match the reference implementation this was ported from.
+	function buildGridIntroLines(svg) {
+		var w = vw(), h = vh();
+		if (!w || !h) return null;
+		var nx = Math.max(1, Math.round(w / BASE_GRID));
+		var ny = Math.max(1, Math.round(h / BASE_GRID));
+		var cellW = w / nx, cellH = h / ny;
+		var ns = 'http://www.w3.org/2000/svg';
+		svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+		svg.setAttribute('width', w);
+		svg.setAttribute('height', h);
+		svg.textContent = '';
+
+		var lines = [];
+		for (var col = 0; col <= nx; col++) {
+			var x = col * cellW;
+			var vLine = document.createElementNS(ns, 'line');
+			vLine.setAttribute('x1', x); vLine.setAttribute('y1', 0);
+			vLine.setAttribute('x2', x); vLine.setAttribute('y2', h);
+			vLine.style.strokeDasharray = h;
+			vLine.style.strokeDashoffset = h;
+			svg.appendChild(vLine);
+			lines.push(vLine);
+		}
+		for (var row = 0; row <= ny; row++) {
+			var y = row * cellH;
+			var hLine = document.createElementNS(ns, 'line');
+			hLine.setAttribute('x1', 0); hLine.setAttribute('y1', y);
+			hLine.setAttribute('x2', w); hLine.setAttribute('y2', y);
+			hLine.style.strokeDasharray = w;
+			hLine.style.strokeDashoffset = w;
+			svg.appendChild(hLine);
+			lines.push(hLine);
+		}
+		return lines;
+	}
+
+	// Once every line reaches dashoffset 0 it's pixel-identical to the CSS
+	// grid underneath, so swapping back to that grid and dropping the SVG
+	// is invisible.
+	var GRID_DRAW_MS = 900;
+	var GRID_DRAW_STAGGER_MS = 45;
+	var GRID_DRAW_EASE = 'cubic-bezier(0.7, 0, 0.84, 0)'; // expo-in
+	function startGridIntroDraw(svg, lines) {
+		lines.forEach(function (line, i) {
+			var delay = i * GRID_DRAW_STAGGER_MS;
+			line.style.transition = 'stroke-dashoffset ' + GRID_DRAW_MS + 'ms ' + GRID_DRAW_EASE + ' ' + delay + 'ms';
+			line.style.strokeDashoffset = 0;
+		});
+
+		var lastDelay = (lines.length - 1) * GRID_DRAW_STAGGER_MS;
+		window.setTimeout(function () {
+			document.body.classList.remove('grid-intro');
+			if (svg.parentNode) svg.parentNode.removeChild(svg);
+		}, lastDelay + GRID_DRAW_MS + 80);
+	}
+
 	function init() {
 		syncGridSize();
 		syncGridCardSize();
-		window.addEventListener('resize', syncGridSize);
-		window.addEventListener('resize', syncGridCardSize);
+		watchGridSize();
 
 	var isDesktop = window.matchMedia('(min-width: 861px)').matches;
 	var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	var gridDrawSvg = document.getElementById('grid-draw');
+	var gridIntroLines = null;
+	if (gridDrawSvg) {
+		if (reduceMotion) {
+			document.body.classList.remove('grid-intro');
+			gridDrawSvg.parentNode.removeChild(gridDrawSvg);
+		} else {
+			gridIntroLines = buildGridIntroLines(gridDrawSvg);
+			if (!gridIntroLines) document.body.classList.remove('grid-intro');
+		}
+	}
 
 	var scrollTrack = document.getElementById('scrollTrack');
 	var stage = document.getElementById('stage');
@@ -75,6 +162,7 @@
 		document.body.classList.remove('is-preload');
 		var introInner = document.querySelector('.box[data-box="overview"] .box-inner');
 		if (introInner) introInner.classList.add('fade-in');
+		if (gridDrawSvg && gridIntroLines) startGridIntroDraw(gridDrawSvg, gridIntroLines);
 	}, 100);
 
 	/* =========================

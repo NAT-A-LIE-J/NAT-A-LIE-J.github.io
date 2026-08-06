@@ -40,11 +40,11 @@
 		</script>
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Permanent+Marker&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&display=swap" rel="stylesheet">
 		<link rel="stylesheet" href="assets/css/graphpaper.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 	</head>
-	<body class="is-preload">
+	<body class="is-preload grid-intro">
 
 		<!-- Shared filter referenced by every hand-drawn animation (celebrate
 		     lines, resume circle, connect arrow, exclamation point) so their
@@ -55,6 +55,11 @@
 				<feDisplacementMap in="SourceGraphic" in2="noise" scale="1.6" xChannelSelector="R" yChannelSelector="G" />
 			</filter>
 		</svg>
+
+		<!-- Draws the ruling in by hand on first load, one line at a time,
+		     then hands off to the real (always-on, resize-safe) CSS grid
+		     background underneath — see playGridIntro() in graphpaper.js. -->
+		<svg id="grid-draw" aria-hidden="true"></svg>
 
 		<a href="#intro" class="site-mark">NATALIE LAM JOHNSON</a>
 
