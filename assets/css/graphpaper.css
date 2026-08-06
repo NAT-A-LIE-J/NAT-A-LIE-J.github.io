@@ -75,9 +75,25 @@ body.is-preload * {
 /* While the ruling is being hand-drawn on first load, hide the real
    (instant, always-on) CSS grid background so the drawn-in SVG lines are
    the only thing visible — see #grid-draw and playGridIntro() in
-   graphpaper.js. Removed the moment the drawing finishes. */
+   graphpaper.js. Removed the moment the drawing finishes.
+
+   The intro box (".box") paints its own opaque copy of this same grid
+   (color + background-color) so it stays legible at full-viewport size
+   (see "Box shared styling" below) — and it sits in a *higher* stacking
+   context than #grid-draw (inside #stage, z-index: 10, vs #grid-draw's 0),
+   so left alone it simply paints over the drawing, hiding it completely.
+   Rather than fight that by raising #grid-draw above the box — which would
+   then draw over the box's own text instead — make the box fully
+   transparent during the intro so #grid-draw shows straight through it.
+   Text inside the box is unaffected either way: it was always painted
+   above the box's own background by normal DOM order, never by z-index. */
 body.grid-intro {
 	background-image: none;
+}
+
+body.grid-intro .box {
+	background-image: none;
+	background-color: transparent;
 }
 
 #grid-draw {
