@@ -67,9 +67,10 @@
 	// every rule the real CSS grid will show, each starting fully hidden
 	// via stroke-dasharray/dashoffset. #grid-draw sits on top of the (here,
 	// hidden — see body.grid-intro) CSS grid so this is the only ruling
-	// visible until the draw finishes. Line order (verticals, then
-	// horizontals) and the draw itself (flat 15ms stagger, 600ms, expo-in)
-	// match the reference implementation this was ported from.
+	// visible until the draw finishes. Verticals and horizontals are kept
+	// as separate groups (instead of one flat list) so the draw can stagger
+	// each axis independently and run them in parallel — see
+	// startGridIntroDraw.
 	function buildGridIntroLines(svg) {
 		var w = vw(), h = vh();
 		if (!w || !h) return null;
@@ -82,7 +83,7 @@
 		svg.setAttribute('height', h);
 		svg.textContent = '';
 
-		var lines = [];
+		var verticals = [], horizontals = [];
 		for (var col = 0; col <= nx; col++) {
 			var x = col * cellW;
 			var vLine = document.createElementNS(ns, 'line');
@@ -91,7 +92,7 @@
 			vLine.style.strokeDasharray = h;
 			vLine.style.strokeDashoffset = h;
 			svg.appendChild(vLine);
-			lines.push(vLine);
+			verticals.push(vLine);
 		}
 		for (var row = 0; row <= ny; row++) {
 			var y = row * cellH;
@@ -101,9 +102,9 @@
 			hLine.style.strokeDasharray = w;
 			hLine.style.strokeDashoffset = w;
 			svg.appendChild(hLine);
-			lines.push(hLine);
+			horizontals.push(hLine);
 		}
-		return lines;
+		return { verticals: verticals, horizontals: horizontals };
 	}
 
 	// Once every line reaches dashoffset 0 it's pixel-identical to the CSS
@@ -113,17 +114,27 @@
 	var GRID_DRAW_STAGGER_MS = 45;
 	var GRID_DRAW_EASE = 'cubic-bezier(0.7, 0, 0.84, 0)'; // expo-in
 	function startGridIntroDraw(svg, lines) {
-		lines.forEach(function (line, i) {
-			var delay = i * GRID_DRAW_STAGGER_MS;
-			line.style.transition = 'stroke-dashoffset ' + GRID_DRAW_MS + 'ms ' + GRID_DRAW_EASE + ' ' + delay + 'ms';
-			line.style.strokeDashoffset = 0;
-		});
+		var verticals = lines.verticals, horizontals = lines.horizontals;
+		// Both axes sweep from 0 to the same SPAN, each scaled to its own
+		// line count, so at any moment roughly the same fraction of each
+		// axis has started — verticals and horizontals fill in together
+		// instead of horizontals waiting for every vertical to finish first.
+		var span = (Math.max(verticals.length, horizontals.length) - 1) * GRID_DRAW_STAGGER_MS;
+		function reveal(group) {
+			var steps = Math.max(group.length - 1, 1);
+			group.forEach(function (line, i) {
+				var delay = Math.round((i / steps) * span);
+				line.style.transition = 'stroke-dashoffset ' + GRID_DRAW_MS + 'ms ' + GRID_DRAW_EASE + ' ' + delay + 'ms';
+				line.style.strokeDashoffset = 0;
+			});
+		}
+		reveal(verticals);
+		reveal(horizontals);
 
-		var lastDelay = (lines.length - 1) * GRID_DRAW_STAGGER_MS;
 		window.setTimeout(function () {
 			document.body.classList.remove('grid-intro');
 			if (svg.parentNode) svg.parentNode.removeChild(svg);
-		}, lastDelay + GRID_DRAW_MS + 80);
+		}, span + GRID_DRAW_MS + 80);
 	}
 
 	function init() {
@@ -136,11 +147,11 @@
 
 	var gridDrawSvg = document.getElementById('grid-draw');
 	var gridIntroLines = null;
-	// How long the vertical sweep takes before the horizontals start —
-	// used below to time the intro text so it rises in step with the
-	// horizontal lines instead of finishing while they're still verticals-
-	// only.
-	var horizontalStartDelay = 0;
+	// Total time the grid's own sweep takes (both axes run in parallel —
+	// see startGridIntroDraw) — used below so the intro text takes about as
+	// long to rise as the grid takes to finish drawing, instead of a fixed
+	// duration that could finish well before or after it.
+	var gridSweepMs = 0;
 	if (gridDrawSvg) {
 		if (reduceMotion) {
 			document.body.classList.remove('grid-intro');
@@ -150,8 +161,10 @@
 			if (!gridIntroLines) {
 				document.body.classList.remove('grid-intro');
 			} else {
-				var verticalCount = Math.max(1, Math.round(vw() / BASE_GRID)) + 1;
-				horizontalStartDelay = verticalCount * GRID_DRAW_STAGGER_MS;
+				var verticalCount = gridIntroLines.verticals.length;
+				var horizontalCount = gridIntroLines.horizontals.length;
+				var span = (Math.max(verticalCount, horizontalCount) - 1) * GRID_DRAW_STAGGER_MS;
+				gridSweepMs = span + GRID_DRAW_MS;
 			}
 		}
 	}
@@ -173,12 +186,12 @@
 		var introInner = document.querySelector('.box[data-box="overview"] .box-inner');
 		if (introInner) {
 			if (gridIntroLines) {
-				// Rise in step with the horizontal sweep: start the moment it
-				// begins, take about as long as one line's own draw (a touch
-				// slower), instead of the CSS default that finishes almost
-				// immediately, long before the grid's done.
-				introInner.style.transitionDelay = horizontalStartDelay + 'ms';
-				introInner.style.transitionDuration = (GRID_DRAW_MS + 200) + 'ms';
+				// Start rising immediately (same moment the grid starts) and
+				// take a touch longer than the grid's own sweep, instead of
+				// the CSS default that finishes almost immediately, long
+				// before the grid's done.
+				introInner.style.transitionDelay = '0ms';
+				introInner.style.transitionDuration = (gridSweepMs + 200) + 'ms';
 			}
 			introInner.classList.add('fade-in');
 		}
