@@ -136,12 +136,15 @@
 
 	var gridDrawSvg = document.getElementById('grid-draw');
 	var gridIntroLines = null;
+	console.log('[grid-intro] svg found:', !!gridDrawSvg, 'reduceMotion:', reduceMotion, 'innerWidth:', window.innerWidth, 'innerHeight:', window.innerHeight);
 	if (gridDrawSvg) {
 		if (reduceMotion) {
 			document.body.classList.remove('grid-intro');
 			gridDrawSvg.parentNode.removeChild(gridDrawSvg);
+			console.log('[grid-intro] skipped (reduced motion)');
 		} else {
 			gridIntroLines = buildGridIntroLines(gridDrawSvg);
+			console.log('[grid-intro] lines built:', gridIntroLines ? gridIntroLines.length : null);
 			if (!gridIntroLines) document.body.classList.remove('grid-intro');
 		}
 	}
@@ -162,6 +165,7 @@
 		document.body.classList.remove('is-preload');
 		var introInner = document.querySelector('.box[data-box="overview"] .box-inner');
 		if (introInner) introInner.classList.add('fade-in');
+		console.log('[grid-intro] 100ms timer fired, starting draw:', !!(gridDrawSvg && gridIntroLines));
 		if (gridDrawSvg && gridIntroLines) startGridIntroDraw(gridDrawSvg, gridIntroLines);
 	}, 100);
 
