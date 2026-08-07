@@ -268,17 +268,10 @@
 	}
 	initPenCursor();
 
-	/* =========================
-	   Wandering doodle: a paper airplane that rarely flies across the
-	   screen, unannounced — desktop + motion-ok only, see the reasoning in
-	   the plan for why this doesn't just piggyback on setActiveDot.
-	   ========================= */
-
-	// Shared by the ambient wandering doodle below and the draw-a-path
-	// feature further down — nose points right (matches the rotation
-	// values baked into the doodle-fly-a/b keyframes, and the atan2-based
-	// heading math for the draw-and-fly plane). A folded-paper dart, not a
-	// plain arrow: a filled body plus one centerfold crease line.
+	// Used by the draw-a-path feature further down — nose points right
+	// (matches the atan2-based heading math for the draw-and-fly plane). A
+	// folded-paper dart, not a plain arrow: a filled body plus two
+	// centerfold crease lines.
 	function createPlaneSvg() {
 		var ns = 'http://www.w3.org/2000/svg';
 		var svg = document.createElementNS(ns, 'svg');
@@ -306,24 +299,6 @@
 
 		return svg;
 	}
-
-	function spawnDoodle() {
-		var variant = Math.random() < 0.5 ? 'doodle-fly-a' : 'doodle-fly-b';
-		var svg = createPlaneSvg();
-		svg.classList.add(variant);
-		document.body.appendChild(svg);
-		svg.addEventListener('animationend', function () { svg.remove(); });
-	}
-
-	function scheduleDoodle() {
-		var delay = 45000 + Math.random() * 45000;
-		window.setTimeout(function () {
-			if (!document.hidden) spawnDoodle();
-			scheduleDoodle();
-		}, delay);
-	}
-
-	if (isDesktop && !reduceMotion) scheduleDoodle();
 
 	/* =========================
 	   Draw a path, watch a paper airplane fly it: click-and-drag anywhere

@@ -1079,13 +1079,13 @@ ul.actions { list-style: none; }
 }
 
 /* =========================
-   Wandering doodle
+   Paper airplane (used by the click-and-drag draw-a-path feature)
    ========================= */
 
-/* A paper airplane that rarely flies across the screen — see
-   scheduleDoodle()/spawnDoodle() in graphpaper.js. Above #stage (10) so
-   it's visible over whatever section is showing, below the fixed nav
-   chrome (300) so chrome never gets buried, well below the pen cursor. */
+/* Above #stage (10) so it's visible over whatever section is showing,
+   below the fixed nav chrome (300) so chrome never gets buried, well
+   below the pen cursor. Position driven per-frame by JS (see
+   initDrawAndFly() in graphpaper.js), not a CSS animation. */
 .doodle-plane {
 	position: fixed;
 	top: 0;
@@ -1101,48 +1101,13 @@ ul.actions { list-style: none; }
 	fill: var(--ink-soft);
 }
 
-/* Centerfold crease — same dry-brush-filtered stroke language as the rest
+/* Centerfold creases — same dry-brush-filtered stroke language as the rest
    of the site's hand-drawn accents, just enough detail to read as folded
    paper rather than a solid arrowhead. */
 .doodle-plane .doodle-plane-crease {
 	fill: none;
 	stroke: var(--paper);
 	stroke-width: 1;
-}
-
-.doodle-plane.doodle-fly-a {
-	animation: doodle-fly-a 6.5s ease-in-out forwards;
-}
-
-.doodle-plane.doodle-fly-b {
-	animation: doodle-fly-b 6.5s ease-in-out forwards;
-}
-
-/* Both paths swoop in a wavy line across the screen and spin all the way
-   through a loop around the midpoint, rather than a single straight
-   diagonal crossing — reads as actually looping through the air. */
-@keyframes doodle-fly-a {
-	0%   { transform: translate3d(-15vw, 55vh, 0) rotate(-10deg); opacity: 0; }
-	10%  { opacity: 1; }
-	22%  { transform: translate3d(15vw, 20vh, 0) rotate(15deg); }
-	36%  { transform: translate3d(32vw, 40vh, 0) rotate(120deg); }
-	46%  { transform: translate3d(42vw, 22vh, 0) rotate(270deg); }
-	56%  { transform: translate3d(50vw, 38vh, 0) rotate(380deg); }
-	70%  { transform: translate3d(68vw, 15vh, 0) rotate(350deg); }
-	88%  { transform: translate3d(95vw, 45vh, 0) rotate(370deg); opacity: 1; }
-	100% { transform: translate3d(115vw, 30vh, 0) rotate(360deg); opacity: 0; }
-}
-
-@keyframes doodle-fly-b {
-	0%   { transform: translate3d(115vw, 15vh, 0) rotate(180deg); opacity: 0; }
-	10%  { opacity: 1; }
-	22%  { transform: translate3d(82vw, 45vh, 0) rotate(160deg); }
-	36%  { transform: translate3d(65vw, 25vh, 0) rotate(30deg); }
-	46%  { transform: translate3d(55vw, 42vh, 0) rotate(-120deg); }
-	56%  { transform: translate3d(48vw, 20vh, 0) rotate(-260deg); }
-	70%  { transform: translate3d(30vw, 48vh, 0) rotate(-210deg); }
-	88%  { transform: translate3d(5vw, 12vh, 0) rotate(-190deg); opacity: 1; }
-	100% { transform: translate3d(-15vw, 35vh, 0) rotate(-180deg); opacity: 0; }
 }
 
 /* =========================
