@@ -254,6 +254,16 @@
 	var exclaimMarkFx = makeReplayableDrawing(exclaimMark);
 	function setExclaimMark(active) { exclaimMarkFx.set(active); }
 
+	// Independent lookups (not the resumeCircle/connectArrow vars declared
+	// later for the proximity mousemove listener) — those are assigned after
+	// the first setActiveDot(0) call below runs, so capturing them here would
+	// close over undefined. Same pattern as celebrateLines/exclaimMark above.
+	var resumeCircleFx = makeReplayableDrawing(document.querySelector('.resume-circle'));
+	function setResumeCircle(active) { resumeCircleFx.set(active); }
+
+	var connectArrowFx = makeReplayableDrawing(document.querySelector('.connect-arrow'));
+	function setConnectArrow(active) { connectArrowFx.set(active); }
+
 	/* =========================
 	   Desktop: stage + FLIP state machine
 	   ========================= */
@@ -301,6 +311,8 @@
 			if (index !== 1) hideEasterEgg();
 			setCelebrateLines(index === 1);
 			setExclaimMark(index === 0);
+			setResumeCircle(index === 2);
+			setConnectArrow(index === 3);
 		}
 
 		function flip(elements, applyFinalState, duration) {
@@ -493,6 +505,8 @@
 						if (idx !== 1) hideEasterEgg();
 						setCelebrateLines(idx === 1);
 						setExclaimMark(idx === 0);
+						setResumeCircle(idx === 2);
+						setConnectArrow(idx === 3);
 					}
 				});
 			}, { threshold: 0.5 });
@@ -537,16 +551,21 @@
 	// open a new tab.
 	var emailLink = document.querySelector('.copy-email');
 	if (emailLink && navigator.clipboard) {
+		// Target the .note-label span, not the link itself — the link also
+		// holds the .note-underline SVG as a sibling, and overwriting
+		// emailLink.textContent directly would wipe that child out the first
+		// time someone copies the email.
+		var emailLabel = emailLink.querySelector('.note-label') || emailLink;
 		var emailAddress = emailLink.href.replace('mailto:', '');
-		var emailOriginalText = emailLink.textContent;
+		var emailOriginalText = emailLabel.textContent;
 		var emailRevertTimer = null;
 		emailLink.addEventListener('click', function (e) {
 			e.preventDefault();
 			navigator.clipboard.writeText(emailAddress).then(function () {
-				emailLink.textContent = 'Copied!';
+				emailLabel.textContent = 'Copied!';
 				window.clearTimeout(emailRevertTimer);
 				emailRevertTimer = window.setTimeout(function () {
-					emailLink.textContent = emailOriginalText;
+					emailLabel.textContent = emailOriginalText;
 				}, 1500);
 			});
 		});
