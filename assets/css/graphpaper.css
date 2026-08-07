@@ -998,7 +998,8 @@ ul.actions { list-style: none; }
    for reduced motion — everywhere else the real system cursor shows and
    these two elements stay hidden. */
 #pen-cursor,
-#ink-trail-canvas {
+#ink-trail-canvas,
+#draw-path-canvas {
 	display: none;
 }
 
@@ -1014,7 +1015,8 @@ ul.actions { list-style: none; }
 	}
 
 	#pen-cursor,
-	#ink-trail-canvas {
+	#ink-trail-canvas,
+	#draw-path-canvas {
 		display: block;
 	}
 }
@@ -1024,6 +1026,16 @@ ul.actions { list-style: none; }
 	inset: 0;
 	pointer-events: none;
 	z-index: 999;
+}
+
+/* Sits with the wandering doodle (see below) — above section content,
+   below the fixed nav chrome — since a click-drawn path should read as
+   "on the page," the same layer the paper airplane already flies at. */
+#draw-path-canvas {
+	position: fixed;
+	inset: 0;
+	pointer-events: none;
+	z-index: 250;
 }
 
 #pen-cursor {

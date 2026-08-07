@@ -274,26 +274,43 @@
 	   the plan for why this doesn't just piggyback on setActiveDot.
 	   ========================= */
 
-	function spawnDoodle() {
-		var variant = Math.random() < 0.5 ? 'doodle-fly-a' : 'doodle-fly-b';
+	// Shared by the ambient wandering doodle below and the draw-a-path
+	// feature further down — nose points right (matches the rotation
+	// values baked into the doodle-fly-a/b keyframes, and the atan2-based
+	// heading math for the draw-and-fly plane). A folded-paper dart, not a
+	// plain arrow: a filled body plus one centerfold crease line.
+	function createPlaneSvg() {
 		var ns = 'http://www.w3.org/2000/svg';
 		var svg = document.createElementNS(ns, 'svg');
 		svg.setAttribute('viewBox', '0 0 60 40');
 		svg.setAttribute('aria-hidden', 'true');
-		svg.classList.add('doodle-plane', variant);
+		svg.classList.add('doodle-plane');
 
-		// Nose points right (matches the rotation values baked into the
-		// doodle-fly-a/b keyframes) — a folded-paper dart, not a plain arrow.
+		// Wider dart body (nose right) plus two fold creases — a centerline
+		// spine and one angled fold on the top wing — so it reads as
+		// folded paper with visible facets, not a flat arrow icon.
 		var body = document.createElementNS(ns, 'path');
 		body.setAttribute('class', 'doodle-plane-body');
-		body.setAttribute('d', 'M58,20 L6,4 L24,20 L6,36 Z');
+		body.setAttribute('d', 'M58,20 L4,3 L20,20 L4,37 Z');
 		svg.appendChild(body);
 
-		var crease = document.createElementNS(ns, 'path');
-		crease.setAttribute('class', 'doodle-plane-crease');
-		crease.setAttribute('d', 'M58,20 L24,20');
-		svg.appendChild(crease);
+		var spine = document.createElementNS(ns, 'path');
+		spine.setAttribute('class', 'doodle-plane-crease');
+		spine.setAttribute('d', 'M58,20 L20,20');
+		svg.appendChild(spine);
 
+		var wingFold = document.createElementNS(ns, 'path');
+		wingFold.setAttribute('class', 'doodle-plane-crease');
+		wingFold.setAttribute('d', 'M36,20 L15,9');
+		svg.appendChild(wingFold);
+
+		return svg;
+	}
+
+	function spawnDoodle() {
+		var variant = Math.random() < 0.5 ? 'doodle-fly-a' : 'doodle-fly-b';
+		var svg = createPlaneSvg();
+		svg.classList.add(variant);
 		document.body.appendChild(svg);
 		svg.addEventListener('animationend', function () { svg.remove(); });
 	}
@@ -307,6 +324,165 @@
 	}
 
 	if (isDesktop && !reduceMotion) scheduleDoodle();
+
+	/* =========================
+	   Draw a path, watch a paper airplane fly it: click-and-drag anywhere
+	   (outside interactive elements) draws a persistent ink line; on
+	   release, a plane flies the exact drawn path over ~3s, erasing the
+	   line behind itself as it goes. Desktop mouse + motion-ok only, same
+	   gate as the pen cursor — dragging on touch would fight page scroll.
+	   ========================= */
+
+	function initDrawAndFly() {
+		var mq = window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
+		if (!mq.matches) return;
+
+		var canvas = document.getElementById('draw-path-canvas');
+		if (!canvas) return;
+		var ctx = canvas.getContext('2d');
+		function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+		resize();
+		window.addEventListener('resize', resize);
+
+		var INK = 'rgba(23,30,54,0.55)';
+		var LINE_WIDTH = 2.6;
+		// Constant cruising speed, not a fixed duration — a short scribble
+		// flies by quickly (no minimum time on screen), a long one takes
+		// longer, but never past MAX_FLIGHT_MS: past that length the plane
+		// just goes faster instead of the flight taking longer.
+		var FLIGHT_SPEED = 0.25; // px/ms
+		var MAX_FLIGHT_MS = 3000;
+		var MIN_POINT_DIST = 3;
+		var MIN_PATH_LENGTH = 24; // ignore near-zero drags (accidental clicks)
+		var PLANE_W = 44, PLANE_H = 44 * 40 / 60;
+
+		var isDrawing = false;
+		var points = [];
+		var flightId = null;
+		var flightPlane = null;
+
+		function stopFlight() {
+			if (flightId !== null) { window.cancelAnimationFrame(flightId); flightId = null; }
+			if (flightPlane) { flightPlane.remove(); flightPlane = null; }
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+		}
+
+		function pathLength(pts) {
+			var total = 0;
+			for (var i = 1; i < pts.length; i++) total += Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y);
+			return total;
+		}
+
+		function onDown(e) {
+			if (e.button !== 0) return;
+			if (e.target.closest('a, button, .todo-item, input, textarea, iframe')) return;
+			stopFlight();
+			isDrawing = true;
+			points = [{ x: e.clientX, y: e.clientY }];
+			e.preventDefault(); // no text-selection drag while doodling
+		}
+
+		function onMove(e) {
+			if (!isDrawing) return;
+			var last = points[points.length - 1];
+			var dx = e.clientX - last.x, dy = e.clientY - last.y;
+			if (Math.hypot(dx, dy) < MIN_POINT_DIST) return;
+			var p = { x: e.clientX, y: e.clientY };
+			ctx.strokeStyle = INK;
+			ctx.lineWidth = LINE_WIDTH;
+			ctx.lineCap = 'round';
+			ctx.lineJoin = 'round';
+			ctx.beginPath();
+			ctx.moveTo(last.x, last.y);
+			ctx.lineTo(p.x, p.y);
+			ctx.stroke();
+			points.push(p);
+		}
+
+		function onUp() {
+			if (!isDrawing) return;
+			isDrawing = false;
+			var drawn = points;
+			points = [];
+			if (drawn.length < 2 || pathLength(drawn) < MIN_PATH_LENGTH) {
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				return;
+			}
+			startFlight(drawn);
+		}
+
+		function startFlight(pathPoints) {
+			var cum = [0];
+			for (var i = 1; i < pathPoints.length; i++) {
+				cum.push(cum[i - 1] + Math.hypot(pathPoints[i].x - pathPoints[i - 1].x, pathPoints[i].y - pathPoints[i - 1].y));
+			}
+			var total = cum[cum.length - 1];
+			var duration = Math.min(total / FLIGHT_SPEED, MAX_FLIGHT_MS);
+
+			function angleBetween(a, b) { return Math.atan2(b.y - a.y, b.x - a.x) * (180 / Math.PI); }
+
+			function pointAt(dist) {
+				if (dist <= 0) return { p: pathPoints[0], angle: angleBetween(pathPoints[0], pathPoints[1]) };
+				if (dist >= total) return { p: pathPoints[pathPoints.length - 1], angle: angleBetween(pathPoints[pathPoints.length - 2], pathPoints[pathPoints.length - 1]) };
+				for (var i = 1; i < cum.length; i++) {
+					if (cum[i] >= dist) {
+						var segStart = cum[i - 1], segEnd = cum[i];
+						var t = segEnd > segStart ? (dist - segStart) / (segEnd - segStart) : 0;
+						var a = pathPoints[i - 1], b = pathPoints[i];
+						return {
+							p: { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t },
+							angle: angleBetween(a, b)
+						};
+					}
+				}
+				return { p: pathPoints[pathPoints.length - 1], angle: 0 };
+			}
+
+			// .doodle-plane (from createPlaneSvg) already sets position:fixed;
+			// top:0; left:0 — no fly-a/b class here, so nothing but this
+			// per-frame transform drives it.
+			flightPlane = createPlaneSvg();
+			document.body.appendChild(flightPlane);
+
+			var start = null;
+			function step(ts) {
+				if (start === null) start = ts;
+				var t = Math.min((ts - start) / duration, 1);
+				var dist = t * total;
+				var here = pointAt(dist);
+
+				// Redraw only the not-yet-flown remainder of the path, so the
+				// line visibly shrinks away behind the plane as it advances.
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				ctx.strokeStyle = INK;
+				ctx.lineWidth = LINE_WIDTH;
+				ctx.lineCap = 'round';
+				ctx.lineJoin = 'round';
+				ctx.beginPath();
+				var started = false;
+				for (var i = 0; i < pathPoints.length; i++) {
+					if (cum[i] < dist) continue;
+					if (!started) { ctx.moveTo(here.p.x, here.p.y); started = true; }
+					ctx.lineTo(pathPoints[i].x, pathPoints[i].y);
+				}
+				if (started) ctx.stroke();
+
+				flightPlane.style.transform = 'translate3d(' + (here.p.x - PLANE_W / 2) + 'px,' + (here.p.y - PLANE_H / 2) + 'px,0) rotate(' + here.angle + 'deg)';
+
+				if (t < 1) {
+					flightId = window.requestAnimationFrame(step);
+				} else {
+					stopFlight();
+				}
+			}
+			flightId = window.requestAnimationFrame(step);
+		}
+
+		document.addEventListener('mousedown', onDown);
+		document.addEventListener('mousemove', onMove);
+		document.addEventListener('mouseup', onUp);
+	}
+	initDrawAndFly();
 
 	/* =========================
 	   Easter egg: double-click "things i've made" to reveal, hidden again
