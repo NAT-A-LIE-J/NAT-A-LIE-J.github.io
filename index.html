@@ -93,11 +93,11 @@
 						<p><a href="https://www.marshall.usc.edu/programs/undergraduate-programs/undergraduate-degrees/bs-artificial-intelligence-for-business-buai" class="bio-link">AI for Business student @ USC.<svg class="drawn-underline" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><path d="M2,6 C20,9 45,3 65,6 C80,8 92,4 98,6" pathLength="1" /></svg></a> I'm a Technical Product Lead living at the intersection of technology and people. Bay Area born, LA raised. More on me:</p>
 
 						<ul class="intro-list">
-							<li>2x intern @ Advantest, building RAG systems used by NVIDIA and Qualcomm, and connecting GenAI companies for million-dollar contracts.</li>
+							<li><span class="stat-wrap"><span class="stat-count" data-target="2" data-suffix="x">2x</span><svg class="drawn-underline stat-underline" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><path d="M2,6 C20,9 45,3 65,6 C80,8 92,4 98,6" pathLength="1" /></svg></span> intern @ Advantest, building RAG systems used by NVIDIA and Qualcomm, and connecting GenAI companies for million-dollar contracts.</li>
 							<li>Cornell AI/ML Fellow. National Merit Scholar (top 1% nationally). USC Presidential Scholar (top 2% merit scholarship).</li>
-							<li>Technical Product Lead @ BUAI Builders Hub, designing a scheduling engine to help 20,000+ undergraduate students plan their degrees.</li>
-							<li>President of USC's Data Science Organization, supporting 100+ members.</li>
-							<li>Active in my Vietnamese community – raised thousands to host a 500+ person dating <span class="show-word">show<svg class="exclaim-mark" viewBox="0 0 20 46" aria-hidden="true">
+							<li>Technical Product Lead @ BUAI Builders Hub, designing a scheduling engine to help <span class="stat-wrap"><span class="stat-count" data-target="20000" data-suffix="+">20,000+</span><svg class="drawn-underline stat-underline" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><path d="M2,6 C20,9 45,3 65,6 C80,8 92,4 98,6" pathLength="1" /></svg></span> undergraduate students plan their degrees.</li>
+							<li>President of USC's Data Science Organization, supporting <span class="stat-wrap"><span class="stat-count" data-target="100" data-suffix="+">100+</span><svg class="drawn-underline stat-underline" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><path d="M2,6 C20,9 45,3 65,6 C80,8 92,4 98,6" pathLength="1" /></svg></span> members.</li>
+							<li>Active in my Vietnamese community – raised thousands to host a <span class="stat-wrap"><span class="stat-count" data-target="500" data-suffix="+">500+</span><svg class="drawn-underline stat-underline" viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><path d="M2,6 C20,9 45,3 65,6 C80,8 92,4 98,6" pathLength="1" /></svg></span> person dating <span class="show-word">show<svg class="exclaim-mark" viewBox="0 0 20 46" aria-hidden="true">
 								<path class="exclaim-stem" d="M10,4 L8,28" pathLength="1" />
 								<circle class="exclaim-dot" cx="9" cy="38" r="2.4" />
 							</svg></span></li>
@@ -119,6 +119,10 @@
 
 							<div class="linkedin-carousel-wrapper">
 								<div class="linkedin-carousel" id="linkedinCarousel">
+								<!-- Post 10 -->
+								<div class="linkedin-card">
+									<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7490466302373875712?collapsed=1" height="895" width="504" frameborder="0" allowfullscreen="" title="LinkedIn Post 10" loading="lazy"></iframe>
+								</div>
 								<!-- Post 9 -->
 								<div class="linkedin-card">
 									<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7457253319120691201?collapsed=1" height="628" width="504" frameborder="0" allowfullscreen="" title="LinkedIn Post 9" loading="lazy"></iframe>
@@ -228,6 +232,17 @@
 			<section class="snap-point" id="grid"></section>
 
 		</div><!-- /.scroll-track -->
+
+		<!-- Hand-drawn pen cursor + fading ink trail (desktop mouse only —
+		     see the @media gate in graphpaper.css and initPenCursor() in
+		     graphpaper.js). -->
+		<canvas id="ink-trail-canvas" aria-hidden="true"></canvas>
+		<div id="pen-cursor" aria-hidden="true">
+			<svg class="pen-cursor-glyph" viewBox="0 0 24 24">
+				<path d="M2,22 L12,4 L18,7 L10,24 Z" />
+				<path class="pen-cursor-slit" d="M9,13 L10,24" />
+			</svg>
+		</div>
 
 		<script src="assets/js/graphpaper.js"></script>
 

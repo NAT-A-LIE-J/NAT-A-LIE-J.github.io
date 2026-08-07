@@ -199,6 +199,116 @@
 	}, 100);
 
 	/* =========================
+	   Hand-drawn pen cursor + fading ink trail (desktop mouse only, see
+	   the matching @media gate in graphpaper.css)
+	   ========================= */
+
+	function initPenCursor() {
+		var mq = window.matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)');
+		if (!mq.matches) return;
+
+		var cursorEl = document.getElementById('pen-cursor');
+		var canvas = document.getElementById('ink-trail-canvas');
+		if (!cursorEl || !canvas) return;
+		var ctx = canvas.getContext('2d');
+
+		function resize() {
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
+		}
+		resize();
+		window.addEventListener('resize', resize);
+
+		var mouseX = -100, mouseY = -100;
+		var lastTX = null, lastTY = null;
+		var seen = false;
+
+		document.addEventListener('mousemove', function (e) {
+			mouseX = e.clientX;
+			mouseY = e.clientY;
+			if (!seen) {
+				seen = true;
+				cursorEl.style.opacity = '1';
+			}
+		});
+		document.addEventListener('mouseover', function (e) {
+			cursorEl.classList.toggle('is-hover', !!e.target.closest('a, button, .todo-item, [role="button"]'));
+		});
+		document.documentElement.addEventListener('mouseleave', function () {
+			cursorEl.style.opacity = '0';
+		});
+
+		function tick() {
+			cursorEl.style.transform = 'translate3d(' + mouseX + 'px,' + mouseY + 'px,0)';
+
+			ctx.globalCompositeOperation = 'destination-out';
+			ctx.fillStyle = 'rgba(0,0,0,0.04)';
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+			ctx.globalCompositeOperation = 'source-over';
+
+			// Stroke a line from last frame's position to this one, every
+			// frame, instead of stamping separate dots — connects into one
+			// continuous drawn line as the pointer moves, rather than beads.
+			if (lastTX !== null && (mouseX !== lastTX || mouseY !== lastTY)) {
+				ctx.strokeStyle = 'rgba(23,30,54,0.35)';
+				ctx.lineWidth = 2.4;
+				ctx.lineCap = 'round';
+				ctx.lineJoin = 'round';
+				ctx.beginPath();
+				ctx.moveTo(lastTX, lastTY);
+				ctx.lineTo(mouseX, mouseY);
+				ctx.stroke();
+			}
+			lastTX = mouseX;
+			lastTY = mouseY;
+
+			window.requestAnimationFrame(tick);
+		}
+		window.requestAnimationFrame(tick);
+	}
+	initPenCursor();
+
+	/* =========================
+	   Wandering doodle: a paper airplane that rarely flies across the
+	   screen, unannounced — desktop + motion-ok only, see the reasoning in
+	   the plan for why this doesn't just piggyback on setActiveDot.
+	   ========================= */
+
+	function spawnDoodle() {
+		var variant = Math.random() < 0.5 ? 'doodle-fly-a' : 'doodle-fly-b';
+		var ns = 'http://www.w3.org/2000/svg';
+		var svg = document.createElementNS(ns, 'svg');
+		svg.setAttribute('viewBox', '0 0 60 40');
+		svg.setAttribute('aria-hidden', 'true');
+		svg.classList.add('doodle-plane', variant);
+
+		// Nose points right (matches the rotation values baked into the
+		// doodle-fly-a/b keyframes) — a folded-paper dart, not a plain arrow.
+		var body = document.createElementNS(ns, 'path');
+		body.setAttribute('class', 'doodle-plane-body');
+		body.setAttribute('d', 'M58,20 L6,4 L24,20 L6,36 Z');
+		svg.appendChild(body);
+
+		var crease = document.createElementNS(ns, 'path');
+		crease.setAttribute('class', 'doodle-plane-crease');
+		crease.setAttribute('d', 'M58,20 L24,20');
+		svg.appendChild(crease);
+
+		document.body.appendChild(svg);
+		svg.addEventListener('animationend', function () { svg.remove(); });
+	}
+
+	function scheduleDoodle() {
+		var delay = 45000 + Math.random() * 45000;
+		window.setTimeout(function () {
+			if (!document.hidden) spawnDoodle();
+			scheduleDoodle();
+		}, delay);
+	}
+
+	if (isDesktop && !reduceMotion) scheduleDoodle();
+
+	/* =========================
 	   Easter egg: double-click "things i've made" to reveal, hidden again
 	   as soon as you leave Projects (all breakpoints)
 	   ========================= */
@@ -258,11 +368,80 @@
 	// later for the proximity mousemove listener) — those are assigned after
 	// the first setActiveDot(0) call below runs, so capturing them here would
 	// close over undefined. Same pattern as celebrateLines/exclaimMark above.
+	// Auto-play (arriving at the section) waits a beat before drawing in,
+	// so it doesn't fire the instant the section appears — hover-proximity
+	// (.is-near, wired up separately below) stays immediate either way,
+	// since only the active-section trigger goes through this delay.
+	var ACCENT_AUTOPLAY_DELAY_MS = 1400;
+
 	var resumeCircleFx = makeReplayableDrawing(document.querySelector('.resume-circle'));
-	function setResumeCircle(active) { resumeCircleFx.set(active); }
+	var resumeCircleDelayTimer = null;
+	function setResumeCircle(active) {
+		window.clearTimeout(resumeCircleDelayTimer);
+		if (active) {
+			resumeCircleDelayTimer = window.setTimeout(resumeCircleFx.play, ACCENT_AUTOPLAY_DELAY_MS);
+		} else {
+			resumeCircleFx.set(false);
+		}
+	}
 
 	var connectArrowFx = makeReplayableDrawing(document.querySelector('.connect-arrow'));
-	function setConnectArrow(active) { connectArrowFx.set(active); }
+	var connectArrowDelayTimer = null;
+	function setConnectArrow(active) {
+		window.clearTimeout(connectArrowDelayTimer);
+		if (active) {
+			connectArrowDelayTimer = window.setTimeout(connectArrowFx.play, ACCENT_AUTOPLAY_DELAY_MS);
+		} else {
+			connectArrowFx.set(false);
+		}
+	}
+
+	// Same independent-lookup reasoning as above. Counts up 0 -> target every
+	// time Intro becomes active (not just once), matching exclaimMark.
+	var statCounts = Array.prototype.slice.call(document.querySelectorAll('.stat-count'));
+	var statUnderlines = Array.prototype.slice.call(document.querySelectorAll('.stat-underline'));
+	var statTweenId = null;
+
+	function formatStat(el, value) {
+		return Math.round(value).toLocaleString() + (el.dataset.suffix || '');
+	}
+
+	function setStatCounters(active) {
+		if (statTweenId !== null) {
+			window.cancelAnimationFrame(statTweenId);
+			statTweenId = null;
+		}
+		if (!active) {
+			statUnderlines.forEach(function (svg) { svg.classList.remove('is-active'); });
+			return;
+		}
+
+		statUnderlines.forEach(function (svg) {
+			svg.classList.remove('is-active');
+			// eslint-disable-next-line no-unused-expressions
+			svg.offsetWidth; // force reflow so the transition replays, same trick as makeReplayableDrawing
+			svg.classList.add('is-active');
+		});
+
+		if (reduceMotion) {
+			statCounts.forEach(function (el) { el.textContent = formatStat(el, Number(el.dataset.target)); });
+			return;
+		}
+
+		var DURATION = 1000;
+		var start = null;
+		statCounts.forEach(function (el) { el.textContent = formatStat(el, 0); });
+		function step(ts) {
+			if (start === null) start = ts;
+			var t = Math.min((ts - start) / DURATION, 1);
+			var eased = 1 - Math.pow(1 - t, 3);
+			statCounts.forEach(function (el) {
+				el.textContent = formatStat(el, Number(el.dataset.target) * eased);
+			});
+			statTweenId = t < 1 ? window.requestAnimationFrame(step) : null;
+		}
+		statTweenId = window.requestAnimationFrame(step);
+	}
 
 	/* =========================
 	   Desktop: stage + FLIP state machine
@@ -313,6 +492,7 @@
 			setExclaimMark(index === 0);
 			setResumeCircle(index === 2);
 			setConnectArrow(index === 3);
+			setStatCounters(index === 0);
 		}
 
 		function flip(elements, applyFinalState, duration) {
@@ -507,6 +687,7 @@
 						setExclaimMark(idx === 0);
 						setResumeCircle(idx === 2);
 						setConnectArrow(idx === 3);
+						setStatCounters(idx === 0);
 					}
 				});
 			}, { threshold: 0.5 });
