@@ -372,7 +372,7 @@
 	// so it doesn't fire the instant the section appears — hover-proximity
 	// (.is-near, wired up separately below) stays immediate either way,
 	// since only the active-section trigger goes through this delay.
-	var ACCENT_AUTOPLAY_DELAY_MS = 1400;
+	var ACCENT_AUTOPLAY_DELAY_MS = 700;
 
 	var resumeCircleFx = makeReplayableDrawing(document.querySelector('.resume-circle'));
 	var resumeCircleDelayTimer = null;
