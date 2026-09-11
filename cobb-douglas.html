@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cobb-Douglas Production Function</title>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+<style>
+  :root {
+    color-scheme: light;
+    --surface-0:      #f4f4f1;
+    --surface-1:      #fcfcfb;
+    --border:         #dedcd5;
+    --border-strong:  #c2c1b8;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #85847c;
+    --cap:            #2a78d6;
+    --lab:            #0d8a5f;
+    --out:            #eda100;
+    --cap-deep:       #1d5697;
+    --lab-deep:       #0a6244;
+    --out-deep:       #b57b00;
+    --cap-ink:        #1d5697;
+    --lab-ink:        #0a6244;
+    --out-ink:        #9a6a00;
+    --on-out:         #241a00;
+    --grid:           #e9e8e2;
+    --shadow:         0 1px 2px rgba(0,0,0,.04), 0 12px 34px rgba(0,0,0,.055);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface-0:      #111110;
+      --surface-1:      #1a1a19;
+      --border:         #302f2c;
+      --border-strong:  #4a4942;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #8b8a81;
+      --cap:            #3f8ce8;
+      --lab:            #1aa375;
+      --out:            #e0a52b;
+      --cap-deep:       #1d4f8c;
+      --lab-deep:       #0a5c41;
+      --out-deep:       #a2700c;
+      --cap-ink:        #7bb6f4;
+      --lab-ink:        #45c89c;
+      --out-ink:        #e0a52b;
+      --on-out:         #1a1200;
+      --grid:           #292825;
+      --shadow:         0 1px 2px rgba(0,0,0,.4), 0 12px 34px rgba(0,0,0,.3);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--surface-0);
+    color: var(--text-primary);
+    font-family: ui-sans-serif, -apple-system, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 15px; line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 44px 20px 72px; }
+
+  /* ---------- top line: the function ---------- */
+  header { text-align: center; margin-bottom: 26px; }
+  .fn {
+    font-family: ui-serif, Georgia, "Times New Roman", serif;
+    font-size: 36px; line-height: 1.1; letter-spacing: -0.01em;
+    margin: 0; font-weight: 400;
+  }
+  @media (max-width: 560px) { .fn { font-size: 27px; } }
+  .fn sup { font-size: .5em; vertical-align: super; line-height: 0; }
+  .fn .v { color: var(--text-primary); font-weight: 500; }
+  .fn .k { color: var(--cap); }
+  .fn .n { color: var(--lab); }
+  .fn .f { color: var(--out-ink); }
+  .sub {
+    margin: 12px auto 0; max-width: 600px;
+    color: var(--text-muted); font-size: 13.5px; line-height: 1.55;
+  }
+
+  /* ---------- hero scene ---------- */
+  .stage {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    padding: 6px 6px 0;
+    overflow: hidden;
+  }
+  .stage svg { display: block; width: 100%; height: auto; }
+  .scale-note {
+    text-align: center; font-size: 10.5px; color: var(--text-muted);
+    letter-spacing: .07em; text-transform: uppercase; padding: 0 8px 11px;
+  }
+
+  /* ---------- svg paint (var() does not resolve in SVG attributes) ---------- */
+  .sK0 { stop-color: var(--cap); }       .sK1 { stop-color: var(--cap-deep); }
+  .sN0 { stop-color: var(--lab); }       .sN1 { stop-color: var(--lab-deep); }
+  .sF0 { stop-color: var(--out); }       .sF1 { stop-color: var(--out-deep); }
+  #pillarK { fill: url(#gK); }
+  #pillarN { fill: url(#gN); }
+  #beam    { fill: url(#gF); }
+  #floor   { stroke: var(--border-strong); }
+  #axis line { stroke: var(--border); }
+  #axis text { fill: var(--text-muted); }
+  #capSlab { fill: url(#gK); }
+  #labSlab { fill: url(#gN); }
+  #plat    { fill: url(#gF); }
+  #ghostK, #ghostN { fill: none; stroke-dasharray: 3 4; stroke-width: 1.5; }
+  #ghostK { stroke: var(--cap); opacity: .6; }
+  #ghostN { stroke: var(--lab); opacity: .6; }
+  #ghostKf { fill: var(--cap); opacity: .85; }
+  #ghostNf { fill: var(--lab); opacity: .85; }
+  .slabTxt { fill: #fff; }
+  .shareTxt { fill: var(--text-muted); }
+  #arRef  { fill: none; stroke: var(--border-strong); stroke-dasharray: 4 6; opacity: .8; }
+  #arRect { fill: url(#gF); stroke: var(--out-deep); stroke-width: 1.5; }
+  #arBase { stroke: var(--border-strong); }
+  #arWbar { stroke: var(--cap); fill: none; stroke-width: 1.5; }
+  #arHbar { stroke: var(--lab); fill: none; stroke-width: 1.5; }
+  #arKtxt { fill: var(--cap-ink); }
+  #arNtxt { fill: var(--lab-ink); }
+  #arPill { fill: url(#gF); stroke: var(--surface-1); stroke-width: 3; }
+  #arTxt  { fill: var(--on-out); }
+
+  /* one stage, three readings -- only the active group is painted */
+  #viewBeam, #viewStack, #viewArea, #tip { display: none; }
+  #scene.m-beam  #viewBeam,  #scene.m-beam  #tip,
+  #scene.m-stack #viewStack, #scene.m-stack #tip,
+  #scene.m-area  #viewArea { display: block; }
+  #scene.m-area #axisWrap { display: none; }
+
+  .modes {
+    display: flex; justify-content: center; gap: 3px; margin: 0 auto 16px;
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 999px; padding: 3px; width: fit-content;
+  }
+  .modes button {
+    font: inherit; font-size: 12.5px; font-weight: 600; letter-spacing: .02em;
+    padding: 6px 17px; border-radius: 999px; border: 1px solid transparent;
+    background: transparent; color: var(--text-muted); cursor: pointer;
+    transition: background 130ms, color 130ms;
+  }
+  .modes button:hover { color: var(--text-primary); }
+  .modes button.on {
+    background: var(--surface-0); border-color: var(--border);
+    color: var(--text-primary);
+  }
+
+  #tipStem, #tipLead { stroke: var(--out-deep); }
+  #tipLead { opacity: .85; }
+  #tipArrow { fill: var(--out-deep); }
+  #tipDot  { fill: var(--out-deep); stroke: var(--surface-1); }
+  #tipPill { fill: url(#gF); stroke: var(--surface-1); stroke-width: 3; }
+  #tipText { fill: var(--on-out); }
+  .lblK { fill: var(--cap); }
+  .lblN { fill: var(--lab); }
+  .lblCap { fill: var(--text-muted); }
+
+  /* ---------- controls ---------- */
+  .controls {
+    display: grid; grid-template-columns: 1fr 1fr auto; gap: 26px; align-items: end;
+    margin: 24px 4px 0;
+  }
+  @media (max-width: 760px) { .controls { grid-template-columns: 1fr; gap: 18px; } }
+
+  .ctl-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; }
+  .ctl-head label { font-size: 11px; font-weight: 650; letter-spacing: .09em; text-transform: uppercase; color: var(--text-muted); }
+  .ctl-head .num { font-size: 15px; font-weight: 650; font-variant-numeric: tabular-nums; color: var(--text-secondary); }
+
+  input[type=range] {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 20px; background: transparent; cursor: pointer; margin: 0; display: block;
+  }
+  input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: var(--grid); border: 1px solid var(--border); }
+  input[type=range]::-moz-range-track { height: 4px; border-radius: 2px; background: var(--grid); border: 1px solid var(--border); }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 18px; height: 18px; border-radius: 50%; margin-top: -8px;
+    background: var(--thumb); border: 3px solid var(--surface-1);
+    box-shadow: 0 1px 3px rgba(0,0,0,.28); transition: transform 120ms ease-out;
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 13px; height: 13px; border-radius: 50%;
+    background: var(--thumb); border: 3px solid var(--surface-1); box-shadow: 0 1px 3px rgba(0,0,0,.28);
+  }
+  input[type=range]:hover::-webkit-slider-thumb { transform: scale(1.14); }
+  input[type=range]:focus-visible { outline: none; }
+  input[type=range]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px color-mix(in srgb, var(--thumb) 30%, transparent); }
+  #sliderK { --thumb: var(--cap); }
+  #sliderN { --thumb: var(--lab); }
+
+  .btn {
+    padding: 9px 20px; font: inherit; font-weight: 620; font-size: 13.5px;
+    border-radius: 999px; border: 1px solid var(--border-strong);
+    background: var(--surface-1); color: var(--text-primary);
+    cursor: pointer; white-space: nowrap; transition: background 120ms, border-color 120ms;
+  }
+  .btn:hover { background: var(--grid); border-color: var(--text-muted); }
+  .check {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    cursor: pointer; font-size: 12.5px; color: var(--text-muted); user-select: none; margin-top: 16px;
+  }
+  .check input { width: 15px; height: 15px; accent-color: var(--cap); cursor: pointer; margin: 0; flex: none; }
+  .sliders-dim { opacity: .4; pointer-events: none; }
+  .controls { transition: opacity 220ms ease; }
+
+  /* ---------- secondary ---------- */
+  .below { margin-top: 48px; }
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 860px) { .cards { grid-template-columns: 1fr; } }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 14px; padding: 16px 16px 8px; }
+  .card h2 {
+    font-size: 10.5px; font-weight: 650; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--text-muted); margin: 0 0 8px;
+  }
+  details.table-view { margin-top: 22px; }
+  details.table-view summary {
+    cursor: pointer; font-size: 12px; color: var(--text-muted); font-weight: 600;
+    list-style: none; padding: 4px 0; letter-spacing: .03em;
+  }
+  details.table-view summary::-webkit-details-marker { display: none; }
+  details.table-view summary::before { content: "▸ "; }
+  details.table-view[open] summary::before { content: "▾ "; }
+  .t-scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 12.5px; margin-top: 8px; font-variant-numeric: tabular-nums; }
+  th, td { text-align: right; padding: 5px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  th { color: var(--text-muted); font-weight: 600; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
+  caption { caption-side: top; text-align: left; color: var(--text-muted); font-size: 12px; padding-bottom: 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="fn">
+      <span class="f">F</span>(<span class="k">K</span>,&thinsp;<span class="n">N</span>) =
+      <span class="k">K</span><sup class="v" id="expA">0.33</sup>&thinsp;·&thinsp;<span class="n">N</span><sup class="v" id="expB">0.67</sup>
+    </p>
+    <p class="sub">The gold beam rests on both pillars. Raise one input on its own and the beam
+       just tilts — the reading tip barely climbs.</p>
+  </header>
+
+  <!-- ================= HERO ================= -->
+  <div class="modes" id="modes">
+    <button data-mode="beam" class="on">Beam</button>
+    <button data-mode="stack">Stack</button>
+    <button data-mode="area">Area</button>
+  </div>
+
+  <div class="stage">
+    <svg id="scene" class="m-beam" viewBox="0 0 880 480" role="img" aria-labelledby="sceneTitle">
+      <title id="sceneTitle">Capital and labor combining to produce output</title>
+      <defs>
+        <linearGradient id="gK" x1="0" y1="0" x2="0" y2="1">
+          <stop class="sK0" offset="0%"/><stop class="sK1" offset="100%"/>
+        </linearGradient>
+        <linearGradient id="gN" x1="0" y1="0" x2="0" y2="1">
+          <stop class="sN0" offset="0%"/><stop class="sN1" offset="100%"/>
+        </linearGradient>
+        <linearGradient id="gF" x1="0" y1="0" x2="0" y2="1">
+          <stop class="sF0" offset="0%"/><stop class="sF1" offset="100%"/>
+        </linearGradient>
+      </defs>
+
+      <g id="axisWrap">
+        <g id="axis" font-size="11" font-family="ui-sans-serif, system-ui, sans-serif"></g>
+        <line id="floor" x1="44" y1="400" x2="852" y2="400" stroke-width="2" stroke-linecap="round"/>
+      </g>
+
+      <!-- ---------- 1. BEAM: span, so height is a weighted average ---------- -->
+      <g id="viewBeam" font-family="ui-sans-serif, system-ui, sans-serif">
+        <path id="pillarK"/>
+        <path id="pillarN"/>
+        <path id="beam"/>
+        <g text-anchor="middle">
+          <text id="labKv" class="lblK" x="250" y="436" font-size="26" font-weight="650">20</text>
+          <text class="lblCap" x="250" y="456" font-size="10.5" font-weight="650" letter-spacing="1.3">CAPITAL K</text>
+          <text id="labNv" class="lblN" x="630" y="436" font-size="26" font-weight="650">20</text>
+          <text class="lblCap" x="630" y="456" font-size="10.5" font-weight="650" letter-spacing="1.3">LABOR N</text>
+        </g>
+      </g>
+
+      <!-- ---------- 2. STACK: series, so heights add ---------- -->
+      <g id="viewStack" font-family="ui-sans-serif, system-ui, sans-serif">
+        <rect id="ghostK" rx="3"/><rect id="ghostKf" rx="3"/>
+        <rect id="ghostN" rx="3"/><rect id="ghostNf" rx="3"/>
+        <rect id="capSlab"/><rect id="labSlab"/><rect id="plat" rx="3"/>
+        <g text-anchor="middle">
+          <text id="capTxt" class="slabTxt" font-size="12" font-weight="700" letter-spacing="1.5">CAPITAL</text>
+          <text id="labTxt" class="slabTxt" font-size="12" font-weight="700" letter-spacing="1.5">LABOR</text>
+          <text id="gKv" class="lblK" x="206" y="436" font-size="21" font-weight="650">20</text>
+          <text class="lblCap" x="206" y="455" font-size="10" font-weight="650" letter-spacing="1.1">CAPITAL K</text>
+          <text id="gNv" class="lblN" x="674" y="436" font-size="21" font-weight="650">20</text>
+          <text class="lblCap" x="674" y="455" font-size="10" font-weight="650" letter-spacing="1.1">LABOR N</text>
+        </g>
+        <text id="gKs" class="shareTxt" x="240" y="0" font-size="11" font-weight="600">&times;0.33</text>
+        <text id="gNs" class="shareTxt" x="708" y="0" font-size="11" font-weight="600">&times;0.67</text>
+      </g>
+
+      <!-- ---------- 3. AREA: width x height, exactly F ---------- -->
+      <g id="viewArea" font-family="ui-sans-serif, system-ui, sans-serif">
+        <rect id="arRef" x="120" y="100" width="540" height="300" rx="3"/>
+        <rect id="arRect" rx="3"/>
+        <line id="arBase" x1="120" y1="400" x2="660" y2="400" stroke-width="2" stroke-linecap="round"/>
+        <path id="arWbar"/><path id="arHbar"/>
+        <text id="arKtxt" text-anchor="middle" font-size="16" font-weight="650"></text>
+        <text id="arNtxt" text-anchor="middle" font-size="16" font-weight="650"></text>
+        <rect id="arPill" width="164" height="44" rx="22"/>
+        <text id="arTxt" text-anchor="middle">
+          <tspan font-size="10.5" font-weight="700" letter-spacing="1.4">OUTPUT</tspan>
+          <tspan id="arNum" font-size="25" font-weight="700" dx="10">20.0</tspan>
+        </text>
+      </g>
+
+      <!-- ---------- shared height readout (beam + stack) ---------- -->
+      <g id="tip">
+        <line id="tipLead" stroke-width="1.75" stroke-dasharray="2 5" stroke-linecap="round"/>
+        <path id="tipArrow"/>
+        <line id="tipStem" stroke-width="2" stroke-dasharray="3 3.5"/>
+        <circle id="tipDot" r="5.5" stroke-width="2"/>
+        <rect id="tipPill" width="164" height="44" rx="22"/>
+        <text id="tipText" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif">
+          <tspan font-size="10.5" font-weight="700" letter-spacing="1.4">OUTPUT</tspan>
+          <tspan id="tipNum" font-size="25" font-weight="700" dx="10">20.0</tspan>
+        </text>
+      </g>
+    </svg>
+    <div class="scale-note" id="note"></div>
+  </div>
+
+  <!-- ================= CONTROLS ================= -->
+  <div class="controls" id="controls">
+    <div>
+      <div class="ctl-head"><label for="sliderK">Capital&nbsp;K</label><span class="num" id="numK">20</span></div>
+      <input type="range" id="sliderK" min="1" max="100" step="1" value="20">
+    </div>
+    <div>
+      <div class="ctl-head"><label for="sliderN">Labor&nbsp;N</label><span class="num" id="numN">20</span></div>
+      <input type="range" id="sliderN" min="1" max="100" step="1" value="20">
+    </div>
+    <button class="btn" id="playBtn">▶ Play demo</button>
+  </div>
+  <label class="check" for="lockChk">
+    <input type="checkbox" id="lockChk">
+    Scale K &amp; N together (proportional)
+  </label>
+
+  <!-- ================= SECONDARY ================= -->
+  <div class="below">
+    <div class="cards">
+      <div class="card">
+        <h2>Three paths out of K = N = 20</h2>
+        <div id="chart2d"></div>
+      </div>
+      <div class="card">
+        <h2>The production surface</h2>
+        <div id="chart3d"></div>
+      </div>
+    </div>
+    <details class="table-view">
+      <summary>Data table</summary>
+      <div class="t-scroll"><table id="dataTable"></table></div>
+    </details>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------------- model ---------------- */
+  var ALPHA = 0.33, BETA = 1 - ALPHA;
+  function F(k, n) { return Math.pow(k, ALPHA) * Math.pow(n, BETA); }
+  function clamp(v) { return Math.min(100, Math.max(1, v)); }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  /* ---------------- scene geometry ----------------
+     Pillar heights are logarithmic:  hv(v) = ln(v)/ln(100) * H.
+     A straight beam seated on both pillar tops therefore sits at height
+        (1 - t)*hv(K) + t*hv(N)
+     at fraction t across the span.  At t = BETA that equals
+        ALPHA*ln K + BETA*ln N  =  ln F,
+     so the reading tip lands on the true output exactly — no fudge factor.
+     Push K alone and the beam pivots hard while the tip creeps up: that gap
+     between tilt and lift is the diminishing marginal return.
+  ------------------------------------------------- */
+  var FLOOR = 400, H = 300, AX = 44;
+  var XK = 250, XN = 630, PW = 108, OVER = 62;
+  var THICK = 17, ROUND = 6;
+  var BEAM_L = XK - OVER, BEAM_R = XN + OVER;
+  var XB = XK + BETA * (XN - XK);
+  var LN100 = Math.log(100);
+  var C = H / LN100;                              // px per natural-log unit
+  var TCX = 440, TW = 176;                        // stack: the tower
+  var GKX = 206, GNX = 674, GW = 54;              // stack: ghost bars, full input level
+  var AR_X = 120, AR_W = 540, AR_H = 300;         // area: the box
+
+  function hv(v) { return Math.log(clamp(v)) / LN100 * H; }
+  function yv(v) { return FLOOR - hv(v); }
+
+  /* ---------------- theme ---------------- */
+  var CS = getComputedStyle(document.documentElement);
+  function T(name) { return CS.getPropertyValue(name).trim(); }
+  var theme = {
+    surface: T('--surface-1'), grid: T('--grid'), border: T('--border'),
+    ink: T('--text-primary'), ink2: T('--text-secondary'), muted: T('--text-muted'),
+    cap: T('--cap'), lab: T('--lab'), out: T('--out'),
+    capInk: T('--cap-ink'), labInk: T('--lab-ink'), outInk: T('--out-ink')
+  };
+  var FONT = 'ui-sans-serif, -apple-system, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif';
+
+  /* ---------------- dom ---------------- */
+  function $(id) { return document.getElementById(id); }
+  var el = {
+    axis: $('axis'), pillarK: $('pillarK'), pillarN: $('pillarN'), beam: $('beam'),
+    tipStem: $('tipStem'), tipLead: $('tipLead'), tipArrow: $('tipArrow'),
+    tipDot: $('tipDot'), tipPill: $('tipPill'),
+    scene: $('scene'), modes: $('modes'), note: $('note'),
+    capSlab: $('capSlab'), labSlab: $('labSlab'), plat: $('plat'),
+    ghostK: $('ghostK'), ghostKf: $('ghostKf'), ghostN: $('ghostN'), ghostNf: $('ghostNf'),
+    capTxt: $('capTxt'), labTxt: $('labTxt'),
+    gKv: $('gKv'), gNv: $('gNv'), gKs: $('gKs'), gNs: $('gNs'),
+    arRect: $('arRect'), arWbar: $('arWbar'), arHbar: $('arHbar'),
+    arKtxt: $('arKtxt'), arNtxt: $('arNtxt'),
+    arPill: $('arPill'), arTxt: $('arTxt'), arNum: $('arNum'),
+    tipText: $('tipText'), tipNum: $('tipNum'),
+    labKv: $('labKv'), labNv: $('labNv'),
+    numK: $('numK'), numN: $('numN'),
+    sK: $('sliderK'), sN: $('sliderN'), lock: $('lockChk'),
+    play: $('playBtn'), controls: $('controls'), table: $('dataTable'),
+    expA: $('expA'), expB: $('expB')
+  };
+
+  var K = 20, N = 20, playing = false, cancelDemo = false;
+
+  /* ---------------- header placeholders ---------------- */
+  el.expA.textContent = ALPHA.toFixed(2);
+  el.expB.textContent = BETA.toFixed(2);
+
+  /* ---------------- static axis ---------------- */
+  (function buildAxis() {
+    var s = '<line x1="' + AX + '" y1="' + yv(100) + '" x2="' + AX + '" y2="' + FLOOR + '" stroke-width="1"/>';
+    [1, 10, 100].forEach(function (t) {
+      var y = yv(t);
+      s += '<line x1="' + AX + '" y1="' + y + '" x2="852" y2="' + y + '" stroke-width="1" stroke-dasharray="2 7" opacity=".75"/>' +
+           '<text x="' + (AX - 8) + '" y="' + (y + 4) + '" text-anchor="end">' + t + '</text>';
+    });
+    el.axis.innerHTML = s;
+  })();
+
+  /* ---------------- chart data ---------------- */
+  var XS = [], i, j;
+  for (i = 1; i <= 100; i++) XS.push(i);
+
+  var G = 40, gk = [], gn = [], gz = [];
+  for (i = 0; i < G; i++) { gk.push(1 + i * 99 / (G - 1)); gn.push(1 + i * 99 / (G - 1)); }
+  for (i = 0; i < G; i++) { var row = []; for (j = 0; j < G; j++) row.push(F(gk[j], gn[i])); gz.push(row); }
+
+  var AMBER_SCALE = [
+    [0.00, '#fdf6e3'], [0.20, '#f9e3ab'], [0.40, '#f2c766'],
+    [0.60, '#e0a52b'], [0.80, '#b57b00'], [1.00, '#7a4f00']
+  ];
+
+  /* ---------------- scene: three readings of one equation ----------------
+       ln F  =  ALPHA*ln K  +  BETA*ln N
+     BEAM  reads it as a weighted AVERAGE of the two levels.  Two supports side
+           by side can only interpolate, so output always lands between K and N.
+     STACK reads it as a SUM of two contributions.  Series, not span: the shares
+           add, so output is genuinely the top of the pile.
+     AREA  reads it as a PRODUCT.  Width K^ALPHA times height N^BETA is exactly
+           F, for any exponents, with no log scale needed.
+  ------------------------------------------------------------------------- */
+  var MODE = 'beam';
+
+  var NOTES = {
+    beam:  'Log scale &middot; the beam spans both pillars, so its height is a weighted <b>average</b> &middot; output reads ' +
+           Math.round(BETA * 100) + '% of the way across',
+    stack: 'Log scale &middot; each input donates its share &mdash; &alpha; of capital, &beta; of labor &mdash; and the shares <b>add</b>, so output is the top',
+    area:  'Width = K<sup>' + ALPHA.toFixed(2) + '</sup> &middot; height = N<sup>' + BETA.toFixed(2) +
+           '</sup> &middot; the enclosed <b>area</b> is exactly output'
+  };
+
+  function box(e, x, y, w, h) {
+    e.setAttribute('x', x.toFixed(1)); e.setAttribute('y', y.toFixed(1));
+    e.setAttribute('width', Math.max(0, w).toFixed(1));
+    e.setAttribute('height', Math.max(0, h).toFixed(1));
+  }
+
+  // shared height readout: dashed leader back to the y-axis, dot on the reading
+  // point, gold pill floating above it
+  function placeTip(ty, dotX, pillCx, stemX, stemBottom, pillBottom) {
+    var yS = ty.toFixed(1), pillY = pillBottom - 44;
+    el.tipLead.setAttribute('x1', (AX + 11).toFixed(1));
+    el.tipLead.setAttribute('x2', (dotX - 9).toFixed(1));
+    el.tipLead.setAttribute('y1', yS); el.tipLead.setAttribute('y2', yS);
+    el.tipArrow.setAttribute('d', 'M' + AX + ' ' + (ty - 7).toFixed(1) +
+                                  'L' + (AX + 11) + ' ' + yS +
+                                  'L' + AX + ' ' + (ty + 7).toFixed(1) + 'Z');
+    el.tipDot.setAttribute('cx', dotX.toFixed(1)); el.tipDot.setAttribute('cy', yS);
+    el.tipStem.setAttribute('x1', stemX.toFixed(1)); el.tipStem.setAttribute('x2', stemX.toFixed(1));
+    el.tipStem.setAttribute('y1', stemBottom.toFixed(1));
+    el.tipStem.setAttribute('y2', pillBottom.toFixed(1));
+    el.tipPill.setAttribute('x', (pillCx - 82).toFixed(1));
+    el.tipPill.setAttribute('y', pillY.toFixed(1));
+    el.tipText.setAttribute('x', pillCx.toFixed(1));
+    el.tipText.setAttribute('y', (pillY + 30).toFixed(1));
+    el.tipNum.textContent = F(K, N).toFixed(1);
+  }
+
+  /* ---- 1. beam: seated on both pillar tops ---- */
+  function renderBeam() {
+    var yK = yv(K), yN = yv(N);
+    var m = (yN - yK) / (XN - XK);
+    var drop = THICK * Math.sqrt(1 + m * m);
+    function seat(x) { return yK + m * (x - XK); }
+
+    var xl = BEAM_L, xr = BEAM_R;
+    if (Math.abs(m) > 1e-6) {
+      var xFloor = XK + (FLOOR - yK) / m;         // trim the low overhang at the floor
+      if (m > 0) xr = Math.min(xr, xFloor); else xl = Math.max(xl, xFloor);
+    }
+
+    // corners round over ROUND px; the seat line between them stays dead straight
+    var n = function (v) { return v.toFixed(1); };
+    var inv = 1 / Math.sqrt(1 + m * m), ex = ROUND * inv, ey = ROUND * m * inv;
+    var ax = xl, ay = seat(xl) - drop, bx = xr, by = seat(xr) - drop;
+    var cy = seat(xr), dy = seat(xl);
+    el.beam.setAttribute('d',
+      'M' + n(ax + ex) + ' ' + n(ay + ey) + 'L' + n(bx - ex) + ' ' + n(by - ey) +
+      'Q' + n(bx) + ' ' + n(by) + ' ' + n(bx) + ' ' + n(by + ROUND) +
+      'L' + n(bx) + ' ' + n(cy - ROUND) +
+      'Q' + n(bx) + ' ' + n(cy) + ' ' + n(bx - ex) + ' ' + n(cy - ey) +
+      'L' + n(ax + ex) + ' ' + n(dy + ey) +
+      'Q' + n(ax) + ' ' + n(dy) + ' ' + n(ax) + ' ' + n(dy - ROUND) +
+      'L' + n(ax) + ' ' + n(ay + ROUND) +
+      'Q' + n(ax) + ' ' + n(ay) + ' ' + n(ax + ex) + ' ' + n(ay + ey) + 'Z');
+
+    function pillar(cx) {
+      var l = cx - PW / 2, r = cx + PW / 2;
+      return 'M' + l + ' ' + Math.min(seat(l), FLOOR).toFixed(1) +
+             'L' + r + ' ' + Math.min(seat(r), FLOOR).toFixed(1) +
+             'L' + r + ' ' + FLOOR + 'L' + l + ' ' + FLOOR + 'Z';
+    }
+    el.pillarK.setAttribute('d', pillar(XK));
+    el.pillarN.setAttribute('d', pillar(XN));
+    el.labKv.textContent = Math.round(K);
+    el.labNv.textContent = Math.round(N);
+
+    var ty = seat(XB);
+    placeTip(ty, XB, XB, XB, ty - 5, ty - drop - 12);
+  }
+
+  /* ---- 2. stack: each input's share, piled in series ---- */
+  function renderStack() {
+    var lk = Math.log(clamp(K)), lnv = Math.log(clamp(N));
+    var capH = ALPHA * lk * C, labH = BETA * lnv * C;
+    var top = FLOOR - capH - labH;                // identically yv(F)
+    var tx = TCX - TW / 2;
+
+    box(el.capSlab, tx, FLOOR - capH, TW, capH);
+    box(el.labSlab, tx, top, TW, labH);
+    box(el.plat, tx - 16, top - 8, TW + 32, 8);
+
+    // ghost bars: the full input level outlined, the donated share filled in
+    box(el.ghostK, GKX - GW / 2, FLOOR - lk * C, GW, lk * C);
+    box(el.ghostKf, GKX - GW / 2, FLOOR - capH, GW, capH);
+    box(el.ghostN, GNX - GW / 2, FLOOR - lnv * C, GW, lnv * C);
+    box(el.ghostNf, GNX - GW / 2, FLOOR - labH, GW, labH);
+    el.gKs.setAttribute('y', (FLOOR - capH / 2 + 4).toFixed(1));
+    el.gNs.setAttribute('y', (FLOOR - labH / 2 + 4).toFixed(1));
+    el.gKv.textContent = Math.round(K);
+    el.gNv.textContent = Math.round(N);
+
+    el.capTxt.setAttribute('x', TCX); el.capTxt.setAttribute('y', (FLOOR - capH / 2 + 4).toFixed(1));
+    el.labTxt.setAttribute('x', TCX); el.labTxt.setAttribute('y', (top + labH / 2 + 4).toFixed(1));
+    el.capTxt.setAttribute('opacity', capH > 26 ? 1 : 0);
+    el.labTxt.setAttribute('opacity', labH > 26 ? 1 : 0);
+
+    placeTip(top, tx - 16, TCX, TCX, top - 8, top - 20);
+  }
+
+  /* ---- 3. area: width times height ---- */
+  function renderArea() {
+    var w = AR_W * Math.pow(clamp(K) / 100, ALPHA);
+    var h = AR_H * Math.pow(clamp(N) / 100, BETA);
+    var y = FLOOR - h;
+    box(el.arRect, AR_X, y, w, h);
+
+    var wy = FLOOR + 16;
+    el.arWbar.setAttribute('d', 'M' + AR_X + ' ' + (wy - 5) + 'V' + (wy + 5) +
+                                'M' + AR_X + ' ' + wy + 'H' + (AR_X + w).toFixed(1) +
+                                'M' + (AR_X + w).toFixed(1) + ' ' + (wy - 5) + 'V' + (wy + 5));
+    el.arKtxt.setAttribute('x', (AR_X + w / 2).toFixed(1));
+    el.arKtxt.setAttribute('y', (wy + 25).toFixed(1));
+    el.arKtxt.textContent = 'K = ' + Math.round(K);
+
+    var hx = AR_X - 24, hy = FLOOR - h / 2;
+    el.arHbar.setAttribute('d', 'M' + (hx - 5) + ' ' + y.toFixed(1) + 'H' + (hx + 5) +
+                                'M' + hx + ' ' + y.toFixed(1) + 'V' + FLOOR +
+                                'M' + (hx - 5) + ' ' + FLOOR + 'H' + (hx + 5));
+    el.arNtxt.setAttribute('x', (hx - 13).toFixed(1));
+    el.arNtxt.setAttribute('y', hy.toFixed(1));
+    el.arNtxt.setAttribute('transform', 'rotate(-90 ' + (hx - 13).toFixed(1) + ' ' + hy.toFixed(1) + ')');
+    el.arNtxt.textContent = 'N = ' + Math.round(N);
+
+    var px = AR_X + Math.max(w / 2, 84), py = y - 56;
+    el.arPill.setAttribute('x', (px - 82).toFixed(1)); el.arPill.setAttribute('y', py.toFixed(1));
+    el.arTxt.setAttribute('x', px.toFixed(1)); el.arTxt.setAttribute('y', (py + 30).toFixed(1));
+    el.arNum.textContent = F(K, N).toFixed(1);
+  }
+
+  function renderScene() {
+    if (MODE === 'beam') renderBeam();
+    else if (MODE === 'stack') renderStack();
+    else renderArea();
+    el.numK.textContent = Math.round(K);
+    el.numN.textContent = Math.round(N);
+  }
+
+  function setMode(mode) {
+    MODE = mode;
+    el.scene.setAttribute('class', 'm-' + mode);
+    Array.prototype.forEach.call(el.modes.children, function (b) {
+      b.classList.toggle('on', b.getAttribute('data-mode') === mode);
+    });
+    el.note.innerHTML = NOTES[mode];
+    renderScene();
+  }
+  el.modes.addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-mode]');
+    if (b) setMode(b.getAttribute('data-mode'));
+  });
+
+  /* ---------------- 2D chart ----------------
+     Three fixed reference paths, all leaving the same base point K = N = PIN:
+     scale both inputs, scale capital while labour sits still, scale labour
+     while capital sits still.  They are drawn once and never redraw -- only the
+     two dots move, marking where the current K and N sit at the current output.
+     The labour path outruns the capital path because BETA > ALPHA, and both
+     bend away from the straight K = N line, which is constant returns to scale.
+  ------------------------------------------------- */
+  var PIN = 20;            // the level each "alone" path pins its partner at
+  var DOT_TRACE = 3;
+
+  function dotText() { return ['Capital K = ' + Math.round(K), 'Labor N = ' + Math.round(N)]; }
+
+  function data2d() {
+    var f = F(K, N);
+    return [
+      { x: XS, y: XS, type: 'scatter', mode: 'lines', showlegend: false,
+        line: { color: theme.out, width: 2 },
+        hovertemplate: 'K &amp; N together<br>F = %{y:.1f}<extra></extra>' },
+      { x: XS, y: XS.map(function (x) { return F(x, PIN); }), type: 'scatter', mode: 'lines',
+        showlegend: false, line: { color: theme.cap, width: 2 },
+        hovertemplate: 'K alone &middot; N held at ' + PIN + '<br>F = %{y:.1f}<extra></extra>' },
+      { x: XS, y: XS.map(function (x) { return F(PIN, x); }), type: 'scatter', mode: 'lines',
+        showlegend: false, line: { color: theme.lab, width: 2 },
+        hovertemplate: 'N alone &middot; K held at ' + PIN + '<br>F = %{y:.1f}<extra></extra>' },
+      { x: [K, N], y: [f, f], type: 'scatter', mode: 'lines+markers', showlegend: false,
+        text: dotText(), line: { color: theme.muted, width: 1, dash: 'dot' },
+        marker: { color: [theme.cap, theme.lab], size: 12, line: { color: theme.surface, width: 2.5 } },
+        hovertemplate: '%{text}<br>F = %{y:.1f}<extra></extra>' }
+    ];
+  }
+
+  function layout2d() {
+    var LX = 88;
+    var anns = [
+      { y: LX,          text: 'K &amp; N together',          c: theme.outInk },
+      { y: F(PIN, LX),  text: 'N alone (K = ' + PIN + ')',   c: theme.labInk },
+      { y: F(LX, PIN),  text: 'K alone (N = ' + PIN + ')',   c: theme.capInk }
+    ].map(function (a) {
+      return { x: LX, y: a.y, text: a.text, showarrow: false,
+               xanchor: 'right', yanchor: 'bottom', yshift: 5,
+               font: { size: 10.5, color: a.c, family: FONT },
+               bgcolor: theme.surface, borderpad: 2 };
+    });
+    return {
+      height: 300, margin: { l: 46, r: 16, t: 14, b: 40 },
+      paper_bgcolor: theme.surface, plot_bgcolor: theme.surface,
+      font: { family: FONT, size: 11.5, color: theme.ink2 },
+      hovermode: 'closest', showlegend: false,
+      hoverlabel: { bgcolor: theme.surface, bordercolor: theme.border,
+                    font: { family: FONT, size: 12, color: theme.ink } },
+      xaxis: { title: { text: 'Input level', font: { size: 11, color: theme.muted } },
+               range: [0, 101], gridcolor: theme.grid, zeroline: false,
+               linecolor: theme.border, tickcolor: theme.border, tickfont: { size: 10.5, color: theme.muted } },
+      yaxis: { title: { text: 'Output F', font: { size: 11, color: theme.muted } },
+               range: [0, 104], gridcolor: theme.grid, zeroline: false,
+               linecolor: theme.border, tickcolor: theme.border, tickfont: { size: 10.5, color: theme.muted } },
+      annotations: anns, uirevision: 'keep'
+    };
+  }
+
+  /* ---------------- 3D chart ---------------- */
+  function data3d() {
+    return [
+      { type: 'surface', x: gk, y: gn, z: gz, colorscale: AMBER_SCALE, showscale: false,
+        opacity: 0.94, hoverinfo: 'skip',
+        contours: { z: { show: true, usecolormap: true, width: 1, highlight: false } } },
+      { type: 'scatter3d', mode: 'markers', x: [K], y: [N], z: [F(K, N)],
+        marker: { size: 6, color: theme.ink, line: { color: theme.surface, width: 1 } },
+        hovertemplate: 'K %{x:.0f} · N %{y:.0f}<br>F = %{z:.1f}<extra></extra>', showlegend: false }
+    ];
+  }
+
+  function ax3(title) {
+    return { title: { text: title, font: { size: 11, color: theme.muted } },
+             gridcolor: theme.grid, zerolinecolor: theme.border,
+             backgroundcolor: theme.surface, showbackground: true,
+             tickfont: { size: 9.5, color: theme.muted } };
+  }
+
+  function layout3d() {
+    return {
+      height: 300, margin: { l: 0, r: 0, t: 0, b: 0 },
+      paper_bgcolor: theme.surface, font: { family: FONT, color: theme.ink2 },
+      scene: { xaxis: ax3('K'), yaxis: ax3('N'), zaxis: ax3('Output'),
+               camera: { eye: { x: 1.7, y: -1.6, z: 1.0 } }, aspectmode: 'cube' },
+      uirevision: 'keep'
+    };
+  }
+
+  var CFG = { displayModeBar: false, responsive: true };
+
+  /* ---------------- table ---------------- */
+  function renderTable() {
+    var h = '<caption>The three reference paths above, in numbers.</caption>' +
+      '<thead><tr><th>Input level x</th><th>K alone (N = ' + PIN + ')</th>' +
+      '<th>N alone (K = ' + PIN + ')</th><th>K &amp; N together</th></tr></thead><tbody>';
+    [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100].forEach(function (x) {
+      h += '<tr><td>' + x + '</td><td>' + F(x, PIN).toFixed(1) + '</td><td>' +
+           F(PIN, x).toFixed(1) + '</td><td>' + x.toFixed(1) + '</td></tr>';
+    });
+    el.table.innerHTML = h + '</tbody>';
+  }
+
+  /* ---------------- render pipeline ---------------- */
+  // The scene redraws every frame; the charts are throttled while dragging or
+  // tweening, with a trailing timer so the final state is always drawn.
+  var lastChart = 0, trailTimer = null;
+  function renderCharts() {
+    var f = F(K, N);
+    Plotly.restyle('chart2d', { x: [[K, N]], y: [[f, f]], text: [dotText()] }, [DOT_TRACE]);
+    Plotly.restyle('chart3d', { x: [[K]], y: [[N]], z: [[f]] }, [1]);
+  }
+  function renderAll(force) {
+    renderScene();
+    if (trailTimer) { clearTimeout(trailTimer); trailTimer = null; }
+    var now = performance.now();
+    if (force || now - lastChart > 60) { lastChart = now; renderCharts(); }
+    else { trailTimer = setTimeout(function () {
+      trailTimer = null; lastChart = performance.now(); renderCharts();
+    }, 70); }
+  }
+
+  function setState(k, n, force) {
+    K = clamp(k); N = clamp(n);
+    el.sK.value = Math.round(K);
+    el.sN.value = Math.round(N);
+    renderAll(force);
+  }
+
+  /* ---------------- manual controls ---------------- */
+  function onSlider(which) {
+    var v = which === 'K' ? +el.sK.value : +el.sN.value;
+    var prev = which === 'K' ? K : N;
+    if (el.lock.checked && prev > 0) {
+      var ratio = v / prev;
+      if (which === 'K') setState(v, clamp(N * ratio), false);
+      else setState(clamp(K * ratio), v, false);
+    } else {
+      if (which === 'K') setState(v, N, false);
+      else setState(K, v, false);
+    }
+  }
+  el.sK.addEventListener('input', function () { onSlider('K'); });
+  el.sN.addEventListener('input', function () { onSlider('N'); });
+  el.sK.addEventListener('change', function () { renderAll(true); });
+  el.sN.addEventListener('change', function () { renderAll(true); });
+
+  /* ---------------- demo ---------------- */
+  function easeInOut(t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  function tween(ms, step) {
+    return new Promise(function (done) {
+      var t0 = performance.now();
+      (function frame(t) {
+        if (cancelDemo) { done(); return; }
+        var p = Math.min(1, (t - t0) / ms);
+        step(easeInOut(p));
+        if (p < 1) requestAnimationFrame(frame); else { renderAll(true); done(); }
+      })(performance.now());
+    });
+  }
+
+  var BASE = PIN, PEAK = 92, UP_MS = 3400, DOWN_MS = 2800, HOLD = 450;
+
+  function setPlaying(on) {
+    playing = on;
+    el.controls.classList.toggle('sliders-dim', on);
+    el.sK.disabled = el.sN.disabled = el.lock.disabled = on;
+    el.play.disabled = false;
+    el.play.textContent = on ? '■ Stop' : '▶ Play demo';
+  }
+
+  // Every phase eases up to the peak, holds, then eases all the way back down.
+  // Nothing ever snaps back to the start.
+  async function phase(apply) {
+    await tween(UP_MS, function (e) { apply(lerp(BASE, PEAK, e)); });
+    if (cancelDemo) return;
+    await sleep(HOLD);
+    if (cancelDemo) return;
+    await tween(DOWN_MS, function (e) { apply(lerp(PEAK, BASE, e)); });
+    if (cancelDemo) return;
+    await sleep(HOLD * 0.7);
+  }
+
+  el.play.addEventListener('click', async function () {
+    if (playing) { cancelDemo = true; return; }
+    cancelDemo = false;
+    setPlaying(true);
+    try {
+      // glide from wherever the sliders were left to the shared starting point
+      var k0 = K, n0 = N;
+      if (Math.abs(k0 - BASE) > 0.5 || Math.abs(n0 - BASE) > 0.5) {
+        await tween(1000, function (e) { setState(lerp(k0, BASE, e), lerp(n0, BASE, e), false); });
+        if (!cancelDemo) await sleep(HOLD);
+      }
+      if (!cancelDemo) await phase(function (v) { setState(v, BASE, false); });
+      if (!cancelDemo) await phase(function (v) { setState(BASE, v, false); });
+      if (!cancelDemo) await phase(function (v) { setState(v, v, false); });
+    } finally {
+      cancelDemo = false;
+      setPlaying(false);
+      renderAll(true);
+    }
+  });
+
+  /* ---------------- boot ---------------- */
+  Plotly.newPlot('chart2d', data2d(), layout2d(), CFG);
+  Plotly.newPlot('chart3d', data3d(), layout3d(), CFG);
+  setMode('beam');
+  renderTable();
+})();
+</script>
+</body>
+</html>
